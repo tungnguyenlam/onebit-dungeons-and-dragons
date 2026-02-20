@@ -34,20 +34,50 @@ pub fn expend_slot(slots_remaining: &mut [u8; 9], slot_level: u8) -> bool {
     true
 }
 
-/// Resolve simple spell effects from current schema.
-pub fn resolve_effect(spell: &SpellDef) -> Option<SpellEffect> {
+/// Resolve spell effects with simple scaling rules:
+/// - cantrips scale with level (5/11/17)
+/// - leveled spells gain +1 damage/heal die per upcast level
+pub fn resolve_effect(
+    spell: &SpellDef,
+    cast_level: Option<u8>,
+    caster_level: u8,
+    flat_bonus: i32,
+) -> Option<SpellEffect> {
+    let resolved_level = cast_level.unwrap_or(spell.level).max(spell.level);
     if let Some(heal) = &spell.heal {
+        let mut expr = heal.clone();
+        if resolved_level > spell.level && spell.level > 0 {
+            expr.count += (resolved_level - spell.level) as u32;
+        }
+        expr.modifier += flat_bonus;
         return Some(SpellEffect::Heal {
-            amount: heal.roll().max(0) as u32,
+            amount: expr.roll().max(0) as u32,
         });
     }
     if let Some(damage) = &spell.damage {
+        let mut expr = damage.clone();
+        if spell.level == 0 {
+            let scale = cantrip_scale(caster_level);
+            expr.count *= scale;
+        } else if resolved_level > spell.level {
+            expr.count += (resolved_level - spell.level) as u32;
+        }
+        expr.modifier += flat_bonus;
         return Some(SpellEffect::Damage {
-            amount: damage.roll().max(0) as u32,
+            amount: expr.roll().max(0) as u32,
             damage_type: spell.damage_type.clone().unwrap_or_else(|| "force".into()),
         });
     }
     infer_condition(&spell.id).map(|condition| SpellEffect::Condition { condition })
+}
+
+fn cantrip_scale(level: u8) -> u32 {
+    match level {
+        1..=4 => 1,
+        5..=10 => 2,
+        11..=16 => 3,
+        _ => 4,
+    }
 }
 
 fn infer_condition(id: &str) -> Option<Condition> {
@@ -98,10 +128,39 @@ mod tests {
     #[test]
     fn resolve_heal_effect() {
         let s = spell();
-        let effect = resolve_effect(&s).unwrap();
+        let effect = resolve_effect(&s, Some(1), 1, 0).unwrap();
         match effect {
             SpellEffect::Heal { amount } => assert!(amount >= 3),
             _ => panic!("expected heal"),
         }
+    }
+
+    #[test]
+    fn cantrip_damage_scales_by_level() {
+        let spell = SpellDef {
+            id: "fire_bolt".into(),
+            name: "Fire Bolt".into(),
+            level: 0,
+            school: "evocation".into(),
+            casting_time: "action".into(),
+            range: "120ft".into(),
+            components: vec!["V".into(), "S".into()],
+            duration: "instant".into(),
+            description: "burn".into(),
+            damage: Some(DiceExpr::new(1, 10, 0)),
+            damage_type: Some("fire".into()),
+            save: None,
+            heal: None,
+            classes: vec!["wizard".into()],
+        };
+        let low = resolve_effect(&spell, None, 1, 0).unwrap();
+        let high = resolve_effect(&spell, None, 11, 0).unwrap();
+        let (SpellEffect::Damage { amount: low_amt, .. }, SpellEffect::Damage { amount: high_amt, .. }) =
+            (low, high)
+        else {
+            panic!("expected damage");
+        };
+        assert!(high_amt >= 3);
+        assert!(high_amt >= low_amt.min(1));
     }
 }

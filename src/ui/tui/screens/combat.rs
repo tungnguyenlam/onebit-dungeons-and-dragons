@@ -63,7 +63,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
 
     // Battlefield placeholder.
     let battlefield = Paragraph::new(
-        "Battlefield view is placeholder for now.\n\nControls:\n  - 'a' attack\n  - '.' wait/end turn\n  - Esc leave combat",
+        "Battlefield view is placeholder for now.\n\nControls:\n  - 'a' or '1' attack\n  - '2' drink healing potion (action)\n  - '3' second wind (bonus action)\n  - '.' wait/end turn\n  - Esc leave combat",
     )
     .wrap(Wrap { trim: true })
     .block(Block::default().title("Battlefield").borders(Borders::ALL));

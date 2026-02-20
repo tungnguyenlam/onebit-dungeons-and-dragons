@@ -1,10 +1,16 @@
-use crate::data::loader::{load_lore, load_monsters, load_quests, load_region};
+use crate::data::loader::{load_global_assets, load_lore, load_monsters, load_quests, load_region};
 use crate::data::types::{
-    ArmorDef, ArmorType, DialogTree, ItemDef, ItemType, LoreEntry, MonsterAction, MonsterDef,
+    ArmorDef, ArmorType, DialogTree, ItemBonuses, ItemDef, ItemType, LoreEntry, MonsterAction,
+    MonsterDef,
     NpcDef, QuestDef, QuestKind, QuestStageDef, QuestTransition, SpellDef, TriggerKind, WeaponDef,
 };
 use crate::game::{
-    character::{AbilityScores, Character},
+    character::{
+        progression::{
+            class_hit_die, hp_on_level_up, is_asi_level, level_for_xp, spell_slots_for_class_level,
+        },
+        AbilityScores, Character,
+    },
     combat::{
         apply_damage, can_cast, expend_slot, resolve_spell_effect, roll_attack, AttackProfile,
         CombatState, CombatantState, DefenseProfile, EnemyAiRole, HitType, RollMode, SpellEffect,
@@ -213,8 +219,17 @@ pub struct App {
 impl App {
     /// Create a new `App` ready to display the main menu.
     pub fn new() -> Self {
-        let item_defs = sample_item_defs();
-        let spell_defs = sample_spell_defs();
+        let global_assets = load_global_assets("assets").ok();
+        let item_defs = global_assets
+            .as_ref()
+            .map(|ga| ga.items.clone())
+            .filter(|m| !m.is_empty())
+            .unwrap_or_else(sample_item_defs);
+        let spell_defs = global_assets
+            .as_ref()
+            .map(|ga| ga.spells.clone())
+            .filter(|m| !m.is_empty())
+            .unwrap_or_else(sample_spell_defs);
         let monster_defs = load_monsters("assets")
             .ok()
             .filter(|m| !m.is_empty())
@@ -445,7 +460,7 @@ impl App {
 
     fn handle_combat(&mut self, event: GameEvent) -> Result<()> {
         match event {
-            GameEvent::Attack => {
+            GameEvent::Attack | GameEvent::Choice(1) => {
                 if let AppState::Combat(ctx) = &mut self.state {
                     let Some(attacker_id) = ctx.state.current_combatant_id().map(str::to_string)
                     else {
@@ -471,6 +486,16 @@ impl App {
                     let _ = Self::resolve_attack(ctx, &attacker_id, &target_id);
                 }
                 self.finish_combat_if_over();
+            }
+            GameEvent::Choice(2) => {
+                if let AppState::Combat(ctx) = &mut self.state {
+                    Self::use_potion_in_combat(ctx, &mut self.player);
+                }
+            }
+            GameEvent::Choice(3) => {
+                if let AppState::Combat(ctx) = &mut self.state {
+                    Self::use_second_wind(ctx);
+                }
             }
             GameEvent::Wait => {
                 if let AppState::Combat(ctx) = &mut self.state {
@@ -706,6 +731,10 @@ impl App {
         self.player.name = self.char_creation_ui.name.clone();
         self.player.class_id = class_id;
         self.player.race_id = race_id;
+        self.player.level = 1;
+        self.player.xp = 0;
+        self.player.spell_slots_max = spell_slots_for_class_level(&self.player.class_id, self.player.level);
+        self.player.spell_slots = self.player.spell_slots_max;
         self.player.current_hp = self.player.max_hp;
         self.current_room_id = self
             .region
@@ -715,6 +744,96 @@ impl App {
         if let Some(room) = self.current_room() {
             self.player_pos = spawn_pos_for_room(room);
         }
+    }
+
+    fn equipped_item_ids(&self) -> impl Iterator<Item = &str> {
+        [
+            self.player.equipment.main_hand.as_deref(),
+            self.player.equipment.off_hand.as_deref(),
+            self.player.equipment.armor.as_deref(),
+            self.player.equipment.helmet.as_deref(),
+            self.player.equipment.boots.as_deref(),
+            self.player.equipment.ring_1.as_deref(),
+            self.player.equipment.ring_2.as_deref(),
+            self.player.equipment.amulet.as_deref(),
+        ]
+        .into_iter()
+        .flatten()
+    }
+
+    fn equipment_bonus_totals(&self) -> (i32, i32, i32, i32, i32, i32) {
+        // attack, damage, ac, spell_attack, spell_damage, max_hp
+        self.equipped_item_ids().fold((0, 0, 0, 0, 0, 0), |acc, id| {
+            let Some(item) = self.item_defs.get(id) else {
+                return acc;
+            };
+            (
+                acc.0 + item.bonuses.attack_bonus,
+                acc.1 + item.bonuses.damage_bonus,
+                acc.2 + item.bonuses.armor_class_bonus,
+                acc.3 + item.bonuses.spell_attack_bonus,
+                acc.4 + item.bonuses.spell_damage_bonus,
+                acc.5 + item.bonuses.max_hp_bonus,
+            )
+        })
+    }
+
+    fn grant_player_xp(&mut self, gained_xp: u32) {
+        if gained_xp == 0 {
+            return;
+        }
+        let prev_level = self.player.level;
+        self.player.xp = self.player.xp.saturating_add(gained_xp);
+        let target_level = level_for_xp(self.player.xp);
+        if target_level <= prev_level {
+            self.journal.append(
+                format!("xp-{}", self.turn),
+                self.turn,
+                JournalCategory::World,
+                None,
+                "XP Gained",
+                format!("Gained {gained_xp} XP (total {}).", self.player.xp),
+            );
+            return;
+        }
+
+        while self.player.level < target_level {
+            let next_level = self.player.level + 1;
+            let hit_die = class_hit_die(&self.player.class_id);
+            let con_mod = self.player.scores.con_mod() as i32;
+            let hp_gain = hp_on_level_up(hit_die, con_mod, next_level, false);
+            self.player.level = next_level;
+            self.player.max_hp += hp_gain;
+            self.player.current_hp += hp_gain;
+            self.player.spell_slots_max =
+                spell_slots_for_class_level(&self.player.class_id, self.player.level);
+            self.player.spell_slots = self.player.spell_slots_max;
+
+            let asi_note = if is_asi_level(self.player.level) {
+                " ASI available."
+            } else {
+                ""
+            };
+            self.journal.append(
+                format!("level-up-{}-{}", self.player.level, self.turn),
+                self.turn,
+                JournalCategory::World,
+                None,
+                format!("Level Up: {}", self.player.level),
+                format!("+{hp_gain} max HP.{asi_note}"),
+            );
+        }
+        self.journal.append(
+            format!("xp-{}", self.turn),
+            self.turn,
+            JournalCategory::World,
+            None,
+            "XP Gained",
+            format!(
+                "Gained {gained_xp} XP (total {}, level {} -> {}).",
+                self.player.xp, prev_level, self.player.level
+            ),
+        );
     }
 
     fn save_to_default_path(&mut self) -> Result<()> {
@@ -1109,7 +1228,7 @@ impl App {
     }
 
     fn finish_combat_if_over(&mut self) {
-        let Some((is_over, players_alive, player_hp, ws)) = (match &self.state {
+        let Some((is_over, players_alive, player_hp, ws, gained_xp)) = (match &self.state {
             AppState::Combat(ctx) => Some((
                 ctx.state.is_over(),
                 ctx.state
@@ -1118,6 +1237,17 @@ impl App {
                     .any(|c| c.is_player && c.is_alive()),
                 ctx.state.combatants.get("player").map(|c| c.current_hp),
                 ctx.world_state.clone(),
+                ctx.state
+                    .combatants
+                    .values()
+                    .filter(|c| !c.is_player && c.current_hp <= 0)
+                    .filter_map(|c| {
+                        c.id.split('_')
+                            .next()
+                            .and_then(|mid| self.monster_defs.get(mid))
+                            .map(|m| m.xp)
+                    })
+                    .sum::<u32>(),
             )),
             _ => None,
         }) else {
@@ -1133,6 +1263,7 @@ impl App {
         self.world_state = ws;
 
         if players_alive {
+            self.grant_player_xp(gained_xp);
             self.world_state.set_flag("won_first_combat");
             self.world_state.delta_faction_rep("town_guard", 1);
             self.world_state.delta_faction_rep("goblin_tribe", -2);
@@ -1206,6 +1337,54 @@ impl App {
         );
     }
 
+    fn use_potion_in_combat(ctx: &mut CombatContext, player: &mut Character) {
+        let Some(actor_id) = ctx.state.current_combatant_id().map(str::to_string) else {
+            Self::push_log(ctx, "No active combatant.");
+            return;
+        };
+        if actor_id != "player" {
+            Self::push_log(ctx, "It's not the player's turn.");
+            return;
+        }
+        let Some(actor) = ctx.state.combatants.get_mut(&actor_id) else {
+            return;
+        };
+        if !actor.action_slots.action {
+            Self::push_log(ctx, "No action remaining.");
+            return;
+        }
+        if !player.inventory.use_one("healing_potion") {
+            Self::push_log(ctx, "No healing potion available.");
+            return;
+        }
+        let _ = actor.action_slots.use_action();
+        player.heal(8);
+        actor.current_hp = player.current_hp;
+        Self::push_log(ctx, "Player drinks a healing potion and recovers 8 HP.");
+    }
+
+    fn use_second_wind(ctx: &mut CombatContext) {
+        let Some(actor_id) = ctx.state.current_combatant_id().map(str::to_string) else {
+            Self::push_log(ctx, "No active combatant.");
+            return;
+        };
+        if actor_id != "player" {
+            Self::push_log(ctx, "It's not the player's turn.");
+            return;
+        }
+        let Some(actor) = ctx.state.combatants.get_mut(&actor_id) else {
+            return;
+        };
+        if !actor.action_slots.bonus_action {
+            Self::push_log(ctx, "No bonus action remaining.");
+            return;
+        }
+        let heal = DiceExpr::new(1, 10, actor.max_hp.min(20) / 10).roll().max(1);
+        let _ = actor.action_slots.use_bonus_action();
+        actor.current_hp = (actor.current_hp + heal).min(actor.max_hp);
+        Self::push_log(ctx, format!("Player uses Second Wind and recovers {heal} HP."));
+    }
+
     fn cast_known_spell(&mut self, idx: usize) {
         let Some(spell_id) = self.known_spells.get(idx).cloned() else {
             return;
@@ -1217,7 +1396,9 @@ impl App {
         let slot_level = if spell.level == 0 {
             None
         } else {
-            Some(spell.level)
+            (spell.level..=9)
+                .rev()
+                .find(|lvl| self.player.spell_slots[(*lvl - 1) as usize] > 0)
         };
         if !can_cast(&spell, &self.player.spell_slots, slot_level) {
             self.journal.append(
@@ -1233,8 +1414,9 @@ impl App {
         if let Some(level) = slot_level {
             let _ = expend_slot(&mut self.player.spell_slots, level);
         }
+        let (_, _, _, _, spell_damage_bonus, _) = self.equipment_bonus_totals();
 
-        match resolve_spell_effect(&spell) {
+        match resolve_spell_effect(&spell, slot_level, self.player.level, spell_damage_bonus) {
             Some(SpellEffect::Heal { amount }) => {
                 self.player.heal(amount);
                 self.journal.append(
@@ -1243,7 +1425,10 @@ impl App {
                     JournalCategory::World,
                     None,
                     format!("Cast {}", spell.name),
-                    format!("You recover {amount} HP."),
+                    format!(
+                        "You recover {amount} HP{}.",
+                        slot_level.map(|lvl| format!(" (slot {lvl})")).unwrap_or_default()
+                    ),
                 );
             }
             Some(SpellEffect::Damage {
@@ -1258,7 +1443,10 @@ impl App {
                     JournalCategory::World,
                     None,
                     format!("Cast {}", spell.name),
-                    format!("Spell deals {amount} {damage_type} damage."),
+                    format!(
+                        "Spell deals {amount} {damage_type} damage{}.",
+                        slot_level.map(|lvl| format!(" (slot {lvl})")).unwrap_or_default()
+                    ),
                 );
             }
             Some(SpellEffect::Condition { condition }) => {
@@ -1289,6 +1477,8 @@ impl App {
     }
 
     fn make_combat_context(&mut self) -> CombatContext {
+        let (attack_bonus_bonus, damage_bonus, ac_bonus, _, _, max_hp_bonus) =
+            self.equipment_bonus_totals();
         let armor_item = self
             .player
             .equipment
@@ -1304,7 +1494,7 @@ impl App {
             .and_then(|id| self.item_defs.get(id))
             .and_then(|it| it.armor.as_ref())
             .is_some_and(|a| a.armor_type == ArmorType::Shield);
-        let ac = armor_class(armor_item, shield_equipped, self.player.scores.dex_mod());
+        let ac = armor_class(armor_item, shield_equipped, self.player.scores.dex_mod()) + ac_bonus;
 
         let main_weapon = self
             .player
@@ -1314,17 +1504,39 @@ impl App {
             .and_then(|id| self.item_defs.get(id))
             .and_then(|it| it.weapon.as_ref())
             .cloned();
-        let damage = main_weapon
+        let weapon_uses_dex = main_weapon.as_ref().is_some_and(|w| {
+            w.properties.iter().any(|p| p == "finesse" || p == "ranged")
+        });
+        let ability_mod = if weapon_uses_dex {
+            self.player.scores.dex_mod() as i32
+        } else {
+            self.player.scores.str_mod() as i32
+        };
+        let versatile = main_weapon.as_ref().is_some_and(|w| {
+            w.properties.iter().any(|p| p == "versatile")
+                && self.player.equipment.off_hand.is_none()
+                && w.versatile_damage.is_some()
+        });
+        let mut damage = if versatile {
+            main_weapon
+                .as_ref()
+                .and_then(|w| w.versatile_damage.clone())
+                .unwrap_or_else(|| DiceExpr::new(1, 4, 0))
+        } else {
+            main_weapon
             .as_ref()
             .map(|w| w.damage.clone())
-            .unwrap_or_else(|| DiceExpr::new(1, 4, 0));
-        let attack_bonus = self.player.scores.str_mod() as i32 + self.player.proficiency_bonus();
+            .unwrap_or_else(|| DiceExpr::new(1, 4, 0))
+        };
+        damage.modifier += ability_mod + damage_bonus;
+        let attack_bonus =
+            ability_mod + self.player.proficiency_bonus() + attack_bonus_bonus;
 
         let mut combatants = vec![CombatantState::new(
             "player",
             self.player.name.clone(),
             true,
-            self.player.max_hp,
+            self.player.max_hp + max_hp_bonus,
             ac,
             self.player.speed,
             self.player.scores.dex_mod() as i32,
@@ -1471,6 +1683,7 @@ fn sample_item_defs() -> HashMap<String, ItemDef> {
                 range: None,
             }),
             armor: None,
+            bonuses: ItemBonuses::default(),
         },
     );
     map.insert(
@@ -1488,6 +1701,7 @@ fn sample_item_defs() -> HashMap<String, ItemDef> {
                 armor_type: ArmorType::Light,
                 stealth_disadvantage: false,
             }),
+            bonuses: ItemBonuses::default(),
         },
     );
     map.insert(
@@ -1505,6 +1719,10 @@ fn sample_item_defs() -> HashMap<String, ItemDef> {
                 armor_type: ArmorType::Shield,
                 stealth_disadvantage: false,
             }),
+            bonuses: ItemBonuses {
+                armor_class_bonus: 0,
+                ..ItemBonuses::default()
+            },
         },
     );
     map.insert(
@@ -1518,6 +1736,7 @@ fn sample_item_defs() -> HashMap<String, ItemDef> {
             description: "Restores health.".into(),
             weapon: None,
             armor: None,
+            bonuses: ItemBonuses::default(),
         },
     );
     map
@@ -1963,7 +2182,7 @@ mod tests {
         match &app.state {
             AppState::Combat(ctx) => {
                 let p = ctx.state.combatants.get("player").unwrap();
-                assert_eq!(p.damage_dice, DiceExpr::new(1, 8, 0));
+                assert_eq!(p.damage_dice, DiceExpr::new(1, 10, 3));
             }
             _ => panic!("expected combat"),
         }
@@ -1978,6 +2197,72 @@ mod tests {
         app.handle_event(GameEvent::Choice(1)).unwrap(); // cure wounds
         assert!(app.player.current_hp > 10);
         assert_eq!(app.player.spell_slots[0], before_slots - 1);
+    }
+
+    #[test]
+    fn leveling_up_from_xp_updates_hp_and_level() {
+        let mut app = App::new();
+        app.player.class_id = "fighter".into();
+        app.player.level = 1;
+        app.player.xp = 0;
+        let hp_before = app.player.max_hp;
+        app.grant_player_xp(300); // level 2 threshold
+        assert_eq!(app.player.level, 2);
+        assert!(app.player.max_hp > hp_before);
+    }
+
+    #[test]
+    fn casting_uses_highest_available_slot() {
+        let mut app = App::new();
+        app.player.class_id = "wizard".into();
+        app.player.level = 3;
+        app.player.spell_slots = [1, 1, 0, 0, 0, 0, 0, 0, 0];
+        app.player.spell_slots_max = app.player.spell_slots;
+        app.player.current_hp = 5;
+        app.transition(AppState::Spellbook);
+        app.handle_event(GameEvent::Choice(1)).unwrap(); // cure wounds
+        assert_eq!(app.player.spell_slots[1], 0);
+        assert_eq!(app.player.spell_slots[0], 1);
+    }
+
+    #[test]
+    fn equipment_bonus_is_applied_to_combat_stats() {
+        let mut app = App::new();
+        app.item_defs
+            .get_mut("longsword")
+            .unwrap()
+            .bonuses
+            .attack_bonus = 2;
+        app.transition(AppState::WorldMap);
+        app.handle_event(GameEvent::OpenInventory).unwrap();
+        app.handle_event(GameEvent::Choice(1)).unwrap(); // equip longsword
+        app.transition(AppState::WorldMap);
+        app.handle_event(GameEvent::Attack).unwrap();
+        match &app.state {
+            AppState::Combat(ctx) => {
+                let p = ctx.state.combatants.get("player").unwrap();
+                assert!(p.attack_bonus >= 7);
+            }
+            _ => panic!("expected combat"),
+        }
+    }
+
+    #[test]
+    fn combat_choice_uses_potion_action() {
+        let mut app = App::new();
+        app.player.current_hp = 8;
+        app.transition(AppState::WorldMap);
+        app.handle_event(GameEvent::Attack).unwrap(); // enter combat
+        if let AppState::Combat(ctx) = &mut app.state {
+            ctx.state.active_turn = ctx
+                .state
+                .turn_queue
+                .iter()
+                .position(|id| id == "player")
+                .unwrap_or(0);
+        }
+        app.handle_event(GameEvent::Choice(2)).unwrap();
+        assert!(app.player.current_hp >= 16);
     }
 
     #[test]

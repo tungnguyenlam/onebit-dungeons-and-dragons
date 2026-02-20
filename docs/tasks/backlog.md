@@ -106,10 +106,10 @@
 
 ## Milestone 9 — Core RPG Depth
 
-- [ ] Level-up flow and class progression hooks in runtime
-- [ ] Spell scaling and slot usage depth improvements
-- [ ] Data-driven equipment effects in combat/runtime calculations
-- [ ] Expand combat action variety (targeted, high-signal improvements only)
+- [x] Level-up flow and class progression hooks in runtime
+- [x] Spell scaling and slot usage depth improvements
+- [x] Data-driven equipment effects in combat/runtime calculations
+- [x] Expand combat action variety (targeted, high-signal improvements only)
   - See [gameplay/character.md](../gameplay/character.md), [gameplay/combat.md](../gameplay/combat.md), [gameplay/spells.md](../gameplay/spells.md)
 
 ## Milestone 10 — Content Production Pipeline

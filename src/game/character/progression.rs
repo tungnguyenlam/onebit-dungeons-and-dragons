@@ -80,6 +80,55 @@ pub fn is_asi_level(level: u8) -> bool {
     matches!(level, 4 | 8 | 12 | 16 | 19)
 }
 
+/// Class hit die used for deterministic level-up HP gains.
+pub fn class_hit_die(class_id: &str) -> u8 {
+    match class_id {
+        "wizard" => 6,
+        "rogue" => 8,
+        "fighter" => 10,
+        _ => 8,
+    }
+}
+
+/// Runtime spell-slot table (index 0 = 1st-level slots).
+pub fn spell_slots_for_class_level(class_id: &str, level: u8) -> [u8; 9] {
+    let mut slots = [0; 9];
+    match class_id {
+        "wizard" => {
+            let l1 = match level {
+                1 => 2,
+                2 => 3,
+                _ => 4,
+            };
+            slots[0] = l1;
+            if level >= 3 {
+                slots[1] = if level >= 4 { 3 } else { 2 };
+            }
+            if level >= 5 {
+                slots[2] = if level >= 6 { 3 } else { 2 };
+            }
+        }
+        "cleric" => {
+            slots[0] = if level >= 2 { 3 } else { 2 };
+            if level >= 3 {
+                slots[1] = if level >= 4 { 3 } else { 2 };
+            }
+        }
+        _ => {}
+    }
+    slots
+}
+
+/// Cantrip damage scaling tier by level.
+pub fn cantrip_dice_multiplier(level: u8) -> u32 {
+    match level {
+        1..=4 => 1,
+        5..=10 => 2,
+        11..=16 => 3,
+        _ => 4,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -111,5 +160,20 @@ mod tests {
         assert!(is_asi_level(4));
         assert!(!is_asi_level(3));
         assert!(is_asi_level(19));
+    }
+
+    #[test]
+    fn wizard_slots_scale_with_level() {
+        assert_eq!(spell_slots_for_class_level("wizard", 1)[0], 2);
+        assert_eq!(spell_slots_for_class_level("wizard", 3)[1], 2);
+        assert_eq!(spell_slots_for_class_level("wizard", 5)[2], 2);
+    }
+
+    #[test]
+    fn cantrip_scaling_tiers() {
+        assert_eq!(cantrip_dice_multiplier(1), 1);
+        assert_eq!(cantrip_dice_multiplier(5), 2);
+        assert_eq!(cantrip_dice_multiplier(11), 3);
+        assert_eq!(cantrip_dice_multiplier(17), 4);
     }
 }

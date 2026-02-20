@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-02-20 — Milestone 9 (complete): Core RPG Depth
+
+- [x] `src/app.rs` — runtime XP gain + level-up flow wired from combat victory, with HP/slot progression hooks and journal entries
+- [x] `src/game/character/progression.rs` — added class hit-die helpers, cantrip scaling tiers, and class spell-slot progression table
+- [x] `src/game/combat/spells.rs` — added cast-level/caster-level scaling for cantrips and upcast spells
+- [x] `src/data/types.rs` — added data-driven `ItemBonuses` schema on `ItemDef`
+- [x] `src/app.rs` — equipment bonus aggregation now feeds combat AC/attack/damage/max-HP and spell damage resolution
+- [x] `src/app.rs` + `src/ui/tui/screens/combat.rs` — expanded combat action variety with numbered combat actions (attack, potion action, second wind bonus action)
+- [x] tests: added focused coverage for level-up, slot-depth casting, equipment bonus application, and new combat actions
+- [x] `cargo test` passes (108 tests, 0 failures)
+
 ## 2026-02-20 — Milestone 8 (complete): Stability & Engineering Debt
 
 - [x] `src/app.rs` — added end-to-end transition tests for world-map trigger -> dialog and world-map trigger -> combat

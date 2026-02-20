@@ -290,6 +290,24 @@ pub struct ItemDef {
     pub description: String,
     pub weapon:      Option<WeaponDef>,
     pub armor:       Option<ArmorDef>,
+    #[serde(default)]
+    pub bonuses:     ItemBonuses,
+}
+
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+pub struct ItemBonuses {
+    #[serde(default)]
+    pub attack_bonus: i32,
+    #[serde(default)]
+    pub damage_bonus: i32,
+    #[serde(default)]
+    pub armor_class_bonus: i32,
+    #[serde(default)]
+    pub spell_attack_bonus: i32,
+    #[serde(default)]
+    pub spell_damage_bonus: i32,
+    #[serde(default)]
+    pub max_hp_bonus: i32,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
