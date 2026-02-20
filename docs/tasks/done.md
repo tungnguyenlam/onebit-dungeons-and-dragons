@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-02-20 — Milestone 2 (partial): Combat AI Step 4
+
+- [x] `src/app.rs` — tick-driven enemy auto-turn loop added
+- [x] `src/app.rs` — enemy turns now auto-attack and auto-advance to next turn
+- [x] `src/app.rs` — incapacitated enemies skip with combat-log output
+- [x] `src/app.rs` — combat end now transitions to `WorldMap` (victory) or `GameOver` (defeat)
+- [x] `src/ui/tui/screens/combat.rs` — active combatant side shown in initiative banner
+- [x] tests: enemy tick action + combat-end transition coverage added
+- [x] `cargo test` passes (67 tests, 0 failures)
+
 ## 2026-02-20 — Milestone 2 (partial): Combat Actions Step 3
 
 - [x] `src/app.rs` — `GameEvent::Attack` now performs target selection, attack roll, damage application, and action consumption

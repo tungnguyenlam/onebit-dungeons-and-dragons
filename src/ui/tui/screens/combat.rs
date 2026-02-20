@@ -42,9 +42,14 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         })
         .collect::<Vec<_>>()
         .join(" -> ");
+    let active = ctx
+        .state
+        .current_combatant()
+        .map(|c| format!("{} ({})", c.name, if c.is_player { "PLAYER" } else { "ENEMY" }))
+        .unwrap_or_else(|| "Unknown".into());
     let turn_banner = Paragraph::new(Line::from(format!(
-        "Round {} | Turn Order: {banner_text}",
-        ctx.state.round
+        "Round {} | Active: {} | Turn Order: {banner_text}",
+        ctx.state.round, active
     )))
     .block(Block::default().title("Initiative").borders(Borders::ALL));
     frame.render_widget(turn_banner, chunks[0]);

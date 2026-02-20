@@ -135,13 +135,19 @@ impl App {
             GameEvent::Quit => return Ok(ControlFlow::Exit),
 
             GameEvent::Tick => {
-                // TODO: advance animations, cooldowns, emergent events
+                self.handle_tick()?;
             }
 
             // Route remaining events to the active screen handler.
             other => self.dispatch(other)?,
         }
         Ok(ControlFlow::Continue)
+    }
+
+    fn handle_tick(&mut self) -> Result<()> {
+        self.run_enemy_turns();
+        self.finish_combat_if_over();
+        Ok(())
     }
 
     /// Forward an event to the appropriate sub-system based on `AppState`.
@@ -179,110 +185,31 @@ impl App {
     }
 
     fn handle_combat(&mut self, event: GameEvent) -> Result<()> {
-        fn push_log(log: &mut Vec<String>, line: String) {
-            log.push(line);
-            if log.len() > 64 {
-                let keep_from = log.len() - 64;
-                log.drain(0..keep_from);
-            }
-        }
-
         match event {
             GameEvent::Attack => {
                 if let AppState::Combat(ctx) = &mut self.state {
                     let Some(attacker_id) = ctx.state.current_combatant_id().map(str::to_string) else {
-                        push_log(&mut ctx.log, "No active combatant.".into());
+                        Self::push_log(ctx, "No active combatant.");
                         return Ok(());
                     };
+
+                    if !ctx
+                        .state
+                        .combatants
+                        .get(&attacker_id)
+                        .is_some_and(|c| c.is_player)
+                    {
+                        Self::push_log(ctx, "It's not the player's turn.");
+                        return Ok(());
+                    }
 
                     let Some(target_id) = ctx.state.next_enemy_id(&attacker_id).map(str::to_string) else {
-                        push_log(&mut ctx.log, "No valid target.".into());
+                        Self::push_log(ctx, "No valid target.");
                         return Ok(());
                     };
-
-                    let Some(attacker_view) = ctx.state.combatants.get(&attacker_id) else {
-                        push_log(&mut ctx.log, "Attacker not found.".into());
-                        return Ok(());
-                    };
-
-                    if !attacker_view.can_take_actions() {
-                        push_log(
-                            &mut ctx.log,
-                            format!("{} cannot act (incapacitated).", attacker_view.name),
-                        );
-                        return Ok(());
-                    }
-
-                    if !attacker_view.action_slots.action {
-                        push_log(
-                            &mut ctx.log,
-                            format!("{} has no action remaining this turn.", attacker_view.name),
-                        );
-                        return Ok(());
-                    }
-
-                    let Some(target_view) = ctx.state.combatants.get(&target_id) else {
-                        push_log(&mut ctx.log, "Target not found.".into());
-                        return Ok(());
-                    };
-
-                    let attacker_name = attacker_view.name.clone();
-                    let target_name = target_view.name.clone();
-
-                    let outcome = {
-                        let attack = AttackProfile {
-                            id: &attacker_view.id,
-                            attack_bonus: attacker_view.attack_bonus,
-                            damage_dice: &attacker_view.damage_dice,
-                            conditions: &attacker_view.conditions,
-                        };
-                        let defense = DefenseProfile {
-                            id: &target_view.id,
-                            armor_class: target_view.armor_class,
-                            conditions: &target_view.conditions,
-                        };
-                        roll_attack(&attack, &defense, &ctx.world_state)
-                    };
-
-                    if let Some(attacker_mut) = ctx.state.combatants.get_mut(&attacker_id) {
-                        let _ = attacker_mut.action_slots.use_action();
-                    }
-
-                    let mut hp_after = None;
-                    if outcome.damage > 0 {
-                        if let Some(target_mut) = ctx.state.combatants.get_mut(&target_id) {
-                            hp_after = Some(apply_damage(target_mut, outcome.damage));
-                        }
-                    }
-
-                    let headline = match outcome.hit_type {
-                        HitType::Miss => format!(
-                            "{attacker_name} attacks {target_name}: miss (d20={} total={}).",
-                            outcome.d20, outcome.total
-                        ),
-                        HitType::Hit => format!(
-                            "{attacker_name} hits {target_name} for {} damage (d20={} total={}).",
-                            outcome.damage, outcome.d20, outcome.total
-                        ),
-                        HitType::Critical => format!(
-                            "{attacker_name} CRITS {target_name} for {} damage (nat 20).",
-                            outcome.damage
-                        ),
-                    };
-                    push_log(&mut ctx.log, headline);
-
-                    if let Some(hp) = hp_after {
-                        if hp == 0 {
-                            push_log(&mut ctx.log, format!("{target_name} drops to 0 HP."));
-                        } else {
-                            push_log(&mut ctx.log, format!("{target_name} now has {hp} HP."));
-                        }
-                    }
-
-                    if ctx.state.is_over() {
-                        push_log(&mut ctx.log, "Combat is over.".into());
-                    }
+                    let _ = Self::resolve_attack(ctx, &attacker_id, &target_id);
                 }
+                self.finish_combat_if_over();
             }
             GameEvent::Wait => {
                 if let AppState::Combat(ctx) = &mut self.state {
@@ -297,15 +224,10 @@ impl App {
                         .current_combatant()
                         .map(|c| c.name.clone())
                         .unwrap_or_else(|| "Unknown".into());
-                    ctx.log.push(format!("{before} ends turn. {after} is up."));
-                    if ctx.state.is_over() {
-                        ctx.log.push("Combat is over.".into());
-                    }
-                    if ctx.log.len() > 64 {
-                        let keep_from = ctx.log.len() - 64;
-                        ctx.log.drain(0..keep_from);
-                    }
+                    Self::push_log(ctx, format!("{before} ends turn. {after} is up."));
                 }
+                self.run_enemy_turns();
+                self.finish_combat_if_over();
             }
             GameEvent::Cancel | GameEvent::Back => self.transition(AppState::WorldMap),
             _ => {}
@@ -344,6 +266,156 @@ impl App {
             self.transition(AppState::WorldMap);
         }
         Ok(())
+    }
+
+    fn push_log(ctx: &mut CombatContext, line: impl Into<String>) {
+        ctx.log.push(line.into());
+        if ctx.log.len() > 64 {
+            let keep_from = ctx.log.len() - 64;
+            ctx.log.drain(0..keep_from);
+        }
+    }
+
+    fn resolve_attack(ctx: &mut CombatContext, attacker_id: &str, target_id: &str) -> bool {
+        let Some(attacker_view) = ctx.state.combatants.get(attacker_id) else {
+            Self::push_log(ctx, "Attacker not found.");
+            return false;
+        };
+
+        if !attacker_view.can_take_actions() {
+            Self::push_log(
+                ctx,
+                format!("{} cannot act (incapacitated).", attacker_view.name),
+            );
+            return false;
+        }
+
+        if !attacker_view.action_slots.action {
+            Self::push_log(
+                ctx,
+                format!("{} has no action remaining this turn.", attacker_view.name),
+            );
+            return false;
+        }
+
+        let Some(target_view) = ctx.state.combatants.get(target_id) else {
+            Self::push_log(ctx, "Target not found.");
+            return false;
+        };
+
+        let attacker_name = attacker_view.name.clone();
+        let target_name = target_view.name.clone();
+
+        let outcome = {
+            let attack = AttackProfile {
+                id: &attacker_view.id,
+                attack_bonus: attacker_view.attack_bonus,
+                damage_dice: &attacker_view.damage_dice,
+                conditions: &attacker_view.conditions,
+            };
+            let defense = DefenseProfile {
+                id: &target_view.id,
+                armor_class: target_view.armor_class,
+                conditions: &target_view.conditions,
+            };
+            roll_attack(&attack, &defense, &ctx.world_state)
+        };
+
+        if let Some(attacker_mut) = ctx.state.combatants.get_mut(attacker_id) {
+            let _ = attacker_mut.action_slots.use_action();
+        }
+
+        let mut hp_after = None;
+        if outcome.damage > 0 {
+            if let Some(target_mut) = ctx.state.combatants.get_mut(target_id) {
+                hp_after = Some(apply_damage(target_mut, outcome.damage));
+            }
+        }
+
+        let headline = match outcome.hit_type {
+            HitType::Miss => format!(
+                "{attacker_name} attacks {target_name}: miss (d20={} total={}).",
+                outcome.d20, outcome.total
+            ),
+            HitType::Hit => format!(
+                "{attacker_name} hits {target_name} for {} damage (d20={} total={}).",
+                outcome.damage, outcome.d20, outcome.total
+            ),
+            HitType::Critical => format!(
+                "{attacker_name} CRITS {target_name} for {} damage (nat 20).",
+                outcome.damage
+            ),
+        };
+        Self::push_log(ctx, headline);
+
+        if let Some(hp) = hp_after {
+            if hp == 0 {
+                Self::push_log(ctx, format!("{target_name} drops to 0 HP."));
+            } else {
+                Self::push_log(ctx, format!("{target_name} now has {hp} HP."));
+            }
+        }
+        true
+    }
+
+    fn run_enemy_turns(&mut self) {
+        let AppState::Combat(ctx) = &mut self.state else {
+            return;
+        };
+
+        loop {
+            if ctx.state.is_over() {
+                break;
+            }
+
+            let Some(attacker_id) = ctx.state.current_combatant_id().map(str::to_string) else {
+                break;
+            };
+
+            let Some(attacker) = ctx.state.combatants.get(&attacker_id) else {
+                break;
+            };
+            if attacker.is_player {
+                break;
+            }
+
+            if !attacker.can_take_actions() {
+                let name = attacker.name.clone();
+                Self::push_log(ctx, format!("{name} cannot act and skips turn."));
+                let _ = ctx.state.next_turn();
+                continue;
+            }
+
+            let Some(target_id) = ctx.state.next_enemy_id(&attacker_id).map(str::to_string) else {
+                Self::push_log(ctx, "Enemy has no valid target.");
+                break;
+            };
+
+            let _ = Self::resolve_attack(ctx, &attacker_id, &target_id);
+            let _ = ctx.state.next_turn();
+        }
+    }
+
+    fn finish_combat_if_over(&mut self) {
+        let Some((is_over, players_alive)) = (match &self.state {
+            AppState::Combat(ctx) => Some((
+                ctx.state.is_over(),
+                ctx.state.combatants.values().any(|c| c.is_player && c.is_alive()),
+            )),
+            _ => None,
+        }) else {
+            return;
+        };
+
+        if !is_over {
+            return;
+        }
+
+        if players_alive {
+            self.transition(AppState::WorldMap);
+        } else {
+            self.transition(AppState::GameOver);
+        }
     }
 }
 
@@ -403,5 +475,68 @@ mod tests {
             }
             _ => panic!("expected combat state"),
         }
+    }
+
+    #[test]
+    fn enemy_turn_executes_on_tick_and_returns_to_player() {
+        let mut app = App::new();
+        app.transition(AppState::WorldMap);
+        app.handle_event(GameEvent::Attack).unwrap(); // enter combat
+
+        if let AppState::Combat(ctx) = &mut app.state {
+            if let Some(idx) = ctx
+                .state
+                .turn_queue
+                .iter()
+                .position(|id| ctx.state.combatants.get(id).is_some_and(|c| !c.is_player))
+            {
+                ctx.state.active_turn = idx;
+            }
+        }
+
+        app.handle_event(GameEvent::Tick).unwrap();
+
+        match &app.state {
+            AppState::Combat(ctx) => {
+                assert!(ctx
+                    .state
+                    .current_combatant()
+                    .is_some_and(|c| c.is_player));
+                assert!(ctx.log.iter().any(|line| line.contains("Goblin")));
+            }
+            _ => panic!("expected combat state"),
+        }
+    }
+
+    #[test]
+    fn tick_transitions_to_world_map_on_player_victory() {
+        let mut app = App::new();
+        app.transition(AppState::WorldMap);
+        app.handle_event(GameEvent::Attack).unwrap(); // enter combat
+
+        if let AppState::Combat(ctx) = &mut app.state {
+            for c in ctx.state.combatants.values_mut().filter(|c| !c.is_player) {
+                c.current_hp = 0;
+            }
+        }
+
+        app.handle_event(GameEvent::Tick).unwrap();
+        assert!(matches!(app.state, AppState::WorldMap));
+    }
+
+    #[test]
+    fn tick_transitions_to_game_over_on_player_defeat() {
+        let mut app = App::new();
+        app.transition(AppState::WorldMap);
+        app.handle_event(GameEvent::Attack).unwrap(); // enter combat
+
+        if let AppState::Combat(ctx) = &mut app.state {
+            for c in ctx.state.combatants.values_mut().filter(|c| c.is_player) {
+                c.current_hp = 0;
+            }
+        }
+
+        app.handle_event(GameEvent::Tick).unwrap();
+        assert!(matches!(app.state, AppState::GameOver));
     }
 }

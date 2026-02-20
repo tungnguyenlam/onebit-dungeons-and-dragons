@@ -10,40 +10,45 @@
 
 ```
 Date:          2026-02-20
-Stopped at:    Milestone 2 step 3 complete — combat attack flow wired
-Task in progress: M2 combat step 4 — extend condition handling + AI turns
+Stopped at:    Milestone 2 step 4 complete — enemy auto-turn loop added
+Task in progress: M2 combat step 5 — broaden condition effects in combat
 
 What was completed this session:
-  Milestone 2 step 3:
-    - src/app.rs                     — `GameEvent::Attack` now resolves combat:
-        · target selection (next living enemy in initiative order)
-        · roll attack via `game::combat::roll_attack`
-        · apply damage via `game::combat::apply_damage`
-        · consume action slot
-        · write hit/miss/crit + HP results to combat log
-    - src/app.rs                     — attack blocked for incapacitated actors
-    - src/game/combat/combat.rs      — `can_take_actions`, `next_enemy_id` helpers + tests
-    - src/ui/tui/screens/combat.rs   — HUD now displays condition labels
-    - app tests added for attack-action flow and incapacitation checks
-    - `cargo test` — 64 tests, 0 failures
+  Milestone 2 step 4:
+    - src/app.rs                     — combat tick now processes enemy turns automatically
+        · non-player combatants auto-attack valid player targets
+        · enemy turns auto-advance until a player turn is reached
+        · incapacitated enemies skip turn with combat-log entry
+        · combat end now transitions to:
+            - `WorldMap` on player-side victory
+            - `GameOver` on player-side defeat
+    - src/app.rs                     — refactored combat action flow via helper methods
+      (`resolve_attack`, `run_enemy_turns`, `finish_combat_if_over`)
+    - src/game/combat/combat.rs      — helper usage extended in app flow
+    - src/ui/tui/screens/combat.rs   — initiative banner now shows active side
+      (`PLAYER` vs `ENEMY`)
+    - tests added:
+        · enemy turn executes on tick and returns to player turn
+        · tick transitions to world map / game over on combat end
+    - `cargo test` — 67 tests, 0 failures
 
 What is NOT done yet:
     - src/ui/tui/screens/ — all screen render functions
     - src/ui/tui/layout.rs, widgets/
-    - condition application breadth is partial (only currently-modeled effects)
-    - no enemy AI behavior; turns are still manually advanced with wait
+    - condition application breadth is still partial (beyond incap/disadvantage hooks)
+    - no distinct enemy behavior profiles (all enemies use same basic attack loop)
     - game/ and data/ modules mostly not wired into app.rs yet
     - src/game/story/quest.rs, dialog.rs, journal.rs, events.rs  (Milestone 3)
 
 Next action for the incoming agent:
-  1. `cargo test` — must pass (60 tests) before touching anything.
-  2. Implement enemy auto-turn behavior:
-       - on non-player turn, resolve one basic attack against a player target
-       - auto-advance to next turn after enemy action
-  3. Expand condition handling coverage in combat events:
-       - incapacitating conditions force skip/auto-end turn
-       - preserve poisoned disadvantage behavior in attack roll path
-  4. Add combat end-state transition (back to world map or victory state).
+  1. `cargo test` — must pass (67 tests) before touching anything.
+  2. Expand condition effects in combat execution:
+       - prevent attack while `Prone`/`Poisoned`/`Restrained` where applicable
+       - model on-hit condition infliction hooks in combat resolution
+  3. Add richer combat messaging:
+       - explicit skip-turn messages for each incap condition
+       - attack summaries include condition-driven advantage/disadvantage reason
+  4. Add targeted tests for new condition branches.
 
 Files modified this session:
   src/app.rs
@@ -58,19 +63,20 @@ Blockers: none
 
 ## Active Task
 
-### Task: Combat AI Turn Flow (Milestone 2, step 4)
+### Task: Combat Conditions Expansion (Milestone 2, step 5)
 
 **Files to touch:**
-- `src/app.rs`                    — enemy auto-action + turn progression
-- `src/game/combat/combat.rs`     — turn helpers for side checks / target selection
-- `src/ui/tui/screens/combat.rs`  — indicate active side and auto-turn events
+- `src/game/combat/attack.rs`     — condition-aware roll metadata and hooks
+- `src/app.rs`                    — consume condition metadata in combat log
+- `src/game/combat/combat.rs`     — optional helper(s) for turn-skip condition messaging
+- `src/ui/tui/screens/combat.rs`  — expose condition effects in HUD/log context
 
 **Done when:**
 - [ ] `cargo test` passes
-- [ ] Enemy turns execute basic attack automatically
-- [ ] Incapacitated enemies skip action and pass turn
-- [ ] Combat loop ends when one side is defeated
-- [ ] Combat log clearly shows automated enemy actions
+- [ ] Condition-driven advantage/disadvantage reason is visible in combat log
+- [ ] Turn skip reason is specific to condition name
+- [ ] At least one condition-application hook exists in attack resolution path
+- [ ] New condition branches have dedicated tests
 
 **Blocked by:** `src/game/combat/` (done)
 
