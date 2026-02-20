@@ -277,3 +277,138 @@
 - Risks / non-goals:
   - Risk: CI runtime cost grows too high; mitigate with tiered profiles (PR short, nightly long)
   - Non-goal: external cloud load testing
+
+## Milestone 20 — Save/State Drift Hardening
+
+- [ ] Add snapshot invariants for `App`, `WorldState`, quest state, room/position, and combat context
+- [ ] Add save/load drift tests across varied runtime states and repeated roundtrips
+- [ ] Harden schema compatibility for optional/missing fields and forward-safe defaults
+- [ ] Add `--validate-save <path>` command for structural save checks
+- [ ] Add CI gate for save/load roundtrip suite
+  - See [decisions/adr-003-save-format.md](../decisions/adr-003-save-format.md), [architecture/game-loop.md](../architecture/game-loop.md)
+- Scope boundary:
+  - Consistency and compatibility only; no new gameplay systems
+- Target files/modules:
+  - `src/game/save/`
+  - `src/app.rs` save/load glue + tests
+  - `src/main.rs` CLI
+  - `.github/workflows/`
+- Done when:
+  - [ ] no invariant drift in repeated save/load loops
+  - [ ] legacy and current saves load cleanly with explicit compatibility coverage
+  - [ ] save validator reports actionable errors with non-zero exit on invalid files
+- Verification commands:
+  - `cargo test`
+  - `cargo test save_and_load_roundtrip -- --nocapture`
+  - `cargo run -- --validate-save saves/slot1.toml`
+- Risks / non-goals:
+  - Risk: over-strict validation blocks legitimate old saves; mitigate with compatibility warning mode
+  - Non-goal: redesigning save schema
+
+## Milestone 21 — Region Navigation Depth (Multi-room Expansion)
+
+- [ ] Expand each region to a meaningful multi-room graph (branches + loops)
+- [ ] Add critical-path traversal checks and optional-path checks
+- [ ] Add validator rules for required progression routes and dead-end flags
+- [ ] Add region traversal smoke scenarios for full path coverage
+- [ ] Keep region lore/flow coherent while expanding topology
+  - See [content/regions/index.md](../content/regions/index.md), [content/map-format.md](../content/map-format.md), [gameplay/world.md](../gameplay/world.md)
+- Scope boundary:
+  - Topology and traversal reliability only; no combat rebalance
+- Target files/modules:
+  - `assets/regions/**/rooms/*.toml`
+  - `assets/regions/**/region.toml`
+  - `src/data/validate.rs`
+  - `src/app.rs` traversal tests
+- Done when:
+  - [ ] every active region has >= 5 rooms with at least one branching route
+  - [ ] critical progression path is validator-covered and test-covered
+  - [ ] no accidental dead-ends without explicit terminal-room annotation
+- Verification commands:
+  - `cargo run -- --validate-assets`
+  - `cargo test world_map_travel -- --nocapture`
+  - `scripts/agent_tui_smoke.sh --scenario ash_gate --token-efficient --max-frames 220`
+- Risks / non-goals:
+  - Risk: map growth introduces softlocks; mitigate with graph reachability checks
+  - Non-goal: adding new regions
+
+## Milestone 22 — Quest Runtime Robustness + Recovery UX
+
+- [ ] Add runtime diagnostics for blocked quest transitions (condition + stage context)
+- [ ] Emit explicit player-facing blocked-reason feedback in journal/UI
+- [ ] Add guided recovery hooks for known stuck states
+- [ ] Add regression tests for blocked-state recovery paths
+- [ ] Add debug command/output for current quest graph/status
+  - See [gameplay/story.md](../gameplay/story.md), [content/quests.md](../content/quests.md), [gameplay/journal.md](../gameplay/journal.md)
+- Scope boundary:
+  - Robustness and recovery only; no narrative expansion
+- Target files/modules:
+  - `src/game/story/quest.rs`
+  - `src/app.rs` quest/journal feedback paths
+  - `src/ui/tui/screens/journal.rs`
+  - `src/data/validate.rs`
+- Done when:
+  - [ ] blocked progression always yields explicit reason text
+  - [ ] at least one automated recovery path per known stuck-state class is covered
+  - [ ] validator and runtime diagnostics agree on broken quest links
+- Verification commands:
+  - `cargo test quest -- --nocapture`
+  - `cargo run -- --validate-assets`
+  - `scripts/agent_tui_smoke.sh --scenario ember_square --token-efficient --max-frames 220`
+- Risks / non-goals:
+  - Risk: noisy feedback overwhelms journal; mitigate with compact reason formatting
+  - Non-goal: writing new quest arcs
+
+## Milestone 23 — Combat Depth Pass (AI + Targeting + Encounter Variety)
+
+- [ ] Improve enemy target selection heuristics by role/threat/health context
+- [ ] Expand encounter composition templates for better role variety
+- [ ] Improve combat event summarization and condition resolution clarity
+- [ ] Add deterministic combat simulations for stability checks
+- [ ] Add dedicated combat scenario smoke profile
+  - See [gameplay/combat.md](../gameplay/combat.md), [gameplay/npc-ai.md](../gameplay/npc-ai.md), [architecture/tui-visual-system.md](../architecture/tui-visual-system.md)
+- Scope boundary:
+  - Combat decision quality and readability only; no major ruleset expansion
+- Target files/modules:
+  - `src/game/combat/`
+  - `src/app.rs` combat loop + logs
+  - `src/ui/tui/screens/combat.rs`
+  - `scripts/agent_tui_smoke.sh`
+- Done when:
+  - [ ] role-driven AI behaves deterministically under fixed seeds
+  - [ ] encounter templates produce diverse but bounded outcomes
+  - [ ] combat critical events remain visible without scrolling
+- Verification commands:
+  - `cargo test combat -- --nocapture`
+  - `scripts/agent_tui_smoke.sh --capture-log /tmp/combat.log --token-efficient --max-frames 240 --scenario ash_gate`
+- Risks / non-goals:
+  - Risk: AI complexity reduces predictability; mitigate with seed-based test fixtures
+  - Non-goal: introducing entirely new combat subsystems
+
+## Milestone 24 — Release Candidate Pipeline
+
+- [ ] Add `scripts/rc_check.sh` that composes tests, validators, smoke, soak, and save checks
+- [ ] Add tiered CI lanes (fast PR lane + extended nightly lane)
+- [ ] Add startup/perf budget assertions with failure messaging
+- [ ] Ensure all failures emit direct reproduction command and seed
+- [ ] Publish RC checklist and release runbook updates
+  - See [AGENT.md](../AGENT.md), [testing/tui-agent-smoke.md](../testing/tui-agent-smoke.md), [releases/v0.1.0-internal.md](../releases/v0.1.0-internal.md)
+- Scope boundary:
+  - Release quality gating only; no net-new gameplay features
+- Target files/modules:
+  - `scripts/release_check.sh`
+  - `scripts/rc_check.sh` (new)
+  - `.github/workflows/`
+  - `docs/releases/`
+- Done when:
+  - [ ] one command certifies RC gate readiness
+  - [ ] CI enforces gates with bounded runtime and low flake rate
+  - [ ] every failure artifact includes reproducible command context
+- Verification commands:
+  - `scripts/rc_check.sh`
+  - `cargo test`
+  - `cargo run -- --validate-assets`
+  - `scripts/agent_tui_smoke.sh --soak --profile standard --minutes 5 --token-efficient --no-build`
+- Risks / non-goals:
+  - Risk: pipeline runtime becomes too slow; mitigate with strict tiering and nightly-only heavy checks
+  - Non-goal: distribution packaging changes

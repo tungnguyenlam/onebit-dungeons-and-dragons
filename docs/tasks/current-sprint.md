@@ -30,22 +30,27 @@ Next: Pull next roadmap milestone after M19
 
 ## Active Task
 
-### Task: Post-M19 Follow-up Planning
+### Task: Milestone 20 — Save/State Drift Hardening
 
 **Files to touch:**
-- `docs/tasks/backlog.md`
-- `docs/tasks/current-sprint.md`
+- `src/game/save/`
+- `src/app.rs`
+- `src/main.rs`
+- `.github/workflows/`
+- `docs/tasks/`
 
 **Done when:**
-- [ ] next milestone selected
-- [ ] acceptance criteria copied from backlog template
-- [ ] handoff block updated
+- [ ] save/load invariant drift checks are implemented and tested
+- [ ] `--validate-save <path>` command works
+- [ ] CI runs save/load roundtrip coverage
+- [ ] handoff + done/backlog docs are synced
 
 **Blocked by:** none
 
 **Relevant docs:**
 - [../DOCS_MAP.md](../DOCS_MAP.md)
 - [../AGENT.md](../AGENT.md)
+- [backlog.md](backlog.md)
 - [milestone-checklist-template.md](milestone-checklist-template.md)
 
 ---
