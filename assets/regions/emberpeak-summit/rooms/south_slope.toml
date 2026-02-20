@@ -2,11 +2,13 @@ id = "south_slope"
 name = "South Slope"
 description = "Narrow switchbacks cut through cooled lava flows."
 grid = """
-##########
-#..@..!..#
-#........#
-#....v...#
-##########
+##############
+#..@..!......#
+#............#
+#....v.......#
+#............#
+#............#
+##############
 """
 
 [[npcs]]

@@ -2491,6 +2491,11 @@ mod tests {
             .find(|t| t.kind == TriggerKind::Travel)
             .expect("travel trigger must exist");
         assert_eq!(travel.target_id, "ember_square");
+        let [col, row] = travel.position;
+        assert!(
+            room.grid.is_passable(col as i32, row as i32),
+            "travel trigger must be on a passable tile"
+        );
     }
 
     #[test]
