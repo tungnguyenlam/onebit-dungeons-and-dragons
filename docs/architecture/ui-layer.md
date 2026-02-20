@@ -3,29 +3,39 @@
 ## Principle
 
 `src/ui/` contains **only** rendering code. It receives immutable references to
-game state and produces pixel-perfect Ratatui `Frame` output. It imports
-nothing from `src/game/`. Game mutations happen exclusively in `src/game/` in
-response to `Event`s processed by `src/app.rs`.
+game state and produces output — either a Ratatui `Frame` (TUI) or an egui
+`Ui` (GUI). Neither sub-module imports from `src/game/`. Both implement the
+`GameRenderer` trait defined in `src/renderer.rs`.
+
+Game mutations happen exclusively in `src/game/` in response to `GameEvent`s
+processed by `src/app.rs`.
+
+See → [renderer.md](renderer.md) for the trait definition and launch mechanics.
 
 ---
 
 ## Screen Modules
 
-| Module | Shown when |
-|---|---|
-| `screens/world_map.rs` | `AppState::WorldMap` |
-| `screens/combat.rs` | `AppState::Combat(_)` |
-| `screens/dialog.rs` | `AppState::Dialog(_)` |
-| `screens/journal.rs` | `AppState::Journal` |
-| `screens/inventory.rs` | `AppState::Inventory` |
-| `screens/spellbook.rs` | `AppState::Spellbook` |
-| `screens/character_sheet.rs` | overlay, accessible from WorldMap |
+Both renderers expose the same screen set, one per `AppState` variant.
+Each screen in `src/ui/tui/screens/` uses Ratatui; each in
+`src/ui/gui/screens/` uses egui.
+
+| Screen | `AppState` variant | TUI file | GUI file |
+|---|---|---|---|
+| World Map | `WorldMap` | `tui/screens/world_map.rs` | `gui/screens/world_map.rs` |
+| Combat | `Combat(_)` | `tui/screens/combat.rs` | `gui/screens/combat.rs` |
+| Dialog | `Dialog(_)` | `tui/screens/dialog.rs` | `gui/screens/dialog.rs` |
+| Journal | `Journal` | `tui/screens/journal.rs` | `gui/screens/journal.rs` |
+| Inventory | `Inventory` | `tui/screens/inventory.rs` | `gui/screens/inventory.rs` |
+| Spellbook | `Spellbook` | `tui/screens/spellbook.rs` | `gui/screens/spellbook.rs` |
+| Character Sheet | overlay | `tui/screens/character_sheet.rs` | `gui/screens/character_sheet.rs` |
 
 ---
 
 ## Layout Convention
 
-Every screen defines a `fn render(f: &mut Frame, app: &App)` function.
+**TUI screens** define `fn render(f: &mut Frame, app: &App)`.
+**GUI screens** define `fn draw(ui: &mut egui::Ui, app: &App)`.
 
 The terminal is divided into three zones:
 

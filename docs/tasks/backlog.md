@@ -7,20 +7,23 @@
 
 ## Milestone 0 — Crate Bootstrap
 
-- [ ] Init Rust binary crate, verify `cargo build` passes
-- [ ] Add Ratatui + Crossterm dependencies, draw a "Hello World" TUI frame
-- [ ] Implement basic event loop: keyboard input closes the app
-- [ ] Implement `AppState` enum and screen-switch skeleton
+- [x] Init Rust binary crate with feature-flagged dual renderer (`tui` / `gui`)
+- [x] Scaffold renderer abstraction (`src/renderer.rs`, `src/app.rs`, `src/main.rs`, `src/ui/`)
+- [x] `cargo check` passes (TUI default)
+- [x] TUI renderer draws a placeholder frame; `q` exits cleanly
+- [ ] Implement full `AppState` screen-switch in TUI screens (deferred to M1 TUI milestone)
 
 ## Milestone 1 — Core Systems (no content)
 
-- [ ] `src/game/dice/` — `DiceExpr` parser + `roll()` function with unit tests
+- [x] `src/game/dice/` — `DiceExpr` parser + `roll()` function with unit tests
   - See [gameplay/dice.md](../gameplay/dice.md)
-- [ ] `src/data/` — TOML asset loader with typed `serde` structs
+- [x] `src/data/` — TOML asset loader with typed `serde` structs
   - See [architecture/data-pipeline.md](../architecture/data-pipeline.md)
-- [ ] `src/game/character/` — ability scores, modifiers, HP, conditions
+- [x] `src/game/character/` — ability scores, modifiers, HP, conditions
   - See [gameplay/character.md](../gameplay/character.md)
-- [ ] `src/game/world/` — region loader, tile map, room graph, FOV
+- [x] `src/game/items/` — inventory, equipment slots, armor AC
+  - See [gameplay/items.md](../gameplay/items.md)
+- [ ] `src/game/world/` — region loader, tile map, room graph, FOV  ← **NEXT**
   - See [gameplay/world.md](../gameplay/world.md)
 - [ ] `src/game/story/world_state.rs` — flag store, save/load
   - See [gameplay/story.md](../gameplay/story.md)

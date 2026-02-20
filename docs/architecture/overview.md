@@ -8,15 +8,19 @@
 ## Module Boundary Rule
 
 ```
-src/ui/      ← Ratatui rendering ONLY. Reads game state, never mutates it.
-src/game/    ← Pure game logic. No Ratatui imports whatsoever.
+src/ui/tui/  ← Ratatui/Crossterm rendering [feature = "tui"]. Reads game state only.
+src/ui/gui/  ← egui/eframe rendering      [feature = "gui"]. Reads game state only.
+src/game/    ← Pure game logic. No renderer imports whatsoever.
 src/data/    ← TOML deserialization + typed asset structs. No game logic.
-src/app.rs   ← Glue: owns AppState, wires events → game → ui.
-src/events.rs← Input event enum (key presses, ticks).
+src/renderer.rs ← GameRenderer trait + GameEvent enum (renderer-agnostic).
+src/app.rs   ← Glue: owns AppState, wires GameEvent → game → renderer.
+src/main.rs  ← CLI flag parsing, selects TuiRenderer or GuiRenderer at launch.
 ```
 
 Violating the `ui` / `game` split is the single most important constraint
 to maintain. It keeps both layers independently testable.
+
+See → [renderer.md](renderer.md) for the full dual-renderer design.
 
 ---
 
@@ -24,24 +28,40 @@ to maintain. It keeps both layers independently testable.
 
 ```
 src/
-├── main.rs
-├── app.rs
-├── events.rs
+├── main.rs          ← CLI --mode flag; dispatches to TuiRenderer or GuiRenderer
+├── app.rs           ← renderer-agnostic AppState + event handling
+├── renderer.rs      ← GameRenderer trait, GameEvent enum
 ├── ui/
 │   ├── mod.rs
-│   ├── layout.rs
-│   ├── screens/
-│   │   ├── world_map.rs
-│   │   ├── combat.rs
-│   │   ├── character_sheet.rs
-│   │   ├── inventory.rs
-│   │   ├── spellbook.rs
-│   │   ├── dialog.rs
-│   │   └── journal.rs
-│   └── widgets/
-│       ├── dice_roll.rs
-│       ├── log.rs
-│       └── hud.rs
+│   ├── tui/                     [feature = "tui"]
+│   │   ├── mod.rs               ← TuiRenderer: impl GameRenderer
+│   │   ├── layout.rs
+│   │   ├── screens/
+│   │   │   ├── world_map.rs
+│   │   │   ├── combat.rs
+│   │   │   ├── character_sheet.rs
+│   │   │   ├── inventory.rs
+│   │   │   ├── spellbook.rs
+│   │   │   ├── dialog.rs
+│   │   │   └── journal.rs
+│   │   └── widgets/
+│   │       ├── dice_roll.rs
+│   │       ├── log.rs
+│   │       └── hud.rs
+│   └── gui/                     [feature = "gui"]
+│       ├── mod.rs               ← GuiRenderer: impl GameRenderer + eframe::App
+│       ├── screens/
+│       │   ├── world_map.rs
+│       │   ├── combat.rs
+│       │   ├── character_sheet.rs
+│       │   ├── inventory.rs
+│       │   ├── spellbook.rs
+│       │   ├── dialog.rs
+│       │   └── journal.rs
+│       └── widgets/
+│           ├── dice_roll.rs
+│           ├── log.rs
+│           └── hud.rs
 ├── game/
 │   ├── mod.rs
 │   ├── world/
@@ -113,5 +133,6 @@ assets/
 ## Detail Docs
 
 - App loop & tick logic → [game-loop.md](game-loop.md)
+- Renderer abstraction (TUI vs GUI) → [renderer.md](renderer.md)
 - UI screen state machine → [ui-layer.md](ui-layer.md)
 - Asset loading pipeline → [data-pipeline.md](data-pipeline.md)

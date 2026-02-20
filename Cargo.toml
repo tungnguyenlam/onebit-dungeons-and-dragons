@@ -7,14 +7,38 @@ edition = "2021"
 name = "dnd"
 path = "src/main.rs"
 
+# ---------------------------------------------------------------------------
+# Feature flags
+#   tui  (default) — Ratatui / Crossterm terminal UI
+#   gui             — egui / eframe windowed GUI
+#
+# Build examples:
+#   cargo run                                   # TUI only (default)
+#   cargo run --features gui -- --mode gui      # GUI window
+#   cargo run --features gui -- --mode tui      # TUI with gui feature compiled in
+#   cargo run --no-default-features --features gui -- --mode gui
+# ---------------------------------------------------------------------------
+[features]
+default = ["tui"]
+tui     = ["dep:ratatui", "dep:crossterm"]
+gui     = ["dep:eframe", "dep:egui"]
+
 [dependencies]
-ratatui     = "0.29"
-crossterm   = { version = "0.28", features = ["event-stream"] }
-serde       = { version = "1", features = ["derive"] }
-toml        = "0.8"
-rand        = "0.9"
-anyhow      = "1"
-tokio       = { version = "1", features = ["rt", "macros"] }
+# --- renderer: tui ---
+ratatui   = { version = "0.29", optional = true }
+crossterm = { version = "0.28", features = ["event-stream"], optional = true }
+
+# --- renderer: gui ---
+eframe = { version = "0.30", optional = true }
+egui   = { version = "0.30", optional = true }
+
+# --- shared ---
+clap  = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+toml  = "0.8"
+rand  = "0.9"
+anyhow = "1"
+tokio = { version = "1", features = ["rt", "macros"] }
 
 [dev-dependencies]
 pretty_assertions = "1"
