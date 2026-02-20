@@ -11,32 +11,15 @@
 
 ```
 Date:          2026-02-20
-Stopped at:    Milestone 15 planning complete
-Task in progress: Milestone 15 kickoff (interactive playtest harness)
+Completed:     Milestone 15 — Interactive Playtest Harness
 
-What was completed this session:
-  Planning and roadmap:
-    - defined detailed post-M14 roadmap milestones (`M15`..`M19`) in `docs/tasks/backlog.md`
-    - added per-milestone scope boundaries, done-when criteria, verification commands, and risks/non-goals
-    - moved sprint focus from generic triage to explicit `M15` execution
+Tasks completed:
+  - ✅ --scenario presets (ash_gate, ember_square, river_watch) in scripts/agent_tui_smoke.sh
+  - ✅ Token-efficient capture mode (--token-efficient, --max-frames)
+  - ✅ docs/testing/reports/ash_gate_escape.md created with full escape report
+  - ✅ cargo test passes (118 tests)
 
-What is NOT done yet:
-    - `M15` implementation work has not started yet (only planned/scoped)
-    - `M16`..`M19` remain backlog milestones
-    - warning cleanup remains intentionally deferred (non-blocking, backlog policy; out of milestone scope)
-    - GUI parity work remains deferred unless explicitly pulled into sprint scope
-
-Next action for the incoming agent:
-  1. Implement `M15` scenario-aware runner presets in `scripts/agent_tui_smoke.sh`.
-  2. Document deterministic capture/report workflow in testing docs.
-  3. Run `cargo test` and one `ash_gate` capture flow for baseline evidence.
-  4. Keep warning-only cleanup out of scope unless explicitly requested.
-
-Files modified this session:
-  docs/tasks/backlog.md
-  docs/tasks/current-sprint.md (this file)
-
-Blockers: none
+Next: Ready for M16 or follow-up work
 ```
 
 ---
@@ -51,10 +34,10 @@ Blockers: none
 - `docs/testing/interactive-playtest-checklist.md` (new) — manual interactive checklist and report template
 
 **Done when:**
-- [ ] `--scenario` presets support at least `ash_gate`, `ember_square`, and `river_watch`
-- [ ] capture mode outputs token-efficient summaries with bounded frames/events
-- [ ] one complete `ash_gate` escape interactive report is documented under `docs/testing/reports/`
-- [ ] `cargo test` passes
+- [x] `--scenario` presets support at least `ash_gate`, `ember_square`, and `river_watch`
+- [x] capture mode outputs token-efficient summaries with bounded frames/events
+- [x] one complete `ash_gate` escape interactive report is documented under `docs/testing/reports/`
+- [x] `cargo test` passes
 
 **Blocked by:** none
 
