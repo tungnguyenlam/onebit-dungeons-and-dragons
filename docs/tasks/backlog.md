@@ -95,13 +95,13 @@
 
 ## Milestone 8 — Stability & Engineering Debt
 
-- [ ] Freeze gameplay scope temporarily
-- [ ] Add integration tests for core end-to-end flows:
+- [x] Freeze gameplay scope temporarily
+- [x] Add integration tests for core end-to-end flows:
   - world-map -> trigger -> combat
   - world-map -> trigger -> dialog
   - save/load roundtrip from active gameplay state
-- [ ] Tighten module boundaries and remove stale glue paths
-- [ ] Standardize dev automation entry points for agents (`scripts/`)
+- [x] Tighten module boundaries and remove stale glue paths
+- [x] Standardize dev automation entry points for agents (`scripts/`)
   - See [testing/tui-agent-smoke.md](../testing/tui-agent-smoke.md), [architecture/game-loop.md](../architecture/game-loop.md)
 
 ## Milestone 9 — Core RPG Depth

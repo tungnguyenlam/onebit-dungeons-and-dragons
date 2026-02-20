@@ -1,8 +1,7 @@
 use crate::data::loader::{load_lore, load_monsters, load_quests, load_region};
 use crate::data::types::{
-    ArmorDef, ArmorType, DialogChoice, DialogEffect, DialogNode, DialogTree, ItemDef, ItemType,
-    LoreEntry, MonsterAction, MonsterDef, NpcDef, QuestDef, QuestKind, QuestStageDef,
-    QuestTransition, SpellDef, TriggerKind, WeaponDef,
+    ArmorDef, ArmorType, DialogTree, ItemDef, ItemType, LoreEntry, MonsterAction, MonsterDef,
+    NpcDef, QuestDef, QuestKind, QuestStageDef, QuestTransition, SpellDef, TriggerKind, WeaponDef,
 };
 use crate::game::{
     character::{AbilityScores, Character},
@@ -638,29 +637,13 @@ impl App {
     }
 
     fn interact_current_tile(&mut self) {
-        let Some(room) = self.current_room() else {
-            return;
-        };
-        if let Some(trigger) = room.trigger_at(self.player_pos.0, self.player_pos.1) {
+        let trigger = self
+            .current_room()
+            .and_then(|room| room.trigger_at(self.player_pos.0, self.player_pos.1).cloned());
+        if let Some(trigger) = trigger {
             match trigger.kind {
                 TriggerKind::Dialog => {
-                    if let Some(tree) = self.region_dialogs.get(&trigger.target_id).cloned() {
-                        let npc_name = self
-                            .region_npcs
-                            .get(&trigger.target_id)
-                            .map(|n| n.name.clone())
-                            .unwrap_or_else(|| trigger.target_id.clone());
-                        if let Some(resolved) =
-                            dialog_resolve(&tree, "root", &mut self.world_state)
-                        {
-                            self.transition(AppState::Dialog(DialogContext {
-                                npc_name,
-                                tree,
-                                current_node: "root".into(),
-                                resolved,
-                            }));
-                        }
-                    }
+                    self.start_dialog_with_npc(&trigger.target_id);
                 }
                 TriggerKind::Encounter => {
                     self.pending_encounter_monster = Some(trigger.target_id.clone());
@@ -687,21 +670,32 @@ impl App {
                     }
                 }
             }
-        } else if let Some(npc) = room.npc_at(self.player_pos.0, self.player_pos.1) {
-            if let Some(tree) = self.region_dialogs.get(&npc.id).cloned() {
-                let npc_name = self
-                    .region_npcs
-                    .get(&npc.id)
-                    .map(|n| n.name.clone())
-                    .unwrap_or_else(|| npc.id.clone());
-                if let Some(resolved) = dialog_resolve(&tree, "root", &mut self.world_state) {
-                    self.transition(AppState::Dialog(DialogContext {
-                        npc_name,
-                        tree,
-                        current_node: "root".into(),
-                        resolved,
-                    }));
-                }
+            return;
+        }
+
+        let npc_id = self
+            .current_room()
+            .and_then(|room| room.npc_at(self.player_pos.0, self.player_pos.1))
+            .map(|npc| npc.id.clone());
+        if let Some(npc_id) = npc_id {
+            self.start_dialog_with_npc(&npc_id);
+        }
+    }
+
+    fn start_dialog_with_npc(&mut self, npc_id: &str) {
+        if let Some(tree) = self.region_dialogs.get(npc_id).cloned() {
+            let npc_name = self
+                .region_npcs
+                .get(npc_id)
+                .map(|n| n.name.clone())
+                .unwrap_or_else(|| npc_id.to_string());
+            if let Some(resolved) = dialog_resolve(&tree, "root", &mut self.world_state) {
+                self.transition(AppState::Dialog(DialogContext {
+                    npc_name,
+                    tree,
+                    current_node: "root".into(),
+                    resolved,
+                }));
             }
         }
     }
@@ -1169,89 +1163,6 @@ impl App {
         }
         self.world_events
             .tick(&mut self.world_state, &mut self.journal, self.turn);
-    }
-
-    fn make_demo_dialog(&mut self) -> Option<DialogContext> {
-        let tree = DialogTree {
-            npc_id: "captain_kael".into(),
-            nodes: vec![
-                DialogNode {
-                    id: "root".into(),
-                    text: "The city is in danger. Will you help us?".into(),
-                    effect: vec![],
-                    choices: vec![
-                        DialogChoice {
-                            text: "I accept the contract.".into(),
-                            condition: "".into(),
-                            effect: vec![DialogEffect::SetFlag {
-                                set_flag: "accept_demo_quest".into(),
-                            }],
-                            next: "accepted".into(),
-                        },
-                        DialogChoice {
-                            text: "Report faction standings.".into(),
-                            condition: "counter:faction_town_guard_rep >= 1".into(),
-                            effect: vec![],
-                            next: "faction_status".into(),
-                        },
-                        DialogChoice {
-                            text: "Not now.".into(),
-                            condition: "".into(),
-                            effect: vec![],
-                            next: "END".into(),
-                        },
-                    ],
-                    skill: None,
-                    dc: None,
-                    on_pass: None,
-                    on_fail: None,
-                },
-                DialogNode {
-                    id: "faction_status".into(),
-                    text: "The guard appreciates your help. Keep this up and doors will open."
-                        .into(),
-                    effect: vec![DialogEffect::DeltaCounter {
-                        delta_counter: crate::data::types::CounterDelta {
-                            key: "faction_town_guard_rep".into(),
-                            delta: 1,
-                        },
-                    }],
-                    choices: vec![DialogChoice {
-                        text: "Back to business.".into(),
-                        condition: "".into(),
-                        effect: vec![],
-                        next: "END".into(),
-                    }],
-                    skill: None,
-                    dc: None,
-                    on_pass: None,
-                    on_fail: None,
-                },
-                DialogNode {
-                    id: "accepted".into(),
-                    text: "Good. Start by reading the old tablet in the square.".into(),
-                    effect: vec![],
-                    choices: vec![DialogChoice {
-                        text: "Understood.".into(),
-                        condition: "".into(),
-                        effect: vec![],
-                        next: "END".into(),
-                    }],
-                    skill: None,
-                    dc: None,
-                    on_pass: None,
-                    on_fail: None,
-                },
-            ],
-        };
-
-        let resolved = dialog_resolve(&tree, "root", &mut self.world_state)?;
-        Some(DialogContext {
-            npc_name: "Captain Kael".into(),
-            tree,
-            current_node: "root".into(),
-            resolved,
-        })
     }
 
     fn toggle_equip(&mut self, slot: EquipmentSlot, item_id: &str) {
@@ -1887,7 +1798,24 @@ impl Default for App {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::types::TriggerKind;
     use crate::game::character::conditions::Condition;
+    use std::sync::{Mutex, MutexGuard, OnceLock};
+
+    fn save_lock() -> MutexGuard<'static, ()> {
+        static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+        LOCK.get_or_init(|| Mutex::new(())).lock().unwrap()
+    }
+
+    fn trigger_position(app: &App, room_id: &str, kind: TriggerKind) -> (u32, u32) {
+        let room = app.region.room(room_id).expect("room should exist");
+        let trigger = room
+            .triggers
+            .iter()
+            .find(|t| t.kind == kind)
+            .expect("trigger should exist");
+        (trigger.position[0], trigger.position[1])
+    }
 
     #[test]
     fn combat_attack_consumes_action() {
@@ -2103,7 +2031,48 @@ mod tests {
     }
 
     #[test]
+    fn world_map_trigger_transitions_into_dialog() {
+        let mut app = App::new();
+        app.transition(AppState::WorldMap);
+        let room_id = app.current_room_id.clone();
+        app.player_pos = trigger_position(&app, &room_id, TriggerKind::Dialog);
+        app.handle_event(GameEvent::Confirm).unwrap();
+
+        match &app.state {
+            AppState::Dialog(ctx) => {
+                assert_eq!(ctx.tree.npc_id, "captain_kael");
+                assert_eq!(ctx.current_node, "root");
+            }
+            _ => panic!("expected dialog state"),
+        }
+    }
+
+    #[test]
+    fn world_map_trigger_transitions_into_combat() {
+        let mut app = App::new();
+        app.transition(AppState::WorldMap);
+        app.current_room_id = "ember_square".into();
+        app.player_pos = trigger_position(&app, "ember_square", TriggerKind::Encounter);
+        app.handle_event(GameEvent::Confirm).unwrap();
+
+        match &app.state {
+            AppState::Combat(ctx) => {
+                let enemies: Vec<&CombatantState> = ctx
+                    .state
+                    .combatants
+                    .values()
+                    .filter(|c| !c.is_player)
+                    .collect();
+                assert_eq!(enemies.len(), 1);
+                assert!(enemies[0].id.starts_with("goblin_"));
+            }
+            _ => panic!("expected combat state"),
+        }
+    }
+
+    #[test]
     fn save_and_load_roundtrip_through_events() {
+        let _guard = save_lock();
         let mut app = App::new();
         let _ = std::fs::remove_file("saves/slot1.toml");
         app.player.current_hp = 9;
@@ -2114,6 +2083,50 @@ mod tests {
         app.handle_event(GameEvent::LoadGame).unwrap();
         assert_eq!(app.player.current_hp, 9);
         assert_eq!(app.player_pos, (2, 2));
+        let _ = std::fs::remove_file("saves/slot1.toml");
+        let _ = std::fs::remove_dir("saves");
+    }
+
+    #[test]
+    fn save_and_load_roundtrip_from_active_world_state() {
+        let _guard = save_lock();
+        let mut app = App::new();
+        let _ = std::fs::remove_file("saves/slot1.toml");
+        app.transition(AppState::WorldMap);
+        app.current_room_id = "ember_square".into();
+        app.player_pos = (5, 3);
+        app.turn = 77;
+        app.player.current_hp = 5;
+        app.world_state.set_flag("m8_active_state");
+        app.world_state.set_faction_rep("town_guard", 2);
+        app.journal.append(
+            "m8-active",
+            app.turn,
+            JournalCategory::World,
+            None,
+            "M8",
+            "Active runtime snapshot",
+        );
+        app.handle_event(GameEvent::SaveGame).unwrap();
+
+        app.turn = 1;
+        app.player.current_hp = 1;
+        app.current_room_id = "ash_gate".into();
+        app.player_pos = (1, 1);
+        app.world_state.clear_flag("m8_active_state");
+        app.world_state.set_faction_rep("town_guard", -2);
+        app.journal.entries.clear();
+
+        app.handle_event(GameEvent::LoadGame).unwrap();
+        assert!(matches!(app.state, AppState::WorldMap));
+        assert_eq!(app.turn, 77);
+        assert_eq!(app.player.current_hp, 5);
+        assert_eq!(app.current_room_id, "ember_square");
+        assert_eq!(app.player_pos, (5, 3));
+        assert!(app.world_state.flag("m8_active_state"));
+        assert_eq!(app.world_state.faction_rep("town_guard"), 2);
+        assert!(app.journal.entries.iter().any(|e| e.id == "m8-active"));
+
         let _ = std::fs::remove_file("saves/slot1.toml");
         let _ = std::fs::remove_dir("saves");
     }

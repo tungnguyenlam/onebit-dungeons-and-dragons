@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-02-20 — Milestone 8 (complete): Stability & Engineering Debt
+
+- [x] `src/app.rs` — added end-to-end transition tests for world-map trigger -> dialog and world-map trigger -> combat
+- [x] `src/app.rs` — strengthened save/load test coverage with active runtime world-state roundtrip assertions
+- [x] `src/app.rs` — removed stale demo dialog path and consolidated dialog transition glue (`start_dialog_with_npc`)
+- [x] `src/ui/tui/mod.rs` — tightened renderer state dispatch to exhaustive screen match
+- [x] `scripts/agent_verify.sh` (new) — standardized agent verification entry point (`cargo test`, optional smoke)
+- [x] `docs/testing/tui-agent-smoke.md` + `docs/AGENT.md` + `README.md` — documented standardized script entry points
+- [x] `cargo test` passes (101 tests, 0 failures)
+
 ## 2026-02-20 — Milestone 7 (complete): Polish
 
 - [x] `src/game/save/mod.rs` — TOML save/load serialization runtime (`SaveGame`) + tests

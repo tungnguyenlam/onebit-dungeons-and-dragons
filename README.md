@@ -29,6 +29,9 @@ cargo run --features gui -- --mode gui
 # Run tests
 cargo test
 
+# Standard agent verification entry point
+scripts/agent_verify.sh
+
 # Agent-run automated TUI smoke flow
 scripts/agent_tui_smoke.sh
 ```
@@ -160,6 +163,7 @@ For the detailed design see [docs/architecture/overview.md](docs/architecture/ov
 | M5 — NPC & Factions | ✅ Done |
 | M6 — First Region (Valley of Ash) | ✅ Done |
 | M7 — Polish & Save/Load | ✅ Done |
+| M8 — Stability & Engineering Debt | ✅ Done |
 
 ---
 

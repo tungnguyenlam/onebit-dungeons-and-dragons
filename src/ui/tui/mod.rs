@@ -50,64 +50,17 @@ impl GameRenderer for TuiRenderer {
             let _ = io::stdout().flush();
         }
         self.terminal.draw(|frame| {
-            if matches!(&app.state, AppState::MainMenu) {
-                screens::main_menu::render(frame, app);
-                return;
+            match &app.state {
+                AppState::MainMenu => screens::main_menu::render(frame, app),
+                AppState::CharacterCreation => screens::character_creation::render(frame, app),
+                AppState::WorldMap => screens::world_map::render(frame, app),
+                AppState::Combat(_) => screens::combat::render(frame, app),
+                AppState::Dialog(_) => screens::dialog::render(frame, app),
+                AppState::Journal => screens::journal::render(frame, app),
+                AppState::Inventory => screens::inventory::render(frame, app),
+                AppState::Spellbook => screens::spellbook::render(frame, app),
+                AppState::GameOver => screens::game_over::render(frame, app),
             }
-            if matches!(&app.state, AppState::CharacterCreation) {
-                screens::character_creation::render(frame, app);
-                return;
-            }
-            if matches!(&app.state, AppState::WorldMap) {
-                screens::world_map::render(frame, app);
-                return;
-            }
-            if matches!(&app.state, AppState::Combat(_)) {
-                screens::combat::render(frame, app);
-                return;
-            }
-            if matches!(&app.state, AppState::Dialog(_)) {
-                screens::dialog::render(frame, app);
-                return;
-            }
-            if matches!(&app.state, AppState::Journal) {
-                screens::journal::render(frame, app);
-                return;
-            }
-            if matches!(&app.state, AppState::Inventory) {
-                screens::inventory::render(frame, app);
-                return;
-            }
-            if matches!(&app.state, AppState::Spellbook) {
-                screens::spellbook::render(frame, app);
-                return;
-            }
-            if matches!(&app.state, AppState::GameOver) {
-                screens::game_over::render(frame, app);
-                return;
-            }
-
-            // Placeholder for non-combat screens.
-            use ratatui::{
-                layout::Alignment,
-                widgets::{Block, Paragraph},
-            };
-            let area = frame.area();
-            let title = match &app.state {
-                AppState::MainMenu => "Main Menu",
-                AppState::CharacterCreation => "Character Creation",
-                AppState::WorldMap => "World Map",
-                AppState::Combat(_) => "Combat",
-                AppState::Dialog(_) => "Dialog",
-                AppState::Journal => "Journal",
-                AppState::Inventory => "Inventory",
-                AppState::Spellbook => "Spellbook",
-                AppState::GameOver => "Game Over",
-            };
-            let p = Paragraph::new(format!("[TUI] {title}\n\nPress Q to quit."))
-                .block(Block::bordered().title("OneBit D&D"))
-                .alignment(Alignment::Center);
-            frame.render_widget(p, area);
         })?;
         Ok(())
     }

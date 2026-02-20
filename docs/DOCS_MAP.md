@@ -73,7 +73,7 @@
 ### Testing docs
 
 - `testing/tui-agent-smoke.md`
-  - Related: [AGENT.md](AGENT.md), [README.md](../README.md), `scripts/agent_tui_smoke.sh`
+  - Related: [AGENT.md](AGENT.md), [README.md](../README.md), `scripts/agent_tui_smoke.sh`, `scripts/agent_verify.sh`
 
 ---
 

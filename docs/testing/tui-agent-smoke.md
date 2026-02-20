@@ -5,6 +5,7 @@ of the TUI without manual interaction.
 
 Script:
 - `scripts/agent_tui_smoke.sh`
+- `scripts/agent_verify.sh` (standard agent verification entry point)
 
 ---
 
@@ -26,6 +27,13 @@ It then verifies `saves/slot1.toml` was created.
 From repo root:
 
 ```bash
+# Standard regression entry point (tests only)
+scripts/agent_verify.sh
+
+# Tests + scripted TUI keyboard smoke
+scripts/agent_verify.sh --with-smoke
+
+# Smoke-only flow
 scripts/agent_tui_smoke.sh
 ```
 

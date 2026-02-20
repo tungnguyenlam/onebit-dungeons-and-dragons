@@ -35,6 +35,12 @@ scripts/agent_tui_smoke.sh
 ```
 Guide: [testing/tui-agent-smoke.md](testing/tui-agent-smoke.md)
 
+For standard automated verification (tests first, optional smoke):
+```bash
+scripts/agent_verify.sh
+scripts/agent_verify.sh --with-smoke
+```
+
 **Step 3 — Read only the docs for your current task**  
 The handoff block lists which doc files are relevant. Read those and nothing
 else. Do not read the full backlog or unrelated gameplay docs.
