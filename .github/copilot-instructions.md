@@ -2,11 +2,21 @@
 
 Terminal-based open-world D&D game in Rust (TUI via Ratatui, experimental GUI via egui), following the D&D 5e SRD ruleset.
 
-> **Before touching any code, read `docs/AGENT.md`** — it describes the session handoff workflow, which task is active, and which docs are relevant to the current sprint. 
+> **Before touching any code, read `docs/AGENT.md`** — it describes the session handoff workflow, which task is active, and which docs are relevant to the current sprint.
 >
 > **If you update any documentation, gameplay/architecture/content/task doc, or conventions, you MUST review `docs/DOCS_MAP.md` and update all linked files in the same change.**
 >
-> When you finish a task or must stop mid-task, update the `Last Session Handoff` block in `tasks/current-sprint.md` before ending: list exactly where you stopped, every file you modified, and the next concrete action for the incoming agent. Move completed tasks to `done.md` and pull the next from `backlog.md`.
+> When you finish a task or must stop mid-task, update the `Last Session Handoff` block in `docs/tasks/current-sprint.md` before ending: list exactly where you stopped, every file you modified, and the next concrete action for the incoming agent. Move completed tasks to `docs/tasks/done.md` and pull the next from `docs/tasks/backlog.md`.
+
+## Session Resume Workflow
+
+Follow **in order** before touching any code:
+
+1. Read the `## Last Session Handoff` block in `docs/tasks/current-sprint.md`.
+2. Run `cargo check 2>&1 | head -40` — fix any compile errors noted in the handoff before continuing.
+3. Read only the docs listed as relevant in the handoff block (see System Map below).
+4. Do the work, then update the `Last Session Handoff` block before ending.
+5. If a full task is done: move it to `docs/tasks/done.md`, pull the next from `docs/tasks/backlog.md`.
 
 ---
 
@@ -25,6 +35,15 @@ scripts/agent_verify.sh --with-smoke # also runs non-interactive TUI smoke flow
 scripts/agent_tui_smoke.sh           # keyboard smoke test for TUI only
 scripts/validate_content.sh          # validates authored TOML region/quest files
 scripts/release_check.sh             # full release gate: tests + content + startup profile
+
+# Asset graph validation
+cargo run -- --validate-assets
+scripts/validate_assets.sh
+
+# TUI smoke test flags (non-TTY agents: use scripted/smoke mode, NOT --interactive)
+scripts/agent_tui_smoke.sh --interactive                             # TTY required
+scripts/agent_tui_smoke.sh --scenario ash_gate --token-efficient     # scripted scenario
+scripts/agent_tui_smoke.sh --soak --profile standard --minutes 30   # long-session soak
 ```
 
 `cargo` warnings are **non-blocking** — do not do broad warning-only cleanup unless the active task explicitly requests it.
@@ -125,3 +144,25 @@ Settled architecture decisions are in `docs/decisions/`. Do not re-litigate them
 1. `rusty-man <crate>::Type` (reads local rustdoc JSON, best for terminal agents)
 2. `cargo doc` → `target/doc/`
 3. `https://docs.rs/<crate>/latest/<crate>/`
+4. Source in `~/.cargo/registry/src/`
+
+---
+
+## System Map
+
+| System | Doc |
+|---|---|
+| App loop / event handling | `docs/architecture/game-loop.md` |
+| UI / Ratatui screen layout | `docs/architecture/ui-layer.md` |
+| TUI visual style | `docs/architecture/tui-visual-system.md` |
+| Data pipeline (assets → game) | `docs/architecture/data-pipeline.md` |
+| Dice rolling (DiceExpr) | `docs/gameplay/dice.md` |
+| Combat (5e action economy) | `docs/gameplay/combat.md` |
+| Character (stats, class, race) | `docs/gameplay/character.md` |
+| World map & region system | `docs/gameplay/world.md` |
+| Story: WorldState & quest machine | `docs/gameplay/story.md` |
+| Dialog trees | `docs/gameplay/dialog.md` |
+| NPC AI & monster turns | `docs/gameplay/npc-ai.md` |
+| Region index | `docs/content/regions/index.md` |
+| Map & region file format | `docs/content/map-format.md` |
+| Automated TUI smoke tool | `docs/testing/tui-agent-smoke.md` |
