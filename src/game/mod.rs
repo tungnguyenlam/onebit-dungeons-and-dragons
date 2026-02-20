@@ -16,7 +16,8 @@ pub mod items;
 pub mod story;
 pub mod world;
 pub mod combat;
+pub mod save;
 
 // Planned — uncomment when implemented:
 // pub mod npc;
-// pub mod save;
+// pub mod npc;

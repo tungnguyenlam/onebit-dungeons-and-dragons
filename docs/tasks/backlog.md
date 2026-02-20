@@ -69,16 +69,16 @@
 
 ## Milestone 6 — First Region
 
-- [ ] Author region 1: `assets/regions/valley-of-ash/`
-- [ ] Author starter town NPC dialog
-- [ ] Author main quest Act 1 (3 stages)
-- [ ] Author 2 side quests
+- [x] Author region 1: `assets/regions/valley-of-ash/`
+- [x] Author starter town NPC dialog
+- [x] Author main quest Act 1 (3 stages)
+- [x] Author 2 side quests
   - See [content/regions/index.md](../content/regions/index.md), [content/quests.md](../content/quests.md)
 
 ## Milestone 7 — Polish
 
-- [ ] Save / load game
-- [ ] Character creation screen
-- [ ] Main menu
-- [ ] Sound (optional — crossterm bell only)
-- [ ] README with screenshots
+- [x] Save / load game
+- [x] Character creation screen
+- [x] Main menu
+- [x] Sound (optional — crossterm bell only)
+- [x] README with screenshots

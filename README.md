@@ -40,6 +40,9 @@ cargo test
 - `s`: spellbook
 - `n`: journal
 - `m`: world map
+- `p`: save game (`saves/slot1.toml`)
+- `o`: load game (`saves/slot1.toml`)
+- `b`: toggle bell sound
 - `1`..`9`: choice/select action
 - `Esc` / `Backspace`: back/cancel
 
@@ -79,7 +82,7 @@ onebit-dungeons-and-dragons/
 │   │   ├── mod.rs
 │   │   ├── tui/            ← Ratatui / Crossterm renderer [feature = "tui"]
 │   │   │   ├── mod.rs      ← TuiRenderer: impl GameRenderer
-│   │   │   └── screens/    ← combat/dialog/journal/inventory/spellbook
+│   │   │   └── screens/    ← main_menu/world_map/combat/dialog/journal/inventory/spellbook/character_creation/game_over
 │   │   └── gui/            ← egui / eframe renderer [feature = "gui"]
 │   │       └── mod.rs      ← GuiRenderer / GuiApp (stubbed — TUI first)
 │   │
@@ -102,8 +105,7 @@ onebit-dungeons-and-dragons/
 │   │   ├── world/          ← region, room, tile map, FOV
 │   │   ├── combat/         ← initiative, attack, action economy, spell effects
 │   │   ├── story/          ← WorldState, quest machine, dialog, journal, events
-│   │   ├── npc/            ← (planned M5) monster AI
-│   │   └── save/           ← (planned M7) save / load serialization
+│   │   └── save/           ← save / load serialization helpers
 │   │
 │   └── data/               ← TOML deserialization layer — no game logic
 │       ├── mod.rs
@@ -153,8 +155,41 @@ For the detailed design see [docs/architecture/overview.md](docs/architecture/ov
 | M3 — Story & Dialog | ✅ Done |
 | M4 — Items & Spells | ✅ Done |
 | M5 — NPC & Factions | ✅ Done |
-| M6 — First Region (Valley of Ash) | 🔧 Next |
-| M7 — Polish & Save/Load | ⬜ Planned |
+| M6 — First Region (Valley of Ash) | ✅ Done |
+| M7 — Polish & Save/Load | ✅ Done |
+
+---
+
+## TUI Screenshots
+
+### Main Menu
+
+```text
+┌ Main Menu ────────────────────────────────────────┐
+│ OneBit Dungeons & Dragons                         │
+├ Options ──────────────────────────────────────────┤
+│ > New Game                                        │
+│   Continue                                        │
+│   Load Save                                       │
+│   Quit (press q)                                  │
+└────────────────────────────────────────────────────┘
+```
+
+### World Map
+
+```text
+┌ World ────────────────────────────────────────────┐
+│ Region: Valley of Ash (valley-of-ash)            │
+│ Room: ash_gate                                   │
+│ Player: Theron at (3, 2)                         │
+├ Map ──────────────────────────────────────────────┤
+│ ##########                                        │
+│ #........#                                        │
+│ #..@..!..#                                        │
+│ #....+...#                                        │
+│ ##########                                        │
+└────────────────────────────────────────────────────┘
+```
 
 ---
 

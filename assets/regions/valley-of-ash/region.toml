@@ -1,0 +1,19 @@
+slug = "valley-of-ash"
+name = "Valley of Ash"
+description = "A wind-beaten valley where cinders never fully settle."
+entry_room = "ash_gate"
+ambient = "ash_wind"
+
+[[rooms]]
+id = "ash_gate"
+file = "rooms/ash_gate.toml"
+
+[[rooms]]
+id = "ember_square"
+file = "rooms/ember_square.toml"
+
+[[connections]]
+from_room = "ember_square"
+to_region = "valley-of-ash"
+to_room = "ash_gate"
+label = "Return to Ash Gate"

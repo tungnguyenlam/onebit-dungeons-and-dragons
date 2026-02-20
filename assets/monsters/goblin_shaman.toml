@@ -1,0 +1,30 @@
+id = "goblin_shaman"
+name = "Goblin Shaman"
+cr = 0.5
+size = "small"
+monster_type = "humanoid"
+alignment = "neutral_evil"
+hp = "3d6"
+ac = 12
+speed = 30
+str_score = 8
+dex_score = 12
+con_score = 10
+int_score = 12
+wis_score = 14
+cha_score = 10
+xp = 100
+
+[[actions]]
+name = "Dagger"
+description = "Melee attack"
+attack_bonus = 3
+damage = "1d4+1"
+damage_type = "piercing"
+
+[[actions]]
+name = "Poison Bolt"
+description = "Spell attack"
+attack_bonus = 4
+damage = "1d8+1"
+damage_type = "poison"

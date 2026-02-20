@@ -1,0 +1,5 @@
+id = "captain_kael"
+name = "Captain Kael"
+monster_ref = ""
+faction = "town_guard"
+dialog_ref = "captain_kael"

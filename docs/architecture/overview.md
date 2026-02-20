@@ -36,11 +36,15 @@ src/
 │   ├── tui/                     [feature = "tui"]
 │   │   ├── mod.rs               ← TuiRenderer: impl GameRenderer
 │   │   ├── screens/
+│   │   │   ├── main_menu.rs
+│   │   │   ├── character_creation.rs
+│   │   │   ├── world_map.rs
 │   │   │   ├── combat.rs
 │   │   │   ├── inventory.rs
 │   │   │   ├── spellbook.rs
 │   │   │   ├── dialog.rs
-│   │   │   └── journal.rs
+│   │   │   ├── journal.rs
+│   │   │   └── game_over.rs
 │   └── gui/                     [feature = "gui"]
 │       └── mod.rs               ← GuiRenderer stub
 ├── game/
@@ -75,7 +79,8 @@ src/
 │   │   ├── dialog.rs
 │   │   ├── journal.rs
 │   │   └── events.rs
-│   └── (npc/save planned in future milestones)
+│   └── save/
+│       └── mod.rs
 └── data/
     ├── mod.rs
     ├── loader.rs

@@ -1,0 +1,10 @@
+id = "goblin_banners"
+name = "Goblin Banners"
+type = "side"
+
+[[stages]]
+id = "start"
+label = "Defeat the goblin raiders"
+condition = ""
+journal_entry = "The guard wants proof the goblin raiders were driven back."
+next = [{ condition = "flag:won_first_combat", stage = "DONE" }]

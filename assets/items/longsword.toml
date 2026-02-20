@@ -1,0 +1,12 @@
+id = "longsword"
+name = "Longsword"
+type = "weapon"
+weight = 3.0
+value_gp = 15
+description = "A standard steel longsword."
+
+[weapon]
+damage = "1d8"
+damage_type = "slashing"
+properties = ["versatile"]
+versatile_damage = "1d10"

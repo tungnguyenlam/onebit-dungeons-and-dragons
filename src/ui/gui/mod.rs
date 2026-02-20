@@ -119,6 +119,9 @@ fn map_key(key: egui::Key) -> Option<GameEvent> {
         egui::Key::M => GameEvent::OpenMap,
         egui::Key::A => GameEvent::Attack,
         egui::Key::Period => GameEvent::Wait,
+        egui::Key::P => GameEvent::SaveGame,
+        egui::Key::O => GameEvent::LoadGame,
+        egui::Key::B => GameEvent::ToggleSound,
 
         // Dialog choices
         egui::Key::Num1 => GameEvent::Choice(1),

@@ -33,6 +33,9 @@ pub enum GameEvent {
     OpenMap,
     Attack,
     Wait,
+    SaveGame,
+    LoadGame,
+    ToggleSound,
 
     // --- dialog choice (key 1–9) ---
     Choice(u8),

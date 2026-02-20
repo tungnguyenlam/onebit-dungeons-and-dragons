@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-02-20 — Milestone 7 (complete): Polish
+
+- [x] `src/game/save/mod.rs` — TOML save/load serialization runtime (`SaveGame`) + tests
+- [x] `src/renderer.rs` + `src/ui/tui/mod.rs` + `src/ui/gui/mod.rs` — save/load/sound toggle events and key bindings
+- [x] `src/ui/tui/screens/main_menu.rs` + `src/ui/tui/screens/character_creation.rs` + `src/ui/tui/screens/game_over.rs` — menu and character creation screens
+- [x] `src/ui/tui/mod.rs` + `src/ui/tui/screens/mod.rs` — dispatch wired for menu/world/creation/game-over flows
+- [x] `README.md` — status + screenshots + updated controls
+
+## 2026-02-20 — Milestone 6 (complete): First Region
+
+- [x] `assets/regions/valley-of-ash/` — region manifest, 2 rooms, triggers, NPCs, and dialog trees
+- [x] `assets/quests/main/valley-contract.toml` — Act 1 main quest with 3 stages
+- [x] `assets/quests/side/embers-forge.toml` + `assets/quests/side/goblin-banners.toml` — two side quests
+- [x] `assets/lore/ash_tablet.toml` — environmental lore entry wired to room trigger
+- [x] `src/app.rs` — runtime region loading, map movement, trigger interactions, and travel handling
+- [x] `src/data/loader.rs` — authored region loader smoke test
+- [x] `cargo test` passes (98 tests, 0 failures)
+
 ## 2026-02-20 — Milestone 5 (complete): NPC & Factions
 
 - [x] `src/data/loader.rs` — monster loader helper (`load_monsters`) with focused tests

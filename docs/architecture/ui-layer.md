@@ -16,22 +16,24 @@ See → [renderer.md](renderer.md) for the trait definition and launch mechanics
 
 ## Screen Modules
 
-The TUI currently has dedicated screen modules for combat, dialog, journal,
-inventory, and spellbook. World map and menu-like states still use the
-placeholder renderer branch in `src/ui/tui/mod.rs`.
+The TUI currently has dedicated screen modules for main menu, character
+creation, world map, combat, dialog, journal, inventory, spellbook, and game
+over.
 
 GUI remains a stub in `src/ui/gui/mod.rs` and does not yet have per-screen
 modules.
 
 | Screen | `AppState` variant | TUI file | GUI file |
 |---|---|---|---|
-| World Map | `WorldMap` | placeholder branch in `tui/mod.rs` | stub (`gui/mod.rs`) |
+| Main Menu | `MainMenu` | `tui/screens/main_menu.rs` | stub (`gui/mod.rs`) |
+| Character Creation | `CharacterCreation` | `tui/screens/character_creation.rs` | stub (`gui/mod.rs`) |
+| World Map | `WorldMap` | `tui/screens/world_map.rs` | stub (`gui/mod.rs`) |
 | Combat | `Combat(_)` | `tui/screens/combat.rs` | stub (`gui/mod.rs`) |
 | Dialog | `Dialog(_)` | `tui/screens/dialog.rs` | stub (`gui/mod.rs`) |
 | Journal | `Journal` | `tui/screens/journal.rs` | stub (`gui/mod.rs`) |
 | Inventory | `Inventory` | `tui/screens/inventory.rs` | stub (`gui/mod.rs`) |
 | Spellbook | `Spellbook` | `tui/screens/spellbook.rs` | stub (`gui/mod.rs`) |
-| Character Sheet | overlay | not implemented | not implemented |
+| Game Over | `GameOver` | `tui/screens/game_over.rs` | stub (`gui/mod.rs`) |
 
 ---
 

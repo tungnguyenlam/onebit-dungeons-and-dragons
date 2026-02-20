@@ -1,0 +1,11 @@
+id = "shield"
+name = "Shield"
+type = "armor"
+weight = 6.0
+value_gp = 10
+description = "Wooden shield."
+
+[armor]
+base_ac = 2
+type = "shield"
+stealth_disadvantage = false

@@ -1,0 +1,11 @@
+id = "leather_armor"
+name = "Leather Armor"
+type = "armor"
+weight = 10.0
+value_gp = 10
+description = "Flexible light armor."
+
+[armor]
+base_ac = 11
+type = "light"
+stealth_disadvantage = false

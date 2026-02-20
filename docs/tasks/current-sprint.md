@@ -11,41 +11,60 @@
 
 ```
 Date:          2026-02-20
-Stopped at:    Milestone 5 complete — NPC/faction runtime integrated
-Task in progress: Milestone 6 step 1 — first playable region content authoring
+Stopped at:    Milestone 7 complete — all planned milestones implemented
+Task in progress: Post-milestone hardening — reduce warnings and integration polish
 
 What was completed this session:
-  Milestone 5:
-    - src/data/loader.rs               — `load_monsters` helper + loader tests
-    - src/game/combat/combat.rs        — combatant AI-role/loadout metadata (`EnemyAiRole`, ranged/spell profiles)
-    - src/game/combat/mod.rs           — exports updated for AI role
-    - src/game/story/world_state.rs    — faction reputation helper APIs
-    - src/app.rs                       — monster-template encounter building, role-driven enemy turns, emergent events from `WorldState`
-    - src/ui/tui/screens/combat.rs     — enemy role shown in combat HUD
-    - `cargo test` — 94 tests, 0 failures
-  Milestone 5 status:
+  Milestone 6:
+    - assets/regions/valley-of-ash/region.toml + rooms + npcs + dialog authored
+    - assets/quests/main + assets/quests/side authored for first-region progression
+    - assets/lore + assets/items + assets/spells + assets/monsters seeded for runtime loading
+    - src/app.rs — region/room runtime state, movement, trigger interaction, travel wiring
+    - src/data/loader.rs — authored region smoke test
+  Milestone 7:
+    - src/game/save/mod.rs — save/load TOML serialization runtime + tests
+    - src/renderer.rs + src/ui/tui/mod.rs + src/ui/gui/mod.rs — save/load/sound events and key mappings
+    - src/ui/tui/screens/ — main menu, world map, character creation, game over screens
+    - README.md — screenshots and updated controls/status
+    - cargo test — 98 tests, 0 failures
+  Milestone 6/7 status:
     - all backlog checklist items now complete
 
 What is NOT done yet:
-    - Milestone 6 (first region content) not started
-    - real asset-driven content set under `assets/` is still minimal/missing
-    - combat/map integration still uses demo encounter flow rather than region triggers
+    - warning cleanup (unused re-exports and dead-code across modules)
+    - GUI remains a functional stub compared with TUI
+    - deeper content/balance pass for Valley of Ash
 
 Next action for the incoming agent:
-  1. `cargo test` — must pass (94 tests) before touching anything.
-  2. Start Milestone 6 step 1:
-       - author `assets/regions/valley-of-ash/region.toml` + rooms + starter npcs/dialog
-       - create first encounter/quest content with existing loaders
-  3. Wire region entry/loading in app flow from `assets/regions/`.
-  4. Add smoke tests for loading authored region files.
+  1. cargo test — must pass (98 tests) before touching anything.
+  2. Tackle warning reduction by removing stale re-exports and dead demo code.
+  3. Add end-to-end integration tests for world-map trigger -> combat/dialog transitions.
+  4. If GUI milestone is desired, mirror the new TUI screens in src/ui/gui/.
 
 Files modified this session:
+  Cargo.toml
   src/app.rs
+  src/renderer.rs
+  src/game/mod.rs
+  src/game/save/mod.rs (new)
   src/data/loader.rs
-  src/game/combat/mod.rs
-  src/game/combat/combat.rs
-  src/game/story/world_state.rs
+  src/ui/tui/mod.rs
+  src/ui/tui/screens/mod.rs
+  src/ui/tui/screens/main_menu.rs (new)
+  src/ui/tui/screens/character_creation.rs (new)
+  src/ui/tui/screens/world_map.rs (new)
+  src/ui/tui/screens/game_over.rs (new)
   src/ui/tui/screens/combat.rs
+  src/ui/gui/mod.rs
+  assets/regions/valley-of-ash/* (new)
+  assets/quests/main/* (new)
+  assets/quests/side/* (new)
+  assets/lore/* (new)
+  assets/items/* (new)
+  assets/spells/* (new)
+  assets/monsters/* (new)
+  docs/content/regions/index.md
+  README.md
   docs/tasks/backlog.md
   docs/tasks/done.md
   docs/tasks/current-sprint.md (this file)
@@ -57,27 +76,24 @@ Blockers: none
 
 ## Active Task
 
-### Task: Valley Of Ash Authoring (Milestone 6, step 1)
+### Task: Post-Milestone Hardening
 
 **Files to touch:**
-- `assets/regions/valley-of-ash/region.toml`   — region manifest
-- `assets/regions/valley-of-ash/rooms/*.toml`  — room layouts, triggers, items
-- `assets/regions/valley-of-ash/npcs/*.toml`   — starter NPC definitions
-- `assets/regions/valley-of-ash/dialog/*.toml` — starter dialog trees
+- `src/game/*/mod.rs` — remove/adjust stale re-exports
+- `src/app.rs` — remove deprecated demo-only paths
+- `src/ui/gui/mod.rs` — improve parity with TUI flows
 
 **Done when:**
 - [ ] `cargo test` passes
-- [ ] region manifest + rooms load through `load_region`
-- [ ] at least one dialog trigger and one encounter trigger are authored
-- [ ] starter quest hooks are represented in content files
-- [ ] authored content has loader-focused tests
+- [ ] warnings materially reduced from current baseline
+- [ ] no milestone docs are stale
+- [ ] basic GUI path supports menu/world/combat transitions
 
-**Blocked by:** `Milestone 5` (done)
+**Blocked by:** none
 
 **Relevant docs:**
-- [../content/regions/index.md](../content/regions/index.md)
-- [../content/map-format.md](../content/map-format.md)
-- [../content/quests.md](../content/quests.md)
+- [../DOCS_MAP.md](../DOCS_MAP.md)
+- [../architecture/ui-layer.md](../architecture/ui-layer.md)
 
 ---
 

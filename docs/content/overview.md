@@ -19,15 +19,15 @@ schemas.
 |---|---|---|
 | Playable classes | 🔲 planned | [classes.md](classes.md) |
 | Playable races | 🔲 planned | [races.md](races.md) |
-| Monsters | 🔲 planned | [monsters.md](monsters.md) |
-| Spells list | 🔲 planned | [spells-list.md](spells-list.md) |
-| Items list | 🔲 planned | [items-list.md](items-list.md) |
-| Quests | 🔲 planned | [quests.md](quests.md) |
-| Lore & environmental text | 🔲 planned | [lore.md](lore.md) |
-| World regions | 🔲 planned | [regions/index.md](regions/index.md) |
+| Monsters | ✅ seeded | [monsters.md](monsters.md) |
+| Spells list | ✅ seeded | [spells-list.md](spells-list.md) |
+| Items list | ✅ seeded | [items-list.md](items-list.md) |
+| Quests | ✅ seeded | [quests.md](quests.md) |
+| Lore & environmental text | ✅ seeded | [lore.md](lore.md) |
+| World regions | ✅ first region complete | [regions/index.md](regions/index.md) |
 | Map & TOML format | ✅ documented | [map-format.md](map-format.md) |
 
-Status keys: 🔲 planned · 🚧 in progress · ✅ complete
+Status keys: 🔲 planned · 🚧 in progress · ✅ complete/seeded
 
 ---
 

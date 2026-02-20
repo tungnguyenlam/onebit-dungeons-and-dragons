@@ -1,0 +1,11 @@
+id = "poison_spray"
+name = "Poison Spray"
+level = 0
+school = "conjuration"
+casting_time = "action"
+range = "10ft"
+components = ["V", "S"]
+duration = "instantaneous"
+description = "Noxious gas."
+save = "constitution"
+classes = ["wizard"]

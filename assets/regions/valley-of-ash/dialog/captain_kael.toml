@@ -1,0 +1,25 @@
+npc_id = "captain_kael"
+
+[[nodes]]
+id = "root"
+text = "The goblins probe our gate nightly. Will you stand with us?"
+
+[[nodes.choices]]
+text = "I will help your guard."
+condition = ""
+next = "accept"
+effect = [{ set_flag = "accept_demo_quest" }]
+
+[[nodes.choices]]
+text = "Not right now."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "accept"
+text = "Then clear Ember Square and report back."
+
+[[nodes.choices]]
+text = "Understood."
+condition = ""
+next = "END"

@@ -1,0 +1,10 @@
+id = "embers_forge"
+name = "Embers of the Forge"
+type = "side"
+
+[[stages]]
+id = "start"
+label = "Find the forge tablet"
+condition = ""
+journal_entry = "Sage Lyra asked you to read the ash tablet in Ember Square."
+next = [{ condition = "flag:read_old_tablet", stage = "DONE" }]

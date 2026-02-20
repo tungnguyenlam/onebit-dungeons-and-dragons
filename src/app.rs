@@ -1,8 +1,8 @@
-use crate::data::loader::load_monsters;
+use crate::data::loader::{load_lore, load_monsters, load_quests, load_region};
 use crate::data::types::{
     ArmorDef, ArmorType, DialogChoice, DialogEffect, DialogNode, DialogTree, ItemDef, ItemType,
-    LoreEntry, MonsterAction, MonsterDef, QuestDef, QuestKind, QuestStageDef, QuestTransition,
-    SpellDef, WeaponDef,
+    LoreEntry, MonsterAction, MonsterDef, NpcDef, QuestDef, QuestKind, QuestStageDef,
+    QuestTransition, SpellDef, TriggerKind, WeaponDef,
 };
 use crate::game::{
     character::{AbilityScores, Character},
@@ -12,6 +12,7 @@ use crate::game::{
     },
     dice::DiceExpr,
     items::{armor::armor_class, equipment::EquipmentSlot},
+    save::{load_from_path, save_to_path, SaveGame},
     story::{
         dialog::{choose as dialog_choose, resolve as dialog_resolve, ResolvedNode},
         events::{inspect_lore, EventEngine, EventTrigger, WorldEvent},
@@ -19,6 +20,7 @@ use crate::game::{
         quest::QuestLog,
         WorldState,
     },
+    world::region::Region,
 };
 /// Application glue layer.
 ///
@@ -30,6 +32,7 @@ use crate::game::{
 /// and reads `App::state` (and sub-system state) during rendering.
 use crate::renderer::{ControlFlow, GameEvent};
 use anyhow::Result;
+use std::cell::Cell;
 use std::collections::HashMap;
 
 // ---------------------------------------------------------------------------
@@ -142,6 +145,40 @@ impl Default for JournalUiState {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct MainMenuUiState {
+    pub selected: usize,
+}
+
+impl Default for MainMenuUiState {
+    fn default() -> Self {
+        Self { selected: 0 }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct CharacterCreationUiState {
+    pub selected: usize,
+    pub name: String,
+    pub class_options: Vec<String>,
+    pub class_index: usize,
+    pub race_options: Vec<String>,
+    pub race_index: usize,
+}
+
+impl Default for CharacterCreationUiState {
+    fn default() -> Self {
+        Self {
+            selected: 0,
+            name: "Theron".into(),
+            class_options: vec!["fighter".into(), "wizard".into(), "rogue".into()],
+            class_index: 0,
+            race_options: vec!["human".into(), "elf".into(), "dwarf".into()],
+            race_index: 0,
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // App
 // ---------------------------------------------------------------------------
@@ -159,6 +196,17 @@ pub struct App {
     pub journal: Journal,
     pub quests: QuestLog,
     pub world_events: EventEngine,
+    pub lore_defs: HashMap<String, LoreEntry>,
+    pub region: Region,
+    pub region_npcs: HashMap<String, NpcDef>,
+    pub region_dialogs: HashMap<String, DialogTree>,
+    pub current_room_id: String,
+    pub player_pos: (u32, u32),
+    pub pending_encounter_monster: Option<String>,
+    pub sound_enabled: bool,
+    pub pending_beep: Cell<bool>,
+    pub menu_ui: MainMenuUiState,
+    pub char_creation_ui: CharacterCreationUiState,
     pub journal_ui: JournalUiState,
     pub turn: u64,
 }
@@ -172,6 +220,7 @@ impl App {
             .ok()
             .filter(|m| !m.is_empty())
             .unwrap_or_else(sample_monster_defs);
+        let lore_defs = load_lore("assets").ok().unwrap_or_default();
         let mut player = Character::new(
             "Theron".into(),
             "fighter".into(),
@@ -223,6 +272,37 @@ impl App {
                 },
             ],
         };
+        let quest_defs = load_quests("assets")
+            .ok()
+            .filter(|q| !q.is_empty())
+            .map(|map| map.into_values().collect::<Vec<_>>())
+            .unwrap_or_else(|| vec![sample_quest]);
+
+        let (region, region_npcs, region_dialogs, current_room_id, player_pos) =
+            if let Ok(loaded) = load_region("assets", "valley-of-ash") {
+                let region = Region::from_loaded(&loaded);
+                let room_id = region
+                    .entry()
+                    .map(|r| r.id.clone())
+                    .unwrap_or_else(|| region.entry_room.clone());
+                let spawn = region
+                    .room(&room_id)
+                    .map(spawn_pos_for_room)
+                    .unwrap_or((1, 1));
+                (region, loaded.npcs, loaded.dialogs, room_id, spawn)
+            } else {
+                let (region, npcs, dialogs) = sample_region_bundle();
+                let room_id = region
+                    .entry()
+                    .map(|r| r.id.clone())
+                    .unwrap_or_else(|| region.entry_room.clone());
+                let spawn = region
+                    .room(&room_id)
+                    .map(spawn_pos_for_room)
+                    .unwrap_or((1, 1));
+                (region, npcs, dialogs, room_id, spawn)
+            };
+
         Self {
             state: AppState::default(),
             player,
@@ -236,8 +316,19 @@ impl App {
             ],
             world_state: WorldState::new(),
             journal: Journal::default(),
-            quests: QuestLog::with_defs(vec![sample_quest]),
+            quests: QuestLog::with_defs(quest_defs),
             world_events: demo_world_events(),
+            lore_defs,
+            region,
+            region_npcs,
+            region_dialogs,
+            current_room_id,
+            player_pos,
+            pending_encounter_monster: None,
+            sound_enabled: false,
+            pending_beep: Cell::new(false),
+            menu_ui: MainMenuUiState::default(),
+            char_creation_ui: CharacterCreationUiState::default(),
             journal_ui: JournalUiState::default(),
             turn: 0,
         }
@@ -254,6 +345,21 @@ impl App {
     pub fn handle_event(&mut self, event: GameEvent) -> Result<ControlFlow> {
         match event {
             GameEvent::Quit => return Ok(ControlFlow::Exit),
+            GameEvent::SaveGame => {
+                self.save_to_default_path()?;
+                return Ok(ControlFlow::Continue);
+            }
+            GameEvent::LoadGame => {
+                self.load_from_default_path()?;
+                return Ok(ControlFlow::Continue);
+            }
+            GameEvent::ToggleSound => {
+                self.sound_enabled = !self.sound_enabled;
+                if self.sound_enabled {
+                    self.pending_beep.set(true);
+                }
+                return Ok(ControlFlow::Continue);
+            }
 
             GameEvent::Tick => {
                 self.turn += 1;
@@ -284,7 +390,7 @@ impl App {
             AppState::Journal => self.handle_journal(event),
             AppState::Spellbook => self.handle_spellbook(event),
             AppState::CharacterCreation => self.handle_char_creation(event),
-            AppState::GameOver => Ok(()),
+            AppState::GameOver => self.handle_game_over(event),
         }
     }
 
@@ -293,15 +399,34 @@ impl App {
     // -----------------------------------------------------------------------
 
     fn handle_main_menu(&mut self, event: GameEvent) -> Result<()> {
-        if event == GameEvent::Confirm {
-            self.transition(AppState::CharacterCreation);
+        match event {
+            GameEvent::MoveUp => {
+                self.menu_ui.selected = self.menu_ui.selected.saturating_sub(1);
+            }
+            GameEvent::MoveDown => {
+                self.menu_ui.selected = (self.menu_ui.selected + 1).min(3);
+            }
+            GameEvent::Confirm => match self.menu_ui.selected {
+                0 => self.transition(AppState::CharacterCreation),
+                1 => self.transition(AppState::WorldMap),
+                2 => {
+                    self.load_from_default_path()?;
+                    self.transition(AppState::WorldMap);
+                }
+                3 => self.transition(AppState::GameOver),
+                _ => {}
+            },
+            _ => {}
         }
         Ok(())
     }
 
     fn handle_world_map(&mut self, event: GameEvent) -> Result<()> {
         match event {
-            GameEvent::Attack => self.transition(AppState::Combat(self.make_combat_context())),
+            GameEvent::Attack => {
+                let ctx = self.make_combat_context();
+                self.transition(AppState::Combat(ctx));
+            }
             GameEvent::OpenInventory => self.transition(AppState::Inventory),
             GameEvent::OpenSpellbook => self.transition(AppState::Spellbook),
             GameEvent::OpenJournal => {
@@ -309,25 +434,13 @@ impl App {
                 self.journal_ui.selected = 0;
                 self.transition(AppState::Journal);
             }
-            GameEvent::Confirm => {
-                let lore = LoreEntry {
-                    id: "old_tablet".into(),
-                    title: "Old Tablet".into(),
-                    text: "A cracked tablet describes a vault beneath the city.".into(),
-                    tags: vec!["history".into()],
-                };
-                if inspect_lore(&lore, &mut self.world_state, &mut self.journal, self.turn) {
-                    self.world_state.set_flag("read_old_tablet");
-                }
-            }
-            GameEvent::OpenMap => {
-                if let Some(dialog) = self.make_demo_dialog() {
-                    self.transition(AppState::Dialog(dialog));
-                }
-            }
+            GameEvent::MoveUp => self.try_move_player(0, -1),
+            GameEvent::MoveDown => self.try_move_player(0, 1),
+            GameEvent::MoveLeft => self.try_move_player(-1, 0),
+            GameEvent::MoveRight => self.try_move_player(1, 0),
+            GameEvent::Confirm | GameEvent::OpenMap => self.interact_current_tile(),
             _ => {}
         }
-        // TODO: movement, interact, open overlays
         Ok(())
     }
 
@@ -458,9 +571,216 @@ impl App {
     }
 
     fn handle_char_creation(&mut self, event: GameEvent) -> Result<()> {
-        if event == GameEvent::Confirm {
-            self.transition(AppState::WorldMap);
+        match event {
+            GameEvent::MoveUp => {
+                self.char_creation_ui.selected = self.char_creation_ui.selected.saturating_sub(1);
+            }
+            GameEvent::MoveDown => {
+                self.char_creation_ui.selected = (self.char_creation_ui.selected + 1).min(3);
+            }
+            GameEvent::MoveLeft => {
+                if self.char_creation_ui.selected == 1 {
+                    self.char_creation_ui.class_index =
+                        self.char_creation_ui.class_index.saturating_sub(1);
+                } else if self.char_creation_ui.selected == 2 {
+                    self.char_creation_ui.race_index =
+                        self.char_creation_ui.race_index.saturating_sub(1);
+                }
+            }
+            GameEvent::MoveRight => {
+                if self.char_creation_ui.selected == 1 {
+                    self.char_creation_ui.class_index = (self.char_creation_ui.class_index + 1)
+                        .min(self.char_creation_ui.class_options.len().saturating_sub(1));
+                } else if self.char_creation_ui.selected == 2 {
+                    self.char_creation_ui.race_index = (self.char_creation_ui.race_index + 1)
+                        .min(self.char_creation_ui.race_options.len().saturating_sub(1));
+                }
+            }
+            GameEvent::Choice(n @ 1..=9) => {
+                if self.char_creation_ui.selected == 0 {
+                    self.char_creation_ui.name.push(char::from(b'0' + n));
+                }
+            }
+            GameEvent::Back | GameEvent::Cancel => self.transition(AppState::MainMenu),
+            GameEvent::Confirm => {
+                if self.char_creation_ui.selected == 3 {
+                    self.apply_character_creation();
+                    self.transition(AppState::WorldMap);
+                }
+            }
+            _ => {}
         }
+        Ok(())
+    }
+
+    fn handle_game_over(&mut self, event: GameEvent) -> Result<()> {
+        match event {
+            GameEvent::Confirm => self.transition(AppState::MainMenu),
+            GameEvent::LoadGame => self.load_from_default_path()?,
+            _ => {}
+        }
+        Ok(())
+    }
+
+    fn current_room(&self) -> Option<&crate::game::world::room::Room> {
+        self.region.room(&self.current_room_id)
+    }
+
+    fn try_move_player(&mut self, dx: i32, dy: i32) {
+        let Some(room) = self.current_room() else {
+            return;
+        };
+        let next_col = self.player_pos.0 as i32 + dx;
+        let next_row = self.player_pos.1 as i32 + dy;
+        if room.grid.is_passable(next_col, next_row) {
+            self.player_pos = (next_col as u32, next_row as u32);
+        }
+    }
+
+    fn interact_current_tile(&mut self) {
+        let Some(room) = self.current_room() else {
+            return;
+        };
+        if let Some(trigger) = room.trigger_at(self.player_pos.0, self.player_pos.1) {
+            match trigger.kind {
+                TriggerKind::Dialog => {
+                    if let Some(tree) = self.region_dialogs.get(&trigger.target_id).cloned() {
+                        let npc_name = self
+                            .region_npcs
+                            .get(&trigger.target_id)
+                            .map(|n| n.name.clone())
+                            .unwrap_or_else(|| trigger.target_id.clone());
+                        if let Some(resolved) =
+                            dialog_resolve(&tree, "root", &mut self.world_state)
+                        {
+                            self.transition(AppState::Dialog(DialogContext {
+                                npc_name,
+                                tree,
+                                current_node: "root".into(),
+                                resolved,
+                            }));
+                        }
+                    }
+                }
+                TriggerKind::Encounter => {
+                    self.pending_encounter_monster = Some(trigger.target_id.clone());
+                    self.pending_beep.set(self.sound_enabled);
+                    let ctx = self.make_combat_context();
+                    self.transition(AppState::Combat(ctx));
+                }
+                TriggerKind::Lore => {
+                    if let Some(lore) = self.lore_defs.get(&trigger.target_id) {
+                        if inspect_lore(lore, &mut self.world_state, &mut self.journal, self.turn) {
+                            self.world_state.set_flag("read_old_tablet");
+                        }
+                    }
+                }
+                TriggerKind::QuestStage => {
+                    self.world_state.set_flag(trigger.target_id.clone());
+                }
+                TriggerKind::Travel => {
+                    if self.region.room(&trigger.target_id).is_some() {
+                        self.current_room_id = trigger.target_id.clone();
+                        if let Some(new_room) = self.current_room() {
+                            self.player_pos = spawn_pos_for_room(new_room);
+                        }
+                    }
+                }
+            }
+        } else if let Some(npc) = room.npc_at(self.player_pos.0, self.player_pos.1) {
+            if let Some(tree) = self.region_dialogs.get(&npc.id).cloned() {
+                let npc_name = self
+                    .region_npcs
+                    .get(&npc.id)
+                    .map(|n| n.name.clone())
+                    .unwrap_or_else(|| npc.id.clone());
+                if let Some(resolved) = dialog_resolve(&tree, "root", &mut self.world_state) {
+                    self.transition(AppState::Dialog(DialogContext {
+                        npc_name,
+                        tree,
+                        current_node: "root".into(),
+                        resolved,
+                    }));
+                }
+            }
+        }
+    }
+
+    fn apply_character_creation(&mut self) {
+        let class_id = self.char_creation_ui.class_options[self.char_creation_ui.class_index].clone();
+        let race_id = self.char_creation_ui.race_options[self.char_creation_ui.race_index].clone();
+        self.player.name = self.char_creation_ui.name.clone();
+        self.player.class_id = class_id;
+        self.player.race_id = race_id;
+        self.player.current_hp = self.player.max_hp;
+        self.current_room_id = self
+            .region
+            .entry()
+            .map(|r| r.id.clone())
+            .unwrap_or_else(|| self.region.entry_room.clone());
+        if let Some(room) = self.current_room() {
+            self.player_pos = spawn_pos_for_room(room);
+        }
+    }
+
+    fn save_to_default_path(&mut self) -> Result<()> {
+        let save = SaveGame {
+            turn: self.turn,
+            player: self.player.clone(),
+            world_state: self.world_state.clone(),
+            journal: self.journal.clone(),
+            region_slug: self.region.slug.clone(),
+            room_id: self.current_room_id.clone(),
+            player_pos: self.player_pos,
+        };
+        save_to_path("saves/slot1.toml", &save)?;
+        self.journal.append(
+            format!("save-{}", self.turn),
+            self.turn,
+            JournalCategory::World,
+            None,
+            "Game Saved",
+            "Saved to saves/slot1.toml",
+        );
+        self.pending_beep.set(self.sound_enabled);
+        Ok(())
+    }
+
+    fn load_from_default_path(&mut self) -> Result<()> {
+        let save = match load_from_path("saves/slot1.toml") {
+            Ok(save) => save,
+            Err(_) => {
+                self.journal.append(
+                    format!("load-failed-{}", self.turn),
+                    self.turn,
+                    JournalCategory::World,
+                    None,
+                    "Load Failed",
+                    "No save found at saves/slot1.toml",
+                );
+                return Ok(());
+            }
+        };
+        self.turn = save.turn;
+        self.player = save.player;
+        self.world_state = save.world_state;
+        self.journal = save.journal;
+
+        if let Ok(loaded) = load_region("assets", &save.region_slug) {
+            self.region = Region::from_loaded(&loaded);
+            self.region_npcs = loaded.npcs;
+            self.region_dialogs = loaded.dialogs;
+        }
+        self.current_room_id = if self.region.room(&save.room_id).is_some() {
+            save.room_id
+        } else {
+            self.region
+                .entry()
+                .map(|r| r.id.clone())
+                .unwrap_or_else(|| self.region.entry_room.clone())
+        };
+        self.player_pos = save.player_pos;
+        self.pending_beep.set(self.sound_enabled);
         Ok(())
     }
 
@@ -1057,7 +1377,7 @@ impl App {
         }
     }
 
-    fn make_combat_context(&self) -> CombatContext {
+    fn make_combat_context(&mut self) -> CombatContext {
         let armor_item = self
             .player
             .equipment
@@ -1100,7 +1420,8 @@ impl App {
             attack_bonus,
             damage,
         )];
-        combatants.extend(self.build_encounter_monsters());
+        let queued = self.pending_encounter_monster.take();
+        combatants.extend(self.build_encounter_monsters(queued.as_deref()));
 
         let mut state = CombatState::new_with_seed(combatants, 1337);
         if let Some(player) = state.combatants.get_mut("player") {
@@ -1118,9 +1439,11 @@ impl App {
         }
     }
 
-    fn build_encounter_monsters(&self) -> Vec<CombatantState> {
+    fn build_encounter_monsters(&self, queued_monster: Option<&str>) -> Vec<CombatantState> {
         let mut out = Vec::new();
-        let ids = if self.world_state.faction_rep("goblin_tribe") <= -2 {
+        let ids = if let Some(monster) = queued_monster {
+            vec![monster]
+        } else if self.world_state.faction_rep("goblin_tribe") <= -2 {
             vec!["goblin", "goblin_archer", "goblin_shaman"]
         } else {
             vec!["goblin", "goblin"]
@@ -1157,6 +1480,65 @@ fn prev_category(c: JournalCategory) -> JournalCategory {
         JournalCategory::Combat => JournalCategory::World,
         JournalCategory::Dialog => JournalCategory::Combat,
     }
+}
+
+fn spawn_pos_for_room(room: &crate::game::world::room::Room) -> (u32, u32) {
+    if let Some((col, row, _)) = room
+        .grid
+        .iter()
+        .find(|(_, _, tile)| *tile == crate::game::world::map::Tile::NpcSpawn)
+    {
+        return (col, row);
+    }
+    for row in 0..room.height() {
+        for col in 0..room.width() {
+            if room.grid.is_passable(col as i32, row as i32) {
+                return (col, row);
+            }
+        }
+    }
+    (1, 1)
+}
+
+fn sample_region_bundle() -> (Region, HashMap<String, NpcDef>, HashMap<String, DialogTree>) {
+    let loaded = load_region("assets", "valley-of-ash").ok();
+    if let Some(loaded) = loaded {
+        return (Region::from_loaded(&loaded), loaded.npcs, loaded.dialogs);
+    }
+
+    let fallback = crate::data::loader::LoadedRegion {
+        manifest: crate::data::types::RegionManifest {
+            slug: "fallback".into(),
+            name: "Fallback Region".into(),
+            description: "Fallback region when assets are unavailable.".into(),
+            entry_room: "start".into(),
+            ambient: "".into(),
+            rooms: vec![crate::data::types::RoomRef {
+                id: "start".into(),
+                file: "rooms/start.toml".into(),
+            }],
+            connections: vec![],
+        },
+        rooms: {
+            let mut map = HashMap::new();
+            map.insert(
+                "start".into(),
+                crate::data::types::RoomDef {
+                    id: "start".into(),
+                    name: "Start".into(),
+                    description: "Fallback room".into(),
+                    grid: "#####\n#...#\n#.@.#\n#####\n".into(),
+                    npcs: vec![],
+                    items: vec![],
+                    triggers: vec![],
+                },
+            );
+            map
+        },
+        npcs: HashMap::new(),
+        dialogs: HashMap::new(),
+    };
+    (Region::from_loaded(&fallback), HashMap::new(), HashMap::new())
 }
 
 fn sample_item_defs() -> HashMap<String, ItemDef> {
@@ -1672,7 +2054,7 @@ mod tests {
 
     #[test]
     fn combat_context_uses_monster_templates() {
-        let app = App::new();
+        let mut app = App::new();
         let ctx = app.make_combat_context();
         let enemies: Vec<&CombatantState> = ctx
             .state
@@ -1710,5 +2092,29 @@ mod tests {
         app.world_state.set_faction_rep("goblin_tribe", -4);
         app.handle_event(GameEvent::Tick).unwrap();
         assert!(app.world_state.flag("goblin_tribe_hostile"));
+    }
+
+    #[test]
+    fn world_map_uses_loaded_region_assets() {
+        let app = App::new();
+        assert_eq!(app.region.slug, "valley-of-ash");
+        assert!(app.region.room("ash_gate").is_some());
+        assert!(app.region.room("ember_square").is_some());
+    }
+
+    #[test]
+    fn save_and_load_roundtrip_through_events() {
+        let mut app = App::new();
+        let _ = std::fs::remove_file("saves/slot1.toml");
+        app.player.current_hp = 9;
+        app.player_pos = (2, 2);
+        app.handle_event(GameEvent::SaveGame).unwrap();
+        app.player.current_hp = 1;
+        app.player_pos = (1, 1);
+        app.handle_event(GameEvent::LoadGame).unwrap();
+        assert_eq!(app.player.current_hp, 9);
+        assert_eq!(app.player_pos, (2, 2));
+        let _ = std::fs::remove_file("saves/slot1.toml");
+        let _ = std::fs::remove_dir("saves");
     }
 }

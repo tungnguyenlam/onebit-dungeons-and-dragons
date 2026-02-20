@@ -297,4 +297,14 @@ xp = 25
 
         fs::remove_dir_all(&dir).unwrap();
     }
+
+    #[test]
+    fn load_authored_valley_of_ash_region() {
+        let loaded = load_region("assets", "valley-of-ash").unwrap();
+        assert_eq!(loaded.manifest.slug, "valley-of-ash");
+        assert!(loaded.rooms.contains_key("ash_gate"));
+        assert!(loaded.rooms.contains_key("ember_square"));
+        assert!(loaded.npcs.contains_key("captain_kael"));
+        assert!(loaded.dialogs.contains_key("captain_kael"));
+    }
 }

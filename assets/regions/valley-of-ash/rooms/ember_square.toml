@@ -1,0 +1,32 @@
+id = "ember_square"
+name = "Ember Square"
+description = "A quiet plaza of blackened tiles and old braziers."
+grid = """
+##########
+#..!...!.#
+#..@.....#
+#....v...#
+##########
+"""
+
+[[npcs]]
+id = "sage_lyra"
+position = [3, 2]
+
+[[triggers]]
+position = [3, 1]
+type = "lore"
+target_id = "ash_tablet"
+once = true
+
+[[triggers]]
+position = [7, 1]
+type = "encounter"
+target_id = "goblin"
+once = false
+
+[[triggers]]
+position = [5, 3]
+type = "travel"
+target_id = "ash_gate"
+once = false

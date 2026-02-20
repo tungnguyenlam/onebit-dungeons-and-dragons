@@ -9,7 +9,7 @@
 
 | # | Slug | Name | Status | Connections |
 |---|---|---|---|---|
-| 1 | `valley-of-ash` | Valley of Ash | 🔲 planned | → `emberpeak-summit` |
+| 1 | `valley-of-ash` | Valley of Ash | ✅ complete | local rooms (`ash_gate` ↔ `ember_square`) |
 | 2 | `emberpeak-summit` | Emberpeak Summit | 🔲 planned | ← `valley-of-ash`, → `ironhold-mines` |
 | 3 | `ironhold-mines` | The Ironhold Mines | 🔲 planned | ← `emberpeak-summit`, → `underdark-shelf` |
 | 4 | `underdark-shelf` | The Underdark Shelf | 🔲 planned | ← `ironhold-mines` |

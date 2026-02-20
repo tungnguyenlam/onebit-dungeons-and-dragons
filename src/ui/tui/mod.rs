@@ -18,7 +18,7 @@ use crossterm::{
 };
 use ratatui::{backend::CrosstermBackend, Terminal};
 use std::{
-    io::{self, Stdout},
+    io::{self, Stdout, Write},
     time::Duration,
 };
 
@@ -45,7 +45,23 @@ impl TuiRenderer {
 
 impl GameRenderer for TuiRenderer {
     fn render(&mut self, app: &App) -> Result<()> {
+        if app.sound_enabled && app.pending_beep.replace(false) {
+            print!("\x07");
+            let _ = io::stdout().flush();
+        }
         self.terminal.draw(|frame| {
+            if matches!(&app.state, AppState::MainMenu) {
+                screens::main_menu::render(frame, app);
+                return;
+            }
+            if matches!(&app.state, AppState::CharacterCreation) {
+                screens::character_creation::render(frame, app);
+                return;
+            }
+            if matches!(&app.state, AppState::WorldMap) {
+                screens::world_map::render(frame, app);
+                return;
+            }
             if matches!(&app.state, AppState::Combat(_)) {
                 screens::combat::render(frame, app);
                 return;
@@ -64,6 +80,10 @@ impl GameRenderer for TuiRenderer {
             }
             if matches!(&app.state, AppState::Spellbook) {
                 screens::spellbook::render(frame, app);
+                return;
+            }
+            if matches!(&app.state, AppState::GameOver) {
+                screens::game_over::render(frame, app);
                 return;
             }
 
@@ -135,6 +155,9 @@ fn map_key(key: KeyEvent) -> GameEvent {
         KeyCode::Char('m') => GameEvent::OpenMap,
         KeyCode::Char('a') => GameEvent::Attack,
         KeyCode::Char('.') => GameEvent::Wait,
+        KeyCode::Char('p') => GameEvent::SaveGame,
+        KeyCode::Char('o') => GameEvent::LoadGame,
+        KeyCode::Char('b') => GameEvent::ToggleSound,
 
         // Dialog choices
         KeyCode::Char(c @ '1'..='9') => GameEvent::Choice(c as u8 - b'0'),

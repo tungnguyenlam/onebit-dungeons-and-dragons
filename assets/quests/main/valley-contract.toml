@@ -1,0 +1,24 @@
+id = "valley_contract"
+name = "Valley Contract"
+type = "main"
+
+[[stages]]
+id = "start"
+label = "Speak with Captain Kael"
+condition = ""
+journal_entry = "Captain Kael asked you to secure Ember Square."
+next = [{ condition = "flag:accept_demo_quest", stage = "clear_square" }]
+
+[[stages]]
+id = "clear_square"
+label = "Clear Ember Square"
+condition = "flag:accept_demo_quest"
+journal_entry = "You entered Ember Square to drive out goblins."
+next = [{ condition = "flag:won_first_combat", stage = "report_back" }]
+
+[[stages]]
+id = "report_back"
+label = "Report back to Captain Kael"
+condition = "flag:won_first_combat"
+journal_entry = "Return to Ash Gate and report your victory."
+next = [{ condition = "counter:faction_town_guard_rep >= 2", stage = "DONE" }]

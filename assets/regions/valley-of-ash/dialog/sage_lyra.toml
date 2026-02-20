@@ -1,0 +1,25 @@
+npc_id = "sage_lyra"
+
+[[nodes]]
+id = "root"
+text = "Ash remembers every oath. The old tablet still speaks."
+
+[[nodes.choices]]
+text = "What does it say?"
+condition = ""
+next = "tablet"
+
+[[nodes.choices]]
+text = "I should go."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "tablet"
+text = "It names a vault under the square and marks those who betray the valley."
+effect = [{ set_flag = "heard_tablet_warning" }]
+
+[[nodes.choices]]
+text = "I will remember."
+condition = ""
+next = "END"

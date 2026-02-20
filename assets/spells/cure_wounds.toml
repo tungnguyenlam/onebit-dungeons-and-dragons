@@ -1,0 +1,11 @@
+id = "cure_wounds"
+name = "Cure Wounds"
+level = 1
+school = "evocation"
+casting_time = "action"
+range = "touch"
+components = ["V", "S"]
+duration = "instantaneous"
+description = "Healing energy restores HP."
+heal = "1d8+2"
+classes = ["cleric"]

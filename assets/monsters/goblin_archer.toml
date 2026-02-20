@@ -1,0 +1,30 @@
+id = "goblin_archer"
+name = "Goblin Archer"
+cr = 0.25
+size = "small"
+monster_type = "humanoid"
+alignment = "neutral_evil"
+hp = "2d6"
+ac = 13
+speed = 30
+str_score = 8
+dex_score = 14
+con_score = 10
+int_score = 10
+wis_score = 8
+cha_score = 8
+xp = 50
+
+[[actions]]
+name = "Scimitar"
+description = "Melee attack"
+attack_bonus = 4
+damage = "1d6+2"
+damage_type = "slashing"
+
+[[actions]]
+name = "Shortbow"
+description = "Ranged attack"
+attack_bonus = 4
+damage = "1d6+2"
+damage_type = "piercing"

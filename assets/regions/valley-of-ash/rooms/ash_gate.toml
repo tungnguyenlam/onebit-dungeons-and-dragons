@@ -1,0 +1,20 @@
+id = "ash_gate"
+name = "Ash Gate"
+description = "A broken stone gate opens into the valley."
+grid = """
+##########
+#........#
+#..@..!..#
+#....+...#
+##########
+"""
+
+[[npcs]]
+id = "captain_kael"
+position = [3, 2]
+
+[[triggers]]
+position = [6, 2]
+type = "dialog"
+target_id = "captain_kael"
+once = false

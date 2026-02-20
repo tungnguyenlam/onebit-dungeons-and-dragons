@@ -1,0 +1,5 @@
+id = "sage_lyra"
+name = "Sage Lyra"
+monster_ref = ""
+faction = "scholars_circle"
+dialog_ref = "sage_lyra"
