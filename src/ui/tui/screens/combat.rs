@@ -150,7 +150,20 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     let start = ctx.log.len().saturating_sub(log_height);
     let log_lines: Vec<Line<'_>> = ctx.log[start..]
         .iter()
-        .map(|line| Line::from(line.clone()))
+        .map(|line| {
+            let style = if line.contains("CRITS") || line.contains("critical") {
+                Style::default().fg(theme::theme().warning).add_modifier(Modifier::BOLD)
+            } else if line.contains("miss") {
+                Style::default().fg(theme::theme().text_muted)
+            } else if line.contains("recovers") || line.contains("restoring") {
+                Style::default().fg(theme::theme().success)
+            } else if line.contains("drops to 0 HP") {
+                Style::default().fg(theme::theme().danger).add_modifier(Modifier::BOLD)
+            } else {
+                Style::default().fg(theme::theme().text_primary)
+            };
+            Line::from(line.clone()).style(style)
+        })
         .collect();
     let log = Paragraph::new(log_lines)
         .block(

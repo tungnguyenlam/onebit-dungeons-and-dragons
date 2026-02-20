@@ -2482,6 +2482,29 @@ mod tests {
     }
 
     #[test]
+    fn ash_gate_has_travel_trigger_to_ember_square() {
+        let app = App::new();
+        let room = app.region.room("ash_gate").expect("ash_gate room");
+        let travel = room
+            .triggers
+            .iter()
+            .find(|t| t.kind == TriggerKind::Travel)
+            .expect("travel trigger must exist");
+        assert_eq!(travel.target_id, "ember_square");
+    }
+
+    #[test]
+    fn world_map_travel_from_ash_gate_moves_to_ember_square() {
+        let mut app = App::new();
+        app.transition(AppState::WorldMap);
+        app.current_room_id = "ash_gate".into();
+        // Travel trigger position in ash_gate room.
+        app.player_pos = (5, 3);
+        app.handle_event(GameEvent::Confirm).unwrap();
+        assert_eq!(app.current_room_id, "ember_square");
+    }
+
+    #[test]
     fn world_map_trigger_transitions_into_combat() {
         let mut app = App::new();
         app.transition(AppState::WorldMap);

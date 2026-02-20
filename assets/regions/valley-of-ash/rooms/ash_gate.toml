@@ -18,3 +18,9 @@ position = [6, 2]
 type = "dialog"
 target_id = "captain_kael"
 once = false
+
+[[triggers]]
+position = [5, 3]
+type = "travel"
+target_id = "ember_square"
+once = false

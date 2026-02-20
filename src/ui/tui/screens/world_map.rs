@@ -1,4 +1,5 @@
 use crate::app::App;
+use crate::game::world::map::Tile;
 use crate::ui::tui::theme;
 use ratatui::{
     layout::{Constraint, Layout},
@@ -10,7 +11,7 @@ use ratatui::{
 
 pub fn render(frame: &mut Frame<'_>, app: &App) {
     let area = frame.area();
-    let chunks = Layout::vertical([Constraint::Length(4), Constraint::Min(8), Constraint::Length(5)])
+    let chunks = Layout::vertical([Constraint::Length(5), Constraint::Min(7), Constraint::Length(4)])
         .split(area);
 
     let header = Paragraph::new(vec![
@@ -45,7 +46,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
                 if (c, r) == app.player_pos {
                     line.push('@');
                 } else {
-                    line.push(room.grid.get(c, r).map(|t| t.glyph()).unwrap_or(' '));
+                    line.push(room.grid.get(c, r).map(render_map_glyph).unwrap_or(' '));
                 }
             }
             rows.push(Line::from(line));
@@ -80,4 +81,23 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         ),
         chunks[2],
     );
+}
+
+fn render_map_glyph(tile: Tile) -> char {
+    match tile {
+        // Avoid visual confusion with player marker '@'.
+        Tile::NpcSpawn => 'n',
+        _ => tile.glyph(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn npc_spawn_is_not_rendered_as_player_glyph() {
+        assert_eq!(render_map_glyph(Tile::NpcSpawn), 'n');
+        assert_eq!(render_map_glyph(Tile::Floor), '.');
+    }
 }

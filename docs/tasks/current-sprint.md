@@ -11,63 +11,44 @@
 
 ```
 Date:          2026-02-20
-Stopped at:    Milestone 13 complete
-Task in progress: Post-release stabilization and roadmap refresh
+Stopped at:    Milestone 14 complete
+Task in progress: Post-milestone maintenance (triage-driven)
 
 What was completed this session:
-  Milestone 12:
-    - src/ui/tui/theme.rs + src/ui/tui/mod.rs:
-      - added terminal capability-tier detection (`T0`..`T3`) and shared semantic theme tokens
-    - src/ui/tui/screens/{main_menu,world_map,combat,inventory,spellbook}.rs:
-      - improved readability and help overlays using semantic styles + icon fallback policy
-    - docs/architecture/ui-layer.md + docs/architecture/tui-visual-system.md + README.md:
-      - documented support matrix and visual fallback policy
-  Milestone 13:
-    - src/game/save/mod.rs + src/app.rs:
-      - added save format versioning (`format_version`) and legacy compatibility fallback
-    - src/data/loader.rs + scripts/profile_startup.sh:
-      - added startup/data-load profiling smoke pass
-    - scripts/release_check.sh + docs/releases/v0.1.0-internal.md:
-      - added consolidated release verification + release notes handoff
-  Milestone 11 carryover:
-    - src/app.rs + assets/regions/valley-of-ash/dialog/captain_kael.toml:
-      - completed faction-driven hostility/support and emergent event chain behavior
-    - tests:
-      - added event-chain and faction-driven behavior coverage in app tests
+  Milestone 14:
+    - assets/regions/valley-of-ash/rooms/ash_gate.toml:
+      - added travel trigger from `ash_gate` to `ember_square` to remove room-flow softlock
+    - src/ui/tui/screens/world_map.rs:
+      - expanded header/control layout to avoid clipping
+      - changed NPC spawn glyph rendering from `@` to `n` to reduce player-marker confusion
+      - added world-map glyph unit test
+    - src/ui/tui/screens/combat.rs:
+      - added lightweight combat feedback styling for miss/crit/heal/downed log lines
+    - src/app.rs tests:
+      - added `ash_gate` travel trigger presence + travel transition regression tests
+    - scripts/agent_tui_smoke.sh + docs/testing/tui-agent-smoke.md:
+      - added interactive/manual mode and token-efficient capture-oriented options
     - cargo test:
-      - 115 tests, 0 failures
-    - scripts/release_check.sh:
-      - passes (tests + content validation + profile smoke)
+      - 118 tests, 0 failures
 
 What is NOT done yet:
     - warning cleanup remains intentionally deferred (non-blocking, backlog policy; out of milestone scope)
-    - post-release bug triage/perf tracking pass has not started
+    - no defined milestones remain in backlog
     - GUI parity work remains deferred unless explicitly pulled into sprint scope
 
 Next action for the incoming agent:
-  1. Run post-release triage against internal feedback and convert top issues into backlog items.
-  2. Track performance regressions over time using `scripts/profile_startup.sh`.
-  3. Plan next content/system roadmap beyond M13 in `docs/tasks/backlog.md`.
+  1. Triage incoming playtest feedback and create issue-driven tasks (non-milestone).
+  2. Continue monitoring startup/load performance via `scripts/profile_startup.sh`.
+  3. Define the next milestone set once new product goals are agreed.
   4. Keep warning-only cleanup out of scope unless explicitly requested.
 
 Files modified this session:
-  src/ui/tui/theme.rs (new)
-  src/ui/tui/mod.rs
-  src/ui/tui/screens/main_menu.rs
+  assets/regions/valley-of-ash/rooms/ash_gate.toml
   src/ui/tui/screens/world_map.rs
   src/ui/tui/screens/combat.rs
-  src/ui/tui/screens/inventory.rs
-  src/ui/tui/screens/spellbook.rs
-  src/game/save/mod.rs
-  src/data/loader.rs
-  scripts/profile_startup.sh (new)
-  scripts/release_check.sh (new)
-  docs/releases/v0.1.0-internal.md (new)
-  docs/architecture/ui-layer.md
-  docs/architecture/tui-visual-system.md
-  README.md
-  assets/regions/valley-of-ash/dialog/captain_kael.toml
   src/app.rs
+  scripts/agent_tui_smoke.sh
+  docs/testing/tui-agent-smoke.md
   docs/tasks/backlog.md
   docs/tasks/done.md
   docs/tasks/current-sprint.md (this file)
@@ -79,17 +60,15 @@ Blockers: none
 
 ## Active Task
 
-### Task: Post-release stabilization and roadmap refresh
+### Task: Post-milestone maintenance (triage-driven)
 
 **Files to touch:**
-- `docs/tasks/backlog.md` — new post-M13 roadmap items
-- `docs/tasks/current-sprint.md` + `docs/tasks/done.md` — triage handoff updates
-- targeted `src/**` files for prioritized fixes found during internal triage
+- `docs/tasks/backlog.md` + `docs/tasks/current-sprint.md` + `docs/tasks/done.md` — feedback-driven planning updates
+- targeted `src/**` and `assets/**` files based on prioritized playtest findings
 
 **Done when:**
-- [ ] top post-release regressions are triaged and prioritized
-- [ ] performance tracking cadence is documented and repeatable
-- [ ] next roadmap slice beyond M13 is defined
+- [ ] triage priorities are documented and accepted
+- [ ] at least one top-priority regression is fixed and verified
 - [ ] `cargo test` passes
 
 **Blocked by:** none
@@ -97,7 +76,7 @@ Blockers: none
 **Relevant docs:**
 - [../DOCS_MAP.md](../DOCS_MAP.md)
 - [../AGENT.md](../AGENT.md)
-- [../decisions/adr-003-save-format.md](../decisions/adr-003-save-format.md)
+- [../architecture/ui-layer.md](../architecture/ui-layer.md)
 
 ---
 

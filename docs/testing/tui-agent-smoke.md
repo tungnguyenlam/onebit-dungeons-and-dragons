@@ -35,6 +35,9 @@ scripts/agent_verify.sh --with-smoke
 
 # Smoke-only flow
 scripts/agent_tui_smoke.sh
+
+# Interactive manual inspection mode (same binary, no scripted keys)
+scripts/agent_tui_smoke.sh --interactive
 ```
 
 Options:
@@ -51,10 +54,14 @@ scripts/agent_tui_smoke.sh --no-build
 
 # Override expect timeout (seconds)
 scripts/agent_tui_smoke.sh --timeout 180
+
+# Capture raw terminal output while running scripted flow
+scripts/agent_tui_smoke.sh --capture-log /tmp/dnd-tui.raw.log
 ```
 
 Environment:
 - `TUI_TIMEOUT` (default: `120`)
+- `TUI_RUSTFLAGS` (default: `-Awarnings`) to keep build output concise during smoke runs
 
 ---
 

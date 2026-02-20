@@ -8,6 +8,9 @@ TIMEOUT_SECONDS="${TUI_TIMEOUT:-120}"
 WITH_TESTS=0
 KEEP_SAVE=0
 NO_BUILD=0
+INTERACTIVE=0
+CAPTURE_LOG=""
+BUILD_RUSTFLAGS="${TUI_RUSTFLAGS:--Awarnings}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -23,13 +26,21 @@ while [[ $# -gt 0 ]]; do
       NO_BUILD=1
       shift
       ;;
+    --interactive)
+      INTERACTIVE=1
+      shift
+      ;;
+    --capture-log)
+      CAPTURE_LOG="$2"
+      shift 2
+      ;;
     --timeout)
       TIMEOUT_SECONDS="$2"
       shift 2
       ;;
     *)
       echo "Unknown option: $1"
-      echo "Usage: scripts/agent_tui_smoke.sh [--with-tests] [--keep-save] [--no-build] [--timeout <seconds>]"
+      echo "Usage: scripts/agent_tui_smoke.sh [--with-tests] [--keep-save] [--no-build] [--interactive] [--capture-log <file>] [--timeout <seconds>]"
       exit 2
       ;;
   esac
@@ -43,17 +54,28 @@ fi
 
 if [[ "$NO_BUILD" -eq 0 ]]; then
   echo "[agent-tui] Building binary..."
-  cargo build --quiet --bin dnd
+  RUSTFLAGS="$BUILD_RUSTFLAGS" cargo build --quiet --bin dnd
+fi
+
+if [[ "$INTERACTIVE" -eq 1 ]]; then
+  echo "[agent-tui] Interactive mode: launching ./target/debug/dnd --mode tui"
+  exec ./target/debug/dnd --mode tui
 fi
 
 rm -f saves/slot1.toml
 
 echo "[agent-tui] Running scripted TUI smoke flow..."
+export TUI_CAPTURE_LOG="$CAPTURE_LOG"
 TUI_TIMEOUT="$TIMEOUT_SECONDS" expect <<'EXPECT_EOF'
 set timeout $env(TUI_TIMEOUT)
 log_user 0
 
-spawn cargo run --quiet -- --mode tui
+if {[info exists env(TUI_CAPTURE_LOG)] && $env(TUI_CAPTURE_LOG) ne ""} {
+  # `script` captures full PTY output, which is better for later UI inspection.
+  spawn script -q $env(TUI_CAPTURE_LOG) ./target/debug/dnd --mode tui
+} else {
+  spawn ./target/debug/dnd --mode tui
+}
 
 # Main Menu -> Character Creation
 after 1100

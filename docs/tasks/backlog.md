@@ -146,3 +146,13 @@
 - [x] Performance and load/startup profiling pass
 - [x] Packaging + release notes + contributor/dev handoff quality
   - See [decisions/adr-003-save-format.md](../decisions/adr-003-save-format.md), [AGENT.md](../AGENT.md)
+
+## Milestone 14 — Playtest UX & Ash Gate Flow Fixes
+
+- [x] Fix `ash_gate` room-flow softlock with a deterministic outbound path (travel trigger and/or door semantics)
+- [x] Fix world-map header clipping so player identity/position/status lines are always visible
+- [x] Fix map rendering duplication for NPC spawn glyphs (avoid visual double-`@` confusion)
+- [x] Add lightweight combat feedback cues (hit/miss/crit/heal) with reduced-motion-safe fallback
+- [x] Improve information hierarchy and empty-state readability on inventory/spellbook/journal
+- [x] Add focused playtest regression tests for `ash_gate` exit flow and related UI rendering expectations
+  - See [gameplay/world.md](../gameplay/world.md), [architecture/ui-layer.md](../architecture/ui-layer.md), [architecture/tui-visual-system.md](../architecture/tui-visual-system.md)

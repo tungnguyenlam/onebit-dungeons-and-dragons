@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-02-20 — Milestone 14 (complete): Playtest UX & Ash Gate Flow Fixes
+
+- [x] `assets/regions/valley-of-ash/rooms/ash_gate.toml` — added deterministic travel trigger from `ash_gate` to `ember_square`
+- [x] `src/ui/tui/screens/world_map.rs` — fixed map readability issues:
+  - increased header space to avoid clipping player status line
+  - rendered NPC spawn tiles as `n` (not `@`) to avoid double-player glyph confusion
+  - added unit test for spawn glyph behavior
+- [x] `src/ui/tui/screens/combat.rs` — added lightweight visual feedback cues in combat log (hit/miss/crit/heal/downed styling)
+- [x] `src/app.rs` tests — added `ash_gate` travel regression tests (`trigger exists` + `travel moves to ember_square`)
+- [x] `scripts/agent_tui_smoke.sh` + `docs/testing/tui-agent-smoke.md` — added token-efficient interactive testing mode and capture flags for manual playtesting
+- [x] `cargo test` passes (118 tests, 0 failures)
+
 ## 2026-02-20 — Milestone 13 (complete): Release Readiness
 
 - [x] `src/game/save/mod.rs` + `src/app.rs` — save format versioning hardening (`format_version`) with legacy compatibility fallback
