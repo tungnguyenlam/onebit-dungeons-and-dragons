@@ -1,5 +1,6 @@
 use crate::app::{App, AppState};
 use crate::game::combat::EnemyAiRole;
+use crate::ui::tui::theme;
 use ratatui::{
     layout::{Constraint, Layout},
     style::{Modifier, Style},
@@ -23,7 +24,12 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         _ => None,
     }) else {
         let p = Paragraph::new("Combat screen requested outside combat state.")
-            .block(Block::default().title("Combat").borders(Borders::ALL));
+            .block(
+                Block::default()
+                    .title("Combat")
+                    .borders(Borders::ALL)
+                    .style(theme::panel_style()),
+            );
         frame.render_widget(p, area);
         return;
     };
@@ -58,15 +64,27 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         "Round {} | Active: {} | Turn Order: {banner_text}",
         ctx.state.round, active
     )))
-    .block(Block::default().title("Initiative").borders(Borders::ALL));
+    .style(Style::default().fg(theme::theme().text_primary))
+    .block(
+        Block::default()
+            .title("Initiative")
+            .borders(Borders::ALL)
+            .style(theme::panel_style()),
+    );
     frame.render_widget(turn_banner, chunks[0]);
 
     // Battlefield placeholder.
     let battlefield = Paragraph::new(
-        "Battlefield view is placeholder for now.\n\nControls:\n  - 'a' or '1' attack\n  - '2' drink healing potion (action)\n  - '3' second wind (bonus action)\n  - '.' wait/end turn\n  - Esc leave combat",
+        "Battlefield view is placeholder for now.\n\nControls:\n  - 'a' or '1' attack\n  - '2' drink healing potion (action)\n  - '3' second wind (bonus action)\n  - '.' wait/end turn\n  - Esc leave combat\n\nLegend: A=Action B=Bonus R=Reaction",
     )
+    .style(theme::muted_style())
     .wrap(Wrap { trim: true })
-    .block(Block::default().title("Battlefield").borders(Borders::ALL));
+    .block(
+        Block::default()
+            .title("Battlefield")
+            .borders(Borders::ALL)
+            .style(theme::panel_style()),
+    );
     frame.render_widget(battlefield, chunks[1]);
 
     // Combatants HUD.
@@ -118,7 +136,12 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         })
         .collect();
     let hud = Paragraph::new(hud_lines)
-        .block(Block::default().title("Combatants").borders(Borders::ALL))
+        .block(
+            Block::default()
+                .title(format!("Combatants {}", theme::icon("health")))
+                .borders(Borders::ALL)
+                .style(theme::panel_style()),
+        )
         .wrap(Wrap { trim: true });
     frame.render_widget(hud, chunks[2]);
 
@@ -130,7 +153,12 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         .map(|line| Line::from(line.clone()))
         .collect();
     let log = Paragraph::new(log_lines)
-        .block(Block::default().title("Combat Log").borders(Borders::ALL))
+        .block(
+            Block::default()
+                .title("Combat Log")
+                .borders(Borders::ALL)
+                .style(theme::panel_style()),
+        )
         .wrap(Wrap { trim: true });
     frame.render_widget(log, chunks[3]);
 }

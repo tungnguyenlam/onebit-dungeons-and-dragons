@@ -32,6 +32,9 @@ cargo test
 # Standard agent verification entry point
 scripts/agent_verify.sh
 
+# Full release-readiness check
+scripts/release_check.sh
+
 # Agent-run automated TUI smoke flow
 scripts/agent_tui_smoke.sh
 ```
@@ -164,6 +167,26 @@ For the detailed design see [docs/architecture/overview.md](docs/architecture/ov
 | M6 — First Region (Valley of Ash) | ✅ Done |
 | M7 — Polish & Save/Load | ✅ Done |
 | M8 — Stability & Engineering Debt | ✅ Done |
+| M9 — Core RPG Depth | ✅ Done |
+| M10 — Content Production Pipeline | ✅ Done |
+| M11 — NPC/Faction Simulation 2.0 | ✅ Done |
+| M12 — UX & Presentation Polish 2.0 | ✅ Done |
+| M13 — Release Readiness | ✅ Done |
+
+---
+
+## Terminal Support Matrix
+
+Runtime visual tier is auto-detected in TUI startup:
+
+| Tier | Capability | Policy |
+|---|---|---|
+| `T0` | ASCII-only / no color | ASCII icons + plain styling fallback |
+| `T1` | UTF-8 glyph support | Unicode icon fallback + minimal color |
+| `T2` | 256-color terminal | Semantic palette tokens enabled |
+| `T3` | Truecolor terminal | Full semantic palette enabled |
+
+Color/visual tokens are centralized in `src/ui/tui/theme.rs`.
 
 ---
 
@@ -205,3 +228,4 @@ For the detailed design see [docs/architecture/overview.md](docs/architecture/ov
 See [docs/AGENT.md](docs/AGENT.md) — the workflow applies equally to humans and AI agents.
 For doc synchronization rules, also see [docs/DOCS_MAP.md](docs/DOCS_MAP.md).
 For automated non-interactive TUI validation, see [docs/testing/tui-agent-smoke.md](docs/testing/tui-agent-smoke.md).
+Release notes: [docs/releases/v0.1.0-internal.md](docs/releases/v0.1.0-internal.md).

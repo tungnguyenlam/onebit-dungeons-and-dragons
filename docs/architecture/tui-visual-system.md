@@ -35,6 +35,9 @@ All visual features must map to one of these runtime tiers.
 Renderer startup should detect and cache the tier in UI state. Effects must use
 tier-aware fallbacks instead of failing.
 
+Implementation note:
+- current runtime detection + token wiring live in `src/ui/tui/theme.rs`.
+
 ---
 
 ## Color System
@@ -126,6 +129,10 @@ Related test entry point: [../testing/tui-agent-smoke.md](../testing/tui-agent-s
   accessibility toggles, and docs/README updates).
 
 Task source of truth: [../tasks/backlog.md](../tasks/backlog.md)
+
+Verification helpers:
+- `scripts/profile_startup.sh`
+- `scripts/release_check.sh`
 
 ---
 

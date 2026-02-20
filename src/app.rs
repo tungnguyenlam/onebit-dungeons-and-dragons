@@ -17,7 +17,7 @@ use crate::game::{
     },
     dice::DiceExpr,
     items::{armor::armor_class, equipment::EquipmentSlot},
-    save::{load_from_path, save_to_path, SaveGame},
+    save::{load_from_path, save_to_path, SaveGame, SAVE_FORMAT_VERSION},
     story::{
         dialog::{choose as dialog_choose, resolve as dialog_resolve, ResolvedNode},
         events::{inspect_lore, EventEngine, EventTrigger, WorldEvent},
@@ -854,6 +854,7 @@ impl App {
 
     fn save_to_default_path(&mut self) -> Result<()> {
         let save = SaveGame {
+            format_version: SAVE_FORMAT_VERSION,
             turn: self.turn,
             player: self.player.clone(),
             world_state: self.world_state.clone(),

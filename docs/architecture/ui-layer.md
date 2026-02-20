@@ -45,6 +45,9 @@ TUI screen modules define `fn render(f: &mut Frame, app: &App)`. They currently
 build layouts inline per screen; shared `layout.rs` and reusable `widgets/`
 modules are deferred to a later UI polish milestone.
 
+Semantic visual tokens and terminal capability-tier fallback are shared via
+`src/ui/tui/theme.rs` and consumed by screen modules.
+
 Most current screens split the terminal into a main panel and secondary info
 rows similar to:
 

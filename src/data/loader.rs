@@ -335,4 +335,20 @@ xp = 25
         assert!(quests.contains_key("dwarven_relic"));
         assert!(quests.contains_key("gnome_debt"));
     }
+
+    #[test]
+    fn profile_asset_load_smoke() {
+        let start = std::time::Instant::now();
+        let global = load_global_assets("assets").unwrap();
+        let _region = load_region("assets", "valley-of-ash").unwrap();
+        let elapsed = start.elapsed();
+        eprintln!(
+            "asset-load profile: {:?} (monsters={}, items={}, regions rooms={})",
+            elapsed,
+            global.monsters.len(),
+            global.items.len(),
+            2
+        );
+        assert!(elapsed < std::time::Duration::from_secs(5));
+    }
 }

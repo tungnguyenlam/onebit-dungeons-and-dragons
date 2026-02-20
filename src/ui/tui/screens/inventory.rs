@@ -1,4 +1,5 @@
 use crate::app::App;
+use crate::ui::tui::theme;
 use ratatui::{
     layout::{Constraint, Layout},
     text::Line,
@@ -11,13 +12,19 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     let chunks = Layout::vertical([Constraint::Length(7), Constraint::Min(10)]).split(area);
 
     let controls = Paragraph::new(vec![
-        Line::from("[1] Toggle longsword"),
+        Line::from(format!("[1] {} Toggle longsword", theme::icon("warning"))),
         Line::from("[2] Toggle leather armor"),
         Line::from("[3] Toggle shield"),
         Line::from("[4] Use healing potion (+8 HP)"),
         Line::from("Esc: close"),
     ])
-    .block(Block::default().title("Inventory Actions").borders(Borders::ALL));
+    .style(theme::muted_style())
+    .block(
+        Block::default()
+            .title("Inventory Actions")
+            .borders(Borders::ALL)
+            .style(theme::panel_style()),
+    );
     frame.render_widget(controls, chunks[0]);
 
     let mut lines = Vec::new();
@@ -39,6 +46,11 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
 
     let list = Paragraph::new(lines)
         .wrap(Wrap { trim: true })
-        .block(Block::default().title("Items").borders(Borders::ALL));
+        .block(
+            Block::default()
+                .title(format!("Items {}", theme::icon("quest")))
+                .borders(Borders::ALL)
+                .style(theme::panel_style()),
+        );
     frame.render_widget(list, chunks[1]);
 }

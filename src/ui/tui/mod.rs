@@ -6,6 +6,7 @@
 /// Sub-modules mirror the screen list from `docs/architecture/ui-layer.md`.
 // pub mod layout;
 pub mod screens;
+pub mod theme;
 // pub mod widgets;
 
 use crate::app::{App, AppState};
@@ -34,6 +35,7 @@ impl TuiRenderer {
     /// Initialise crossterm raw mode + alternate screen, then build the
     /// ratatui Terminal.
     pub fn new() -> Result<Self> {
+        let _ = theme::init_terminal_tier();
         enable_raw_mode()?;
         let mut stdout = io::stdout();
         execute!(stdout, EnterAlternateScreen)?;

@@ -1,4 +1,5 @@
 use crate::app::App;
+use crate::ui::tui::theme;
 use ratatui::{
     layout::{Constraint, Layout},
     text::Line,
@@ -11,14 +12,21 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     let chunks = Layout::vertical([Constraint::Length(5), Constraint::Min(8)]).split(area);
 
     let slots_line = format!(
-        "Slots L1: {}/{}",
+        "{} Slots L1: {}/{}",
+        theme::icon("magic"),
         app.player.spell_slots[0], app.player.spell_slots_max[0]
     );
     let header = Paragraph::new(vec![
         Line::from(slots_line),
         Line::from("Cast with [1]-[9], Esc to close"),
     ])
-    .block(Block::default().title("Spellbook").borders(Borders::ALL));
+    .style(theme::muted_style())
+    .block(
+        Block::default()
+            .title("Spellbook")
+            .borders(Borders::ALL)
+            .style(theme::panel_style()),
+    );
     frame.render_widget(header, chunks[0]);
 
     let mut lines = Vec::new();
@@ -40,6 +48,11 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
 
     let body = Paragraph::new(lines)
         .wrap(Wrap { trim: true })
-        .block(Block::default().title("Known Spells").borders(Borders::ALL));
+        .block(
+            Block::default()
+                .title("Known Spells")
+                .borders(Borders::ALL)
+                .style(theme::panel_style()),
+        );
     frame.render_widget(body, chunks[1]);
 }

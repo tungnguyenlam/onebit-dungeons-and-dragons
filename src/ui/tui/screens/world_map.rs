@@ -1,6 +1,8 @@
 use crate::app::App;
+use crate::ui::tui::theme;
 use ratatui::{
     layout::{Constraint, Layout},
+    style::Style,
     text::Line,
     widgets::{Block, Borders, Paragraph},
     Frame,
@@ -15,14 +17,24 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         Line::from(format!(
             "Region: {} ({})",
             app.region.name, app.region.slug
-        )),
+        ))
+        .style(theme::accent_style()),
         Line::from(format!("Room: {}", app.current_room_id)),
         Line::from(format!(
-            "Player: {} at ({}, {})",
-            app.player.name, app.player_pos.0, app.player_pos.1
+            "Player: {} {} at ({}, {})",
+            theme::icon("health"),
+            app.player.name,
+            app.player_pos.0,
+            app.player_pos.1
         )),
     ])
-    .block(Block::default().title("World").borders(Borders::ALL));
+    .style(Style::default().fg(theme::theme().text_primary))
+    .block(
+        Block::default()
+            .title("World")
+            .borders(Borders::ALL)
+            .style(theme::panel_style()),
+    );
     frame.render_widget(header, chunks[0]);
 
     let map_text = if let Some(room) = app.region.room(&app.current_room_id) {
@@ -44,7 +56,12 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     };
 
     frame.render_widget(
-        Paragraph::new(map_text).block(Block::default().title("Map").borders(Borders::ALL)),
+        Paragraph::new(map_text).block(
+            Block::default()
+                .title("Map")
+                .borders(Borders::ALL)
+                .style(theme::panel_style()),
+        ),
         chunks[1],
     );
 
@@ -54,7 +71,13 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             Line::from("a combat  i inventory  s spellbook  n journal"),
             Line::from("p save  o load  b toggle sound  q quit"),
         ])
-        .block(Block::default().title("Controls").borders(Borders::ALL)),
+        .style(theme::muted_style())
+        .block(
+            Block::default()
+                .title("Controls")
+                .borders(Borders::ALL)
+                .style(theme::panel_style()),
+        ),
         chunks[2],
     );
 }
