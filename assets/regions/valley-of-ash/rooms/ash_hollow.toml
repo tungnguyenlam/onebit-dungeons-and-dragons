@@ -1,28 +1,29 @@
-id = "ember_square"
-name = "Ember Square"
-description = "A quiet plaza of blackened tiles and old braziers."
+id = "ash_hollow"
+name = "Ash Hollow"
+description = "A sunken bowl clogged with still-warm cinders and old bones."
+terminal = false
 grid = """
 ##############
-#..!...!.....#
-#..@.........#
+#..@..!.....!#
+#............#
 #....v.......#
 #...........-#
-#............#
+#...........-#
 ##############
 """
 
 [[npcs]]
 id = "sage_lyra"
-position = [3, 2]
+position = [3, 1]
 
 [[triggers]]
-position = [3, 1]
+position = [6, 1]
 type = "lore"
 target_id = "ash_tablet"
 once = true
 
 [[triggers]]
-position = [7, 1]
+position = [11, 1]
 type = "encounter"
 target_id = "goblin"
 once = false
@@ -30,11 +31,11 @@ once = false
 [[triggers]]
 position = [5, 3]
 type = "travel"
-target_id = "ash_gate"
+target_id = "cinder_ridge"
 once = false
 
 [[triggers]]
 position = [12, 4]
 type = "travel"
-target_id = "cinder_ridge"
+target_id = "soot_shrine"
 once = false

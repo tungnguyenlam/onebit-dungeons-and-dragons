@@ -9,6 +9,8 @@ pub enum Category {
     World,
     Combat,
     Dialog,
+    /// M22: diagnostic/recovery messages from the quest runtime.
+    System,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -60,6 +62,10 @@ impl Journal {
             .collect();
         entries.sort_by_key(|e| std::cmp::Reverse(e.timestamp));
         entries
+    }
+
+    pub fn entries(&self) -> impl Iterator<Item = &JournalEntry> {
+        self.entries.iter()
     }
 }
 

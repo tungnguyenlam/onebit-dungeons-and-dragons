@@ -5,33 +5,21 @@
 
 ---
 
-## Planned Monsters (priority order)
+## Monster Roster
 
-| Slug | Name | CR | Type | AI Behaviour | Status |
+| Slug | Name | CR | Type | AI Role | Status |
 |---|---|---|---|---|---|
-| `goblin` | Goblin | 1/4 | Humanoid | skirmisher | 🔲 |
-| `skeleton` | Skeleton | 1/4 | Undead | brute | 🔲 |
-| `zombie` | Zombie | 1/4 | Undead | brute | 🔲 |
-| `city-guard` | City Guard | 1/8 | Humanoid | brute | 🔲 |
-| `bandit` | Bandit | 1/8 | Humanoid | skirmisher | 🔲 |
-| `wolf` | Wolf | 1/4 | Beast | brute | 🔲 |
-| `giant-spider` | Giant Spider | 1 | Beast | skirmisher | 🔲 |
-| `orc` | Orc | 1/2 | Humanoid | brute | 🔲 |
-| `hobgoblin` | Hobgoblin | 1/2 | Humanoid | brute | 🔲 |
-| `gnoll` | Gnoll | 1/2 | Humanoid | brute | 🔲 |
-| `dire-wolf` | Dire Wolf | 1 | Beast | brute | 🔲 |
-| `owlbear` | Owlbear | 3 | Monstrosity | brute | 🔲 |
-| `troll` | Troll | 5 | Giant | brute | 🔲 |
-| `bandit-king` | Bandit King | 4 | Humanoid | skirmisher | 🔲 |
-| `drow-warrior` | Drow Warrior | 2 | Humanoid | ranged | 🔲 |
-| `fire-elemental` | Fire Elemental | 5 | Elemental | brute | 🔲 |
+| `goblin` | Goblin | 1/4 | Humanoid | Melee | ✅ |
+| `goblin_archer` | Goblin Archer | 1/4 | Humanoid | Ranged | ✅ |
+| `goblin_shaman` | Goblin Shaman | 1/2 | Humanoid | Spellcaster | ✅ |
+| `orc_warrior` | Orc Warrior | 1/2 | Humanoid | Melee | ✅ M23 |
+| `orc_warchief` | Orc Warchief | 4 | Humanoid | Melee | ✅ M23 |
+| `ember_wraith` | Ember Wraith | 2 | Undead | Spellcaster | ✅ M23 |
+| `skeleton` | Skeleton | 1/4 | Undead | Melee | 🔲 planned |
+| `zombie` | Zombie | 1/4 | Undead | Melee | 🔲 planned |
+| `drow-warrior` | Drow Warrior | 2 | Humanoid | Ranged | 🔲 planned |
+| `fire-elemental` | Fire Elemental | 5 | Elemental | Melee | 🔲 planned |
+| `troll` | Troll | 5 | Giant | Melee | 🔲 planned |
 
----
+Status: 🔲 planned · ✅ complete
 
-## Notes
-
-- `city-guard` is the base for region NPCs like `guard-kael` (overridden via
-  `[overrides]` in the region's `npcs/<id>.toml`).
-- Named boss monsters (e.g. `bandit-king`) get unique dialog trees and may
-  have multiple combat phases (implement as separate action lists with HP
-  threshold triggers).

@@ -67,8 +67,16 @@ When you finish a task *or* must stop mid-task, **update the
 - Write the next concrete action for the incoming agent
 
 **Step 5 — Move completed tasks**  
-If you finished a full task: move it to [tasks/done.md](tasks/done.md)
-and pull the next item from [tasks/backlog.md](tasks/backlog.md).
+When you finish a full task:
+1. Prepend a completion record to [tasks/done.md](tasks/done.md)
+2. Mark the row ✅ in [tasks/backlog.md](tasks/backlog.md)
+3. Pull the next item: find its spec in [tasks/milestones/mXX.md](tasks/milestones/)
+4. Copy the spec's "Done When" criteria into the Active Task block of `current-sprint.md`
+
+> **File size discipline**: milestone specs live in  
+> `docs/tasks/milestones/mXX.md` — one file per milestone. An agent  
+> working on M27 only needs to open `milestones/m27.md`. The backlog  
+> is now just an index table (no inline specs after M24).
 
 ---
 

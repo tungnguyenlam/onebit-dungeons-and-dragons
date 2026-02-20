@@ -1,34 +1,34 @@
-id = "mine_entrance"
-name = "Mine Entrance"
-description = "Rusting rails vanish into darkness."
+id = "cinder_ridge"
+name = "Cinder Ridge"
+description = "A brittle escarpment overlooking the valley floor."
 grid = """
 ##############
 #..@..!......#
 #............#
 #....v.......#
+#....-......-#
 #...........-#
-#............#
 ##############
 """
 
 [[npcs]]
-id = "foreman_tarik"
+id = "captain_kael"
 position = [3, 1]
 
 [[triggers]]
 position = [6, 1]
 type = "dialog"
-target_id = "foreman_tarik"
+target_id = "captain_kael"
 once = false
 
 [[triggers]]
 position = [5, 3]
 type = "travel"
-target_id = "deep_shaft"
+target_id = "ember_square"
 once = false
 
 [[triggers]]
 position = [12, 4]
 type = "travel"
-target_id = "ore_chamber"
+target_id = "ash_hollow"
 once = false

@@ -12,6 +12,14 @@ file = "rooms/south_slope.toml"
 id = "obsidian_bridge"
 file = "rooms/obsidian_bridge.toml"
 
+[[rooms]]
+id = "lava_shelf"
+file = "rooms/lava_shelf.toml"
+
+[[rooms]]
+id = "peak_crater"
+file = "rooms/peak_crater.toml"
+
 [[connections]]
 from_room = "south_slope"
 to_region = "valley-of-ash"

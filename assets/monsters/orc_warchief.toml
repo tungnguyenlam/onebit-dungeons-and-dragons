@@ -1,0 +1,29 @@
+id = "orc_warchief"
+name = "Orc Warchief"
+cr = 4.0
+size = "medium"
+monster_type = "humanoid"
+alignment = "chaotic_evil"
+hp = "11d8+44"
+ac = 16
+speed = 30
+str_score = 20
+dex_score = 10
+con_score = 18
+int_score = 10
+wis_score = 10
+cha_score = 14
+xp = 1100
+
+[[actions]]
+name = "Greataxe"
+description = "Melee Weapon Attack"
+attack_bonus = 7
+damage = "1d12+5"
+damage_type = "slashing"
+
+[[actions]]
+name = "Orcish War Cry"
+description = "Rallies allies within 30ft (no damage)"
+attack_bonus = 0
+damage_type = "none"

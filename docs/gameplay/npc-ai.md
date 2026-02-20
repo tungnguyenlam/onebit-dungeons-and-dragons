@@ -61,13 +61,35 @@ flee_at_hp = 0.25           # fraction of max HP — flees if below this
 
 ---
 
-## AI Behaviour Types (Current Runtime)
+## AI Behaviour Types and Target Selection (`src/game/combat/ai.rs`)
 
-| Behaviour | Decision logic |
-|---|---|
-| `melee` | Uses base melee attack profile and nearest opposing target |
-| `ranged` | Prefers ranged profile and prioritizes lowest-HP opposing target |
-| `spellcaster` | Prefers spell profile (including on-hit condition if present) and lowest-HP target |
+> **M23:** AI is now in its own module `src/game/combat/ai.rs`.  
+> The `choose_target()` function selects the best target per role automatically
+> during each enemy turn.
+
+| Role (`EnemyAiRole`) | Target heuristic | Effect |
+|---|---|---|
+| `Melee` | Lowest player HP | Focus-fire / finish-off exposed targets |
+| `Ranged` | Highest player HP | Soften the toughest enemy over multiple rounds |
+| `Spellcaster` | Lowest player AC | Maximize hit probability for spell attacks |
+
+**Runtime path:** `app.rs` → `choose_target(&state, actor_id)` → returns `&str` target id  
+
+---
+
+## Encounter Tier (`EncounterTier`)
+
+Derived from the sum of all monster CR values in an encounter:
+
+| Tier | Total CR | Label |
+|---|---|---|
+| Trivial | ≤ 0.25 | "Trivial" |
+| Easy | ≤ 1.0 | "Easy" |
+| Medium | ≤ 3.0 | "Medium" |
+| Hard | ≤ 6.0 | "Hard" |
+| Deadly | > 6.0 | "Deadly" |
+
+Use `EncounterTier::from_total_cr(cr_sum)` and `.label()` for display.
 
 ---
 

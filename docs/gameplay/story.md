@@ -112,3 +112,25 @@ Quests are offered via dialog choices or world triggers. Accepting a quest:
 3. Appends the first journal entry to the journal.
 
 See → [dialog.md](dialog.md), [journal.md](journal.md)
+
+---
+
+## Quest Diagnostics (M22) (`QuestLog::blocked_quests`)
+
+When a quest is *active* but no transitions are satisfiable, it is **blocked**.
+
+```rust
+// Check all active quests for stuck states
+let blocked: Vec<QuestBlockedDiag> = quest_log.blocked_quests(&world_state);
+
+// Emit recovery hint entries into the journal
+let count = quest_log.emit_blocked_hints(&world_state, &mut journal, turn);
+```
+
+`QuestBlockedDiag` fields:
+- `quest_id` — which quest is stuck
+- `stage_id` — which stage it's blocked on
+- `reason: BlockedReason` — `NoSatisfiedTransition | MissingStage | MissingDef`
+
+Hints are written as `Category::System` journal entries visible in the **System** tab.  
+A stage with *no* `next` entries is a terminal stage, not stuck — it is not reported.

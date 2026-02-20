@@ -56,10 +56,11 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
 
 fn category_label(c: JournalCategory) -> &'static str {
     match c {
-        JournalCategory::Quest => "Quest",
-        JournalCategory::Lore => "Lore",
-        JournalCategory::World => "World",
+        JournalCategory::Quest  => "Quest",
+        JournalCategory::Lore   => "Lore",
+        JournalCategory::World  => "World",
         JournalCategory::Combat => "Combat",
         JournalCategory::Dialog => "Dialog",
+        JournalCategory::System => "System",
     }
 }

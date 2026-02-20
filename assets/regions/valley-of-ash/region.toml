@@ -12,6 +12,18 @@ file = "rooms/ash_gate.toml"
 id = "ember_square"
 file = "rooms/ember_square.toml"
 
+[[rooms]]
+id = "cinder_ridge"
+file = "rooms/cinder_ridge.toml"
+
+[[rooms]]
+id = "ash_hollow"
+file = "rooms/ash_hollow.toml"
+
+[[rooms]]
+id = "soot_shrine"
+file = "rooms/soot_shrine.toml"
+
 [[connections]]
 from_room = "ember_square"
 to_region = "valley-of-ash"

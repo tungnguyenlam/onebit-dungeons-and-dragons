@@ -11,47 +11,52 @@
 
 ```
 Date:          2026-02-21
-Completed:     Milestones 16-19 — Reliability, UX readability, consistency guards, and soak automation
+Completed:     Milestones 20-24 — Save hardening, region depth, quest robustness,
+               combat AI, and release pipeline
 
 Tasks completed:
-  - ✅ `cargo run -- --validate-assets` and `scripts/validate_assets.sh` entrypoints added with room/dialog/quest graph checks
-  - ✅ room traversal reliability checks cover blocked trigger tiles, missing travel targets, and unreachable rooms
-  - ✅ combat screen now includes concise timeline strip + last-turn summary panel
-  - ✅ reduced-motion-aware combat feedback styling hooks added
-  - ✅ dialog runtime now emits explicit blocked-path feedback instead of silent no-op
-  - ✅ long-session soak mode added to `scripts/agent_tui_smoke.sh` (`--soak --profile standard --minutes`)
-  - ✅ CI workflow runs asset validation and short PR soak profile
-  - ✅ milestone completion checklist template added for future handoffs
+  M20 — Save/State Drift Hardening
+  - ✅ SaveGame invariant checks + SaveDriftReport in src/game/save/mod.rs
+  - ✅ --validate-save <path> CLI flag in src/main.rs
+  - ✅ CI gate: cargo test save roundtrip suite
 
-Next: Pull next roadmap milestone after M19
+  M21 — Region Navigation Depth
+  - ✅ valley-of-ash expanded: cinder_ridge, ash_hollow, soot_shrine (+3 rooms)
+  - ✅ emberpeak-summit expanded: lava_shelf, peak_crater (+2 rooms)
+  - ✅ ironhold-mines expanded: ore_chamber, flooded_pit (+2 rooms)
+  - ✅ RoomDef.terminal field added (types.rs, room.rs, region.rs)
+  - ✅ validate.rs: reachability BFS + min-2-rooms + branching checks
+  - ✅ 3 new validate tests: all_regions_have_multiple_rooms,
+       all_rooms_reachable_from_entry, regions_have_branching_paths
+
+  M22 — Quest Runtime Robustness
+  - ✅ QuestLog::blocked_quests() — detects stuck active stages
+  - ✅ QuestLog::emit_blocked_hints() — writes Category::System journal entries
+  - ✅ Category::System added to journal (journal.rs, app.rs, ui/screens/journal.rs)
+  - ✅ 5 new quest tests
+
+  M23 — Combat Depth Pass
+  - ✅ src/game/combat/ai.rs (new): EnemyAiRole focus-fire targeting,
+       EncounterTier CR classifier
+  - ✅ 3 new monster assets: orc_warrior, orc_warchief, ember_wraith
+  - ✅ 9 new AI tests
+
+  M24 — Release Candidate Pipeline
+  - ✅ scripts/rc_check.sh (new): tiered T1/T2/T3 RC gate script
+  - ✅ .github/workflows/rust.yml restructured: fast / slow / release jobs
+
+Tests at close: 146 passed, 0 failed
+
+Next for incoming agent:
+  - Pull M25+ from backlog.md
+  - Run cargo check && cargo test to confirm clean state
 ```
 
 ---
 
 ## Active Task
 
-### Task: Milestone 20 — Save/State Drift Hardening
-
-**Files to touch:**
-- `src/game/save/`
-- `src/app.rs`
-- `src/main.rs`
-- `.github/workflows/`
-- `docs/tasks/`
-
-**Done when:**
-- [ ] save/load invariant drift checks are implemented and tested
-- [ ] `--validate-save <path>` command works
-- [ ] CI runs save/load roundtrip coverage
-- [ ] handoff + done/backlog docs are synced
-
-**Blocked by:** none
-
-**Relevant docs:**
-- [../DOCS_MAP.md](../DOCS_MAP.md)
-- [../AGENT.md](../AGENT.md)
-- [backlog.md](backlog.md)
-- [milestone-checklist-template.md](milestone-checklist-template.md)
+*(No active task — M20-M24 complete. Pull next item from backlog.md.)*
 
 ---
 

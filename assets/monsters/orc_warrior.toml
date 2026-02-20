@@ -1,0 +1,23 @@
+id = "orc_warrior"
+name = "Orc Warrior"
+cr = 0.5
+size = "medium"
+monster_type = "humanoid"
+alignment = "chaotic_evil"
+hp = "2d8+4"
+ac = 13
+speed = 30
+str_score = 16
+dex_score = 10
+con_score = 14
+int_score = 8
+wis_score = 8
+cha_score = 8
+xp = 100
+
+[[actions]]
+name = "Greataxe"
+description = "Melee Weapon Attack"
+attack_bonus = 5
+damage = "1d12+3"
+damage_type = "slashing"

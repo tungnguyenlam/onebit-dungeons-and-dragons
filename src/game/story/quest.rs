@@ -5,6 +5,10 @@ use crate::{
 };
 use std::collections::HashMap;
 
+// ---------------------------------------------------------------------------
+// Public types
+// ---------------------------------------------------------------------------
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum QuestStatus {
     Active { stage_id: String },
@@ -12,9 +16,32 @@ pub enum QuestStatus {
     Failed { stage_id: String },
 }
 
+/// Reason a quest stage cannot advance.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum BlockedReason {
+    /// The active stage exists but none of its transitions are satisfied.
+    NoSatisfiedTransition,
+    /// The active stage references a stage id that doesn't exist in the definition.
+    MissingStage(String),
+    /// The quest definition itself is missing from the log.
+    MissingDef,
+}
+
+/// Diagnostic snapshot for a blocked quest.
+#[derive(Debug, Clone)]
+pub struct QuestBlockedDiag {
+    pub quest_id:  String,
+    pub stage_id:  String,
+    pub reason:    BlockedReason,
+}
+
+// ---------------------------------------------------------------------------
+// QuestLog
+// ---------------------------------------------------------------------------
+
 #[derive(Debug, Clone, Default)]
 pub struct QuestLog {
-    pub defs: HashMap<String, QuestDef>,
+    pub defs:   HashMap<String, QuestDef>,
     pub states: HashMap<String, QuestStatus>,
 }
 
@@ -117,6 +144,94 @@ impl QuestLog {
         }
         false
     }
+
+    // -----------------------------------------------------------------------
+    // M22: diagnostics + recovery
+    // -----------------------------------------------------------------------
+
+    /// Return diagnostics for every active quest that cannot advance.
+    ///
+    /// A quest is "blocked" when its active stage has transitions defined but
+    /// none are currently satisfiable — usually because a required world-state
+    /// flag was never set.  This does NOT consider quests whose current stage
+    /// has NO transitions at all (those are terminal stages, not stuck quests).
+    pub fn blocked_quests(&self, world: &WorldState) -> Vec<QuestBlockedDiag> {
+        let mut out = Vec::new();
+        for (quest_id, status) in &self.states {
+            let QuestStatus::Active { stage_id } = status else {
+                continue;
+            };
+            let Some(def) = self.defs.get(quest_id.as_str()) else {
+                out.push(QuestBlockedDiag {
+                    quest_id:  quest_id.clone(),
+                    stage_id:  stage_id.clone(),
+                    reason:    BlockedReason::MissingDef,
+                });
+                continue;
+            };
+            let Some(stage) = def.stages.iter().find(|s| s.id == *stage_id) else {
+                out.push(QuestBlockedDiag {
+                    quest_id:  quest_id.clone(),
+                    stage_id:  stage_id.clone(),
+                    reason:    BlockedReason::MissingStage(stage_id.clone()),
+                });
+                continue;
+            };
+            // A stage with no `next` entries is terminal — not blocked.
+            if stage.next.is_empty() {
+                continue;
+            }
+            // Has transitions but none are satisfied right now.
+            let any_satisfied = stage.next.iter().any(|t| world.evaluate(&t.condition));
+            if !any_satisfied {
+                out.push(QuestBlockedDiag {
+                    quest_id:  quest_id.clone(),
+                    stage_id:  stage_id.clone(),
+                    reason:    BlockedReason::NoSatisfiedTransition,
+                });
+            }
+        }
+        out
+    }
+
+    /// Write a journal recovery hint for every currently blocked quest.
+    ///
+    /// Emits one `Category::System` entry per blocked quest so the player
+    /// gets actionable feedback in the log.  Returns the number of hints added.
+    pub fn emit_blocked_hints(
+        &mut self,
+        world: &WorldState,
+        journal: &mut Journal,
+        turn: u64,
+    ) -> usize {
+        let blocked = self.blocked_quests(world);
+        let count = blocked.len();
+        for diag in &blocked {
+            let message = match &diag.reason {
+                BlockedReason::NoSatisfiedTransition => format!(
+                    "[Quest hint] '{}' is stuck at stage '{}'. Check if you have completed the required objectives.",
+                    diag.quest_id, diag.stage_id
+                ),
+                BlockedReason::MissingStage(s) => format!(
+                    "[Quest error] '{}' references unknown stage '{s}'. This may be a content bug.",
+                    diag.quest_id
+                ),
+                BlockedReason::MissingDef => format!(
+                    "[Quest error] Quest '{}' is active but its definition is missing.",
+                    diag.quest_id
+                ),
+            };
+            journal.append(
+                format!("quest-hint-{}-{}", diag.quest_id, turn),
+                turn,
+                Category::System,
+                Some(diag.quest_id.clone()),
+                "Quest Hint".to_string(),
+                message,
+            );
+        }
+        count
+    }
 }
 
 fn apply_effects(effects: &[DialogEffect], world: &mut WorldState) {
@@ -204,5 +319,75 @@ mod tests {
             Some(QuestStatus::Completed { .. })
         ));
         assert!(ws.flag("quest_q1_completed"));
+    }
+
+    // M22 tests ---------------------------------------------------------------
+
+    #[test]
+    fn blocked_quest_detected_when_no_transition_satisfied() {
+        let mut log = QuestLog::with_defs(vec![sample()]);
+        let mut ws = WorldState::new();
+        let mut j = Journal::default();
+        log.accept_quest("q1", &mut ws, &mut j, 1);
+        // "go" flag NOT set → transition cannot fire → quest is blocked
+        let blocked = log.blocked_quests(&ws);
+        assert_eq!(blocked.len(), 1);
+        assert_eq!(blocked[0].quest_id, "q1");
+        assert_eq!(blocked[0].reason, BlockedReason::NoSatisfiedTransition);
+    }
+
+    #[test]
+    fn not_blocked_when_transition_satisfiable() {
+        let mut log = QuestLog::with_defs(vec![sample()]);
+        let mut ws = WorldState::new();
+        let mut j = Journal::default();
+        log.accept_quest("q1", &mut ws, &mut j, 1);
+        ws.set_flag("go"); // satisfies the transition
+        let blocked = log.blocked_quests(&ws);
+        assert!(blocked.is_empty());
+    }
+
+    #[test]
+    fn completed_quest_not_reported_as_blocked() {
+        let mut log = QuestLog::with_defs(vec![sample()]);
+        let mut ws = WorldState::new();
+        let mut j = Journal::default();
+        log.accept_quest("q1", &mut ws, &mut j, 1);
+        ws.set_flag("go");
+        log.tick_quest("q1", &mut ws, &mut j, 2);
+        ws.set_flag("done");
+        log.tick_quest("q1", &mut ws, &mut j, 3);
+        let blocked = log.blocked_quests(&ws);
+        assert!(blocked.is_empty());
+    }
+
+    #[test]
+    fn emit_blocked_hints_adds_journal_entries() {
+        let mut log = QuestLog::with_defs(vec![sample()]);
+        let mut ws = WorldState::new();
+        let mut j = Journal::default();
+        log.accept_quest("q1", &mut ws, &mut j, 1);
+        // Don't set "go" → quest is stuck
+        let count = log.emit_blocked_hints(&ws, &mut j, 2);
+        assert_eq!(count, 1);
+        // Journal should have an entry tagged System for the hint
+        let entries: Vec<_> = j.entries().collect();
+        let has_hint = entries.iter().any(|e| {
+            e.category == Category::System && e.body.contains("stuck")
+        });
+        assert!(has_hint);
+    }
+
+    #[test]
+    fn no_hints_emitted_when_no_blocked_quests() {
+        let mut log = QuestLog::with_defs(vec![sample()]);
+        let mut ws = WorldState::new();
+        let mut j = Journal::default();
+        log.accept_quest("q1", &mut ws, &mut j, 1);
+        ws.set_flag("go"); // not blocked
+        let before = j.entries().count();
+        let count = log.emit_blocked_hints(&ws, &mut j, 2);
+        assert_eq!(count, 0);
+        assert_eq!(j.entries().count(), before);
     }
 }

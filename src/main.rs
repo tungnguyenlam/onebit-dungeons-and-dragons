@@ -33,6 +33,9 @@ struct Cli {
     /// Validate content assets and exit (no renderer loop).
     #[arg(long, default_value_t = false)]
     validate_assets: bool,
+    /// Validate a save file and exit.  Exits non-zero on structural errors.
+    #[arg(long)]
+    validate_save: Option<std::path::PathBuf>,
 }
 
 #[derive(Debug, Clone, ValueEnum)]
@@ -63,6 +66,26 @@ fn main() -> Result<()> {
         }
         println!("asset validation passed ({} warning(s))", report.warnings.len());
         return Ok(());
+    }
+
+    if let Some(save_path) = &cli.validate_save {
+        use game::save::validate_save_file;
+        match validate_save_file(save_path) {
+            Ok(report) => {
+                for warn in &report.warnings {
+                    eprintln!("[warn] {warn}");
+                }
+                println!(
+                    "save validation passed ({} warning(s)): {}",
+                    report.warnings.len(),
+                    save_path.display()
+                );
+                return Ok(());
+            }
+            Err(e) => {
+                anyhow::bail!("{e}");
+            }
+        }
     }
 
     let app = App::new();

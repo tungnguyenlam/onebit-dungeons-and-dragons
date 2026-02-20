@@ -1,0 +1,27 @@
+id = "ember_wraith"
+name = "Ember Wraith"
+cr = 2.0
+size = "medium"
+monster_type = "undead"
+alignment = "neutral_evil"
+hp = "5d8+5"
+ac = 13
+speed = 40
+str_score = 6
+dex_score = 14
+con_score = 12
+int_score = 14
+wis_score = 12
+cha_score = 14
+xp = 450
+
+[[actions]]
+name = "Withering Grasp"
+description = "Melee Spell Attack"
+attack_bonus = 4
+damage = "2d8+2"
+damage_type = "necrotic"
+
+[[traits]]
+name = "Incorporeal Movement"
+description = "Can move through other creatures and objects as difficult terrain."

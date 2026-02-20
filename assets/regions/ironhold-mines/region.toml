@@ -12,6 +12,14 @@ file = "rooms/mine_entrance.toml"
 id = "deep_shaft"
 file = "rooms/deep_shaft.toml"
 
+[[rooms]]
+id = "ore_chamber"
+file = "rooms/ore_chamber.toml"
+
+[[rooms]]
+id = "flooded_pit"
+file = "rooms/flooded_pit.toml"
+
 [[connections]]
 from_room = "mine_entrance"
 to_region = "emberpeak-summit"

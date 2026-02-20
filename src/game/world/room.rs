@@ -27,6 +27,8 @@ pub struct Room {
     pub items:       Vec<RoomItem>,
     /// Trigger zones (dialog, encounter, lore, quest_stage, travel).
     pub triggers:    Vec<TriggerDef>,
+    /// When true this is a deliberate dead-end; no outbound travel trigger required.
+    pub terminal:    bool,
 }
 
 impl Room {
@@ -43,6 +45,7 @@ impl Room {
             npcs:        def.npcs.clone(),
             items:       def.items.clone(),
             triggers:    def.triggers.clone(),
+            terminal:    def.terminal,
         }
     }
 
@@ -82,6 +85,7 @@ mod tests {
             name:        "Test Room".into(),
             description: "A room for testing.".into(),
             grid:        "##########\n#........#\n#..@..!..#\n#........#\n##########\n".into(),
+            terminal:    false,
             npcs: vec![RoomNpc { id: "guard".into(), position: [3, 2] }],
             items: vec![],
             triggers: vec![TriggerDef {

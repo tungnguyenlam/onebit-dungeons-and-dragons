@@ -1693,21 +1693,23 @@ impl App {
 
 fn next_category(c: JournalCategory) -> JournalCategory {
     match c {
-        JournalCategory::Quest => JournalCategory::Lore,
-        JournalCategory::Lore => JournalCategory::World,
-        JournalCategory::World => JournalCategory::Combat,
+        JournalCategory::Quest  => JournalCategory::Lore,
+        JournalCategory::Lore   => JournalCategory::World,
+        JournalCategory::World  => JournalCategory::Combat,
         JournalCategory::Combat => JournalCategory::Dialog,
-        JournalCategory::Dialog => JournalCategory::Quest,
+        JournalCategory::Dialog => JournalCategory::System,
+        JournalCategory::System => JournalCategory::Quest,
     }
 }
 
 fn prev_category(c: JournalCategory) -> JournalCategory {
     match c {
-        JournalCategory::Quest => JournalCategory::Dialog,
-        JournalCategory::Lore => JournalCategory::Quest,
-        JournalCategory::World => JournalCategory::Lore,
+        JournalCategory::Quest  => JournalCategory::System,
+        JournalCategory::Lore   => JournalCategory::Quest,
+        JournalCategory::World  => JournalCategory::Lore,
         JournalCategory::Combat => JournalCategory::World,
         JournalCategory::Dialog => JournalCategory::Combat,
+        JournalCategory::System => JournalCategory::Dialog,
     }
 }
 
@@ -1757,6 +1759,7 @@ fn sample_region_bundle() -> (Region, HashMap<String, NpcDef>, HashMap<String, D
                     name: "Start".into(),
                     description: "Fallback room".into(),
                     grid: "#####\n#...#\n#.@.#\n#####\n".into(),
+                    terminal: false,
                     npcs: vec![],
                     items: vec![],
                     triggers: vec![],

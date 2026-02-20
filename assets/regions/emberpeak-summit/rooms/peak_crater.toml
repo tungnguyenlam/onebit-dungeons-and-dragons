@@ -1,0 +1,29 @@
+id = "peak_crater"
+name = "Peak Crater"
+description = "A collapsed caldera still belching thin sulfur wisps."
+terminal = true
+grid = """
+##############
+#.....!......#
+#..@.........#
+#........v...#
+#............#
+#............#
+##############
+"""
+
+[[npcs]]
+id = "archivist_nyra"
+position = [3, 2]
+
+[[triggers]]
+position = [6, 1]
+type = "lore"
+target_id = "ember_rune"
+once = true
+
+[[triggers]]
+position = [9, 3]
+type = "travel"
+target_id = "lava_shelf"
+once = false

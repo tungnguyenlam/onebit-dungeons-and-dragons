@@ -102,6 +102,7 @@ mod tests {
             name:        "Start Room".into(),
             description: "The beginning.".into(),
             grid:        "#####\n#...#\n#####\n".into(),
+            terminal:    false,
             npcs:        vec![],
             items:       vec![],
             triggers:    vec![],

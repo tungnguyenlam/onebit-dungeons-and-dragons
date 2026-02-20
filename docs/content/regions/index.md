@@ -43,7 +43,8 @@ docs/content/regions/<slug>.md   ← author notes, not required for code
 
 **Tone:** Desolate post-war wasteland. Ash drifts constantly.  
 **Entry point:** The Ash Gate — a ruined city gate, 1 guard NPC (Kael).  
-**Key rooms:** Ash Gate · Ash Plain · Burned Village · Bandit Outpost  
+**Key rooms (M21):** Ash Gate · Ember Square · Cinder Ridge · Ash Hollow · Soot Shrine  
+**Branching:** Ember Square → Ash Gate (main) or → Cinder Ridge (side branch)  
 **Main quest tie-in:** Act 1 starts here (The Bandit King)  
 **Region-specific faction:** Ash Bandits (initially hostile)
 
@@ -51,7 +52,8 @@ docs/content/regions/<slug>.md   ← author notes, not required for code
 
 **Tone:** Cold, volcanic, thin air. Dwarf ruins.  
 **Entry point:** South Slope from valley.  
-**Key rooms:** South Slope · Obsidian Bridge · Summit Crater · Dwarven Vault  
+**Key rooms (M21):** Obsidian Bridge · South Slope · Summit Crater · Lava Shelf · Peak Crater  
+**Branching:** South Slope → Obsidian Bridge (main) or → Lava Shelf (side branch)  
 **Main quest tie-in:** Act 2 — source of the volcanic curse  
 **Region-specific faction:** Emberpeak Dwarves (neutral → friendly via quests)
 
@@ -59,7 +61,8 @@ docs/content/regions/<slug>.md   ← author notes, not required for code
 
 **Tone:** Dark, claustrophobic. Echoing pickaxes, distant growls.  
 **Entry point:** Mine Entrance from summit.  
-**Key rooms:** Mine Entrance · Cart Tunnel · Deep Shaft · The Sump  
+**Key rooms (M21):** Mine Entrance · Deep Shaft · Ore Chamber · Flooded Pit  
+**Branching:** Mine Entrance → Deep Shaft (main) or → Ore Chamber (side branch)  
 **Main quest tie-in:** Act 2 — bandit king's treasure is hidden here  
 **Region-specific faction:** Deep Gnomes (neutral)
 

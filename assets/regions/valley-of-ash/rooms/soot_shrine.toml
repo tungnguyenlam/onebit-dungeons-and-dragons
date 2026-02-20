@@ -1,0 +1,29 @@
+id = "soot_shrine"
+name = "Soot Shrine"
+description = "A forgotten altar buried under decades of volcanic ash."
+terminal = true
+grid = """
+##############
+#.....!......#
+#..@.........#
+#........v...#
+#............#
+#............#
+##############
+"""
+
+[[npcs]]
+id = "sage_lyra"
+position = [3, 2]
+
+[[triggers]]
+position = [6, 1]
+type = "lore"
+target_id = "ash_tablet"
+once = true
+
+[[triggers]]
+position = [9, 3]
+type = "travel"
+target_id = "ash_hollow"
+once = false
