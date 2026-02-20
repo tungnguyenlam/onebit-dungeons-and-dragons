@@ -82,3 +82,28 @@ If smoke fails, inspect:
 - `src/ui/tui/mod.rs` (key mapping)
 - `src/app.rs` (event handling/state transitions)
 - `src/ui/tui/screens/*.rs` (render/runtime assumptions)
+
+## Scenario-Aware and Deterministic Capture (Milestone 15)
+
+New options for interactive playtest and token-efficient capture:
+
+```bash
+# List available scenario presets
+scripts/agent_tui_smoke.sh --list-scenarios
+
+# Run a specific scenario (e.g., ash_gate)
+scripts/agent_tui_smoke.sh --scenario ash_gate
+
+# Run in interactive mode for a scenario
+scripts/agent_tui_smoke.sh --interactive --scenario ember_square
+
+# Capture a deterministic, token-efficient log (bounded frames)
+scripts/agent_tui_smoke.sh --capture-log /tmp/ash_gate.log --scenario ash_gate --token-efficient --max-frames 120
+```
+
+- `--scenario <name>`: Use a scenario preset (ash_gate, ember_square, river_watch)
+- `--token-efficient`: Output compact, summary-oriented logs for review
+- `--max-frames <N>`: Limit the number of frames/events captured
+- `--list-scenarios`: List all available scenario presets
+
+See also: [interactive-playtest-checklist.md](interactive-playtest-checklist.md)

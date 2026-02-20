@@ -156,3 +156,124 @@
 - [x] Improve information hierarchy and empty-state readability on inventory/spellbook/journal
 - [x] Add focused playtest regression tests for `ash_gate` exit flow and related UI rendering expectations
   - See [gameplay/world.md](../gameplay/world.md), [architecture/ui-layer.md](../architecture/ui-layer.md), [architecture/tui-visual-system.md](../architecture/tui-visual-system.md)
+
+## Milestone 15 — Interactive Playtest Harness (Token-Efficient)
+
+- [ ] Add scenario-aware interactive playtest runner presets for critical rooms (`ash_gate`, `ember_square`, `river_watch`)
+- [ ] Add deterministic capture mode (bounded ticks, compact summaries, key-event snapshots)
+- [ ] Add playtest report schema (`docs/testing/reports/*.md`) for UI/readability/animation findings
+- [ ] Expand manual testing guidance to require before/after evidence for UX changes
+  - See [testing/tui-agent-smoke.md](../testing/tui-agent-smoke.md), [architecture/ui-layer.md](../architecture/ui-layer.md)
+- Scope boundary:
+  - No new gameplay mechanics; tooling + observability only
+- Target files/modules:
+  - `scripts/agent_tui_smoke.sh`
+  - `docs/testing/tui-agent-smoke.md`
+  - `docs/testing/interactive-playtest-checklist.md` (new)
+- Done when:
+  - [ ] `./scripts/agent_tui_smoke.sh --interactive --scenario ash_gate --token-efficient` works and is documented
+  - [ ] `./scripts/agent_tui_smoke.sh --capture --scenario ash_gate --max-frames 120` generates compact artifact output
+  - [ ] A sample report exists for one full `ash_gate` escape run
+- Verification commands:
+  - `cargo test`
+  - `./scripts/agent_tui_smoke.sh --list-scenarios`
+  - `./scripts/agent_tui_smoke.sh --capture --scenario ash_gate --max-frames 120 --token-efficient`
+- Risks / non-goals:
+  - Risk: capture growth becomes noisy; mitigate with strict line/frame caps
+  - Non-goal: screenshot-perfect visual diffing
+
+## Milestone 16 — Room/Traversal Reliability Sweep
+
+- [ ] Validate every region room for at least one deterministic outbound path
+- [ ] Add asset validation checks for missing exits/triggers and unreachable mandatory quest rooms
+- [ ] Add regression tests for travel transitions and map load fallbacks
+  - See [gameplay/world.md](../gameplay/world.md), [content/map-format.md](../content/map-format.md)
+- Scope boundary:
+  - Reliability only; no region lore/content expansion
+- Target files/modules:
+  - `assets/regions/**/rooms/*.toml`
+  - `src/game/world/`
+  - `src/app.rs` integration tests
+  - `scripts/validate_assets.sh` (if present) or new validator entrypoint
+- Done when:
+  - [ ] validator fails on rooms with no exits/triggers unless explicitly marked terminal
+  - [ ] automated test covers transition out of each critical path room in current regions
+  - [ ] `ash_gate` remains covered with a dedicated regression test
+- Verification commands:
+  - `cargo test`
+  - `cargo run -- --validate-assets`
+- Risks / non-goals:
+  - Risk: false positives for intentional dead-end puzzle rooms; mitigate with explicit opt-out flag in room data
+  - Non-goal: redesigning map topology
+
+## Milestone 17 — Combat UX Readability and Pacing
+
+- [ ] Improve combat log prioritization (last-turn summary + key event highlighting)
+- [ ] Add concise timeline strip (initiative + current actor clarity)
+- [ ] Tighten animation pacing with reduced-motion parity checks
+- [ ] Expand test coverage for combat feedback rendering paths
+  - See [gameplay/combat.md](../gameplay/combat.md), [architecture/tui-visual-system.md](../architecture/tui-visual-system.md)
+- Scope boundary:
+  - Presentation and pacing only; balance changes deferred
+- Target files/modules:
+  - `src/ui/tui/screens/combat.rs`
+  - `src/ui/tui/animation/`
+  - `src/game/combat/` tests touching event formatting
+- Done when:
+  - [ ] critical events (hit/miss/crit/downed/heal/status) are visible within 1 screen without scroll
+  - [ ] reduced-motion mode preserves full semantic feedback
+  - [ ] no frame-budget regressions beyond agreed threshold in docs
+- Verification commands:
+  - `cargo test`
+  - `./scripts/agent_tui_smoke.sh --capture --scenario combat_baseline --max-frames 180 --token-efficient`
+- Risks / non-goals:
+  - Risk: visual emphasis increases noise; mitigate with capped highlight density
+  - Non-goal: introducing new combat actions
+
+## Milestone 18 — Quest/Dialog Consistency and Softlock Guards
+
+- [ ] Add quest graph checks for orphan stages and impossible prerequisites
+- [ ] Add dialog branch checks for missing targets and dead-end mandatory interactions
+- [ ] Add runtime guardrails and explicit player feedback on blocked progression states
+  - See [gameplay/story.md](../gameplay/story.md), [gameplay/dialog.md](../gameplay/dialog.md), [content/quests.md](../content/quests.md)
+- Scope boundary:
+  - Consistency and recoverability only; narrative expansion deferred
+- Target files/modules:
+  - `assets/quests/*.toml`
+  - `assets/dialog/*.toml`
+  - `src/game/story/`
+  - `src/game/dialog/`
+- Done when:
+  - [ ] validator detects unreachable quest stages and broken dialog links
+  - [ ] runtime emits actionable feedback instead of silent progression failure
+  - [ ] regression tests cover at least one blocked-state recovery path
+- Verification commands:
+  - `cargo test`
+  - `cargo run -- --validate-assets`
+- Risks / non-goals:
+  - Risk: strict validation blocks in-progress authoring drafts; mitigate with warning mode for local draft files
+  - Non-goal: writing new quest arcs
+
+## Milestone 19 — Long-Session Automation and CI Soak
+
+- [ ] Add long-session automation profile (multi-scenario chain, deterministic seeds, compact logs)
+- [ ] Add nightly/CI soak command for stability regressions (memory growth, panic detection, save/load drift)
+- [ ] Add milestone-level completion checklist template for automated agent handoffs
+  - See [AGENT.md](../AGENT.md), [testing/tui-agent-smoke.md](../testing/tui-agent-smoke.md)
+- Scope boundary:
+  - Reliability and maintainability only; feature work deferred
+- Target files/modules:
+  - `scripts/agent_tui_smoke.sh`
+  - `scripts/` CI helper scripts
+  - `.github/workflows/` (if present)
+  - `docs/tasks/current-sprint.md` handoff conventions
+- Done when:
+  - [ ] one command runs a >=30 minute deterministic soak profile locally
+  - [ ] CI runs a shorter equivalent profile on each PR
+  - [ ] failure output includes direct reproduction command and seed
+- Verification commands:
+  - `cargo test`
+  - `./scripts/agent_tui_smoke.sh --soak --profile standard --minutes 30 --token-efficient`
+- Risks / non-goals:
+  - Risk: CI runtime cost grows too high; mitigate with tiered profiles (PR short, nightly long)
+  - Non-goal: external cloud load testing

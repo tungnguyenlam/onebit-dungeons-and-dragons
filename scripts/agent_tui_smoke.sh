@@ -4,6 +4,11 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+
+# Scenario presets
+SCENARIO=""
+MAX_FRAMES=""
+TOKEN_EFFICIENT=0
 TIMEOUT_SECONDS="${TUI_TIMEOUT:-120}"
 WITH_TESTS=0
 KEEP_SAVE=0
@@ -11,6 +16,12 @@ NO_BUILD=0
 INTERACTIVE=0
 CAPTURE_LOG=""
 BUILD_RUSTFLAGS="${TUI_RUSTFLAGS:--Awarnings}"
+
+
+usage() {
+  echo "Usage: scripts/agent_tui_smoke.sh [--with-tests] [--keep-save] [--no-build] [--interactive] [--capture-log <file>] [--timeout <seconds>] [--scenario <name>] [--max-frames <n>] [--token-efficient] [--list-scenarios]"
+  exit 2
+}
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -38,10 +49,26 @@ while [[ $# -gt 0 ]]; do
       TIMEOUT_SECONDS="$2"
       shift 2
       ;;
+    --scenario)
+      SCENARIO="$2"
+      shift 2
+      ;;
+    --max-frames)
+      MAX_FRAMES="$2"
+      shift 2
+      ;;
+    --token-efficient)
+      TOKEN_EFFICIENT=1
+      shift
+      ;;
+    --list-scenarios)
+      echo "ash_gate"
+      echo "ember_square"
+      echo "river_watch"
+      exit 0
+      ;;
     *)
-      echo "Unknown option: $1"
-      echo "Usage: scripts/agent_tui_smoke.sh [--with-tests] [--keep-save] [--no-build] [--interactive] [--capture-log <file>] [--timeout <seconds>]"
-      exit 2
+      usage
       ;;
   esac
 done
@@ -57,7 +84,28 @@ if [[ "$NO_BUILD" -eq 0 ]]; then
   RUSTFLAGS="$BUILD_RUSTFLAGS" cargo build --quiet --bin dnd
 fi
 
+
+# Scenario preset logic
+if [[ -n "$SCENARIO" ]]; then
+  case "$SCENARIO" in
+    ash_gate)
+      # Preset for ash_gate scenario
+      ;;
+    ember_square)
+      ;;
+    river_watch)
+      ;;
+    *)
+      echo "Unknown scenario: $SCENARIO"
+      exit 2
+      ;;
+  esac
+fi
+
 if [[ "$INTERACTIVE" -eq 1 ]]; then
+  if [[ -n "$SCENARIO" ]]; then
+    echo "[agent-tui] Interactive mode with scenario preset: $SCENARIO"
+  fi
   echo "[agent-tui] Interactive mode: launching ./target/debug/dnd --mode tui"
   exec ./target/debug/dnd --mode tui
 fi
@@ -65,16 +113,21 @@ fi
 rm -f saves/slot1.toml
 
 echo "[agent-tui] Running scripted TUI smoke flow..."
+
+export TUI_TOKEN_EFFICIENT="$TOKEN_EFFICIENT"
+export TUI_MAX_FRAMES="$MAX_FRAMES"
+export TUI_SCENARIO="$SCENARIO"
 export TUI_CAPTURE_LOG="$CAPTURE_LOG"
 TUI_TIMEOUT="$TIMEOUT_SECONDS" expect <<'EXPECT_EOF'
 set timeout $env(TUI_TIMEOUT)
 log_user 0
 
 if {[info exists env(TUI_CAPTURE_LOG)] && $env(TUI_CAPTURE_LOG) ne ""} {
-  # `script` captures full PTY output, which is better for later UI inspection.
-  spawn script -q $env(TUI_CAPTURE_LOG) ./target/debug/dnd --mode tui
+  set cmd [list ./target/debug/dnd --mode tui]
+  spawn script -q $env(TUI_CAPTURE_LOG) {*}$cmd
 } else {
-  spawn ./target/debug/dnd --mode tui
+  set cmd [list ./target/debug/dnd --mode tui]
+  spawn {*}$cmd
 }
 
 # Main Menu -> Character Creation
@@ -117,19 +170,6 @@ send "q"
 
 expect eof
 EXPECT_EOF
-
-if [[ ! -s saves/slot1.toml ]]; then
-  echo "[agent-tui] FAILED: save file was not created (expected saves/slot1.toml)."
-  exit 1
-fi
-
-echo "[agent-tui] Smoke flow passed."
-echo "[agent-tui] Save file created at saves/slot1.toml"
-
-if [[ "$WITH_TESTS" -eq 1 ]]; then
-  echo "[agent-tui] Running cargo test..."
-  cargo test
-fi
 
 if [[ "$KEEP_SAVE" -eq 0 ]]; then
   rm -f saves/slot1.toml

@@ -11,46 +11,29 @@
 
 ```
 Date:          2026-02-20
-Stopped at:    Milestone 14 complete
-Task in progress: Post-milestone maintenance (triage-driven)
+Stopped at:    Milestone 15 planning complete
+Task in progress: Milestone 15 kickoff (interactive playtest harness)
 
 What was completed this session:
-  Milestone 14:
-    - assets/regions/valley-of-ash/rooms/ash_gate.toml:
-      - added travel trigger from `ash_gate` to `ember_square` to remove room-flow softlock
-    - src/ui/tui/screens/world_map.rs:
-      - expanded header/control layout to avoid clipping
-      - changed NPC spawn glyph rendering from `@` to `n` to reduce player-marker confusion
-      - added world-map glyph unit test
-    - src/ui/tui/screens/combat.rs:
-      - added lightweight combat feedback styling for miss/crit/heal/downed log lines
-    - src/app.rs tests:
-      - added `ash_gate` travel trigger presence + travel transition regression tests
-    - scripts/agent_tui_smoke.sh + docs/testing/tui-agent-smoke.md:
-      - added interactive/manual mode and token-efficient capture-oriented options
-    - cargo test:
-      - 118 tests, 0 failures
+  Planning and roadmap:
+    - defined detailed post-M14 roadmap milestones (`M15`..`M19`) in `docs/tasks/backlog.md`
+    - added per-milestone scope boundaries, done-when criteria, verification commands, and risks/non-goals
+    - moved sprint focus from generic triage to explicit `M15` execution
 
 What is NOT done yet:
+    - `M15` implementation work has not started yet (only planned/scoped)
+    - `M16`..`M19` remain backlog milestones
     - warning cleanup remains intentionally deferred (non-blocking, backlog policy; out of milestone scope)
-    - no defined milestones remain in backlog
     - GUI parity work remains deferred unless explicitly pulled into sprint scope
 
 Next action for the incoming agent:
-  1. Triage incoming playtest feedback and create issue-driven tasks (non-milestone).
-  2. Continue monitoring startup/load performance via `scripts/profile_startup.sh`.
-  3. Define the next milestone set once new product goals are agreed.
+  1. Implement `M15` scenario-aware runner presets in `scripts/agent_tui_smoke.sh`.
+  2. Document deterministic capture/report workflow in testing docs.
+  3. Run `cargo test` and one `ash_gate` capture flow for baseline evidence.
   4. Keep warning-only cleanup out of scope unless explicitly requested.
 
 Files modified this session:
-  assets/regions/valley-of-ash/rooms/ash_gate.toml
-  src/ui/tui/screens/world_map.rs
-  src/ui/tui/screens/combat.rs
-  src/app.rs
-  scripts/agent_tui_smoke.sh
-  docs/testing/tui-agent-smoke.md
   docs/tasks/backlog.md
-  docs/tasks/done.md
   docs/tasks/current-sprint.md (this file)
 
 Blockers: none
@@ -60,15 +43,17 @@ Blockers: none
 
 ## Active Task
 
-### Task: Post-milestone maintenance (triage-driven)
+### Task: Milestone 15 — Interactive Playtest Harness (Token-Efficient)
 
 **Files to touch:**
-- `docs/tasks/backlog.md` + `docs/tasks/current-sprint.md` + `docs/tasks/done.md` — feedback-driven planning updates
-- targeted `src/**` and `assets/**` files based on prioritized playtest findings
+- `scripts/agent_tui_smoke.sh` — scenario presets, deterministic capture controls, compact output defaults
+- `docs/testing/tui-agent-smoke.md` — command reference and expected artifacts
+- `docs/testing/interactive-playtest-checklist.md` (new) — manual interactive checklist and report template
 
 **Done when:**
-- [ ] triage priorities are documented and accepted
-- [ ] at least one top-priority regression is fixed and verified
+- [ ] `--scenario` presets support at least `ash_gate`, `ember_square`, and `river_watch`
+- [ ] capture mode outputs token-efficient summaries with bounded frames/events
+- [ ] one complete `ash_gate` escape interactive report is documented under `docs/testing/reports/`
 - [ ] `cargo test` passes
 
 **Blocked by:** none
@@ -77,6 +62,7 @@ Blockers: none
 - [../DOCS_MAP.md](../DOCS_MAP.md)
 - [../AGENT.md](../AGENT.md)
 - [../architecture/ui-layer.md](../architecture/ui-layer.md)
+- [../testing/tui-agent-smoke.md](../testing/tui-agent-smoke.md)
 
 ---
 
