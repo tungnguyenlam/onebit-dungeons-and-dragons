@@ -5,7 +5,7 @@
 ///
 /// Sub-modules mirror the screen list from `docs/architecture/ui-layer.md`.
 // pub mod layout;
-// pub mod screens;
+pub mod screens;
 // pub mod widgets;
 
 use crate::app::{App, AppState};
@@ -46,8 +46,12 @@ impl TuiRenderer {
 impl GameRenderer for TuiRenderer {
     fn render(&mut self, app: &App) -> Result<()> {
         self.terminal.draw(|frame| {
-            // TODO: dispatch to the correct screen module based on app.state.
-            // For now render a placeholder until screens are implemented.
+            if matches!(&app.state, AppState::Combat(_)) {
+                screens::combat::render(frame, app);
+                return;
+            }
+
+            // Placeholder for non-combat screens.
             use ratatui::{
                 layout::Alignment,
                 widgets::{Block, Paragraph},

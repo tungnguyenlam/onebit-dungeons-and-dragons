@@ -15,8 +15,8 @@ pub mod dice;
 pub mod items;
 pub mod story;
 pub mod world;
+pub mod combat;
 
 // Planned — uncomment when implemented:
-// pub mod combat;
 // pub mod npc;
 // pub mod save;
