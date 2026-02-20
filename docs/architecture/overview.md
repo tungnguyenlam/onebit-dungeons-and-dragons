@@ -114,6 +114,7 @@ assets/
 - App loop & tick logic → [game-loop.md](game-loop.md)
 - Renderer abstraction (TUI vs GUI) → [renderer.md](renderer.md)
 - UI screen state machine → [ui-layer.md](ui-layer.md)
+- TUI color/icon/animation system → [tui-visual-system.md](tui-visual-system.md)
 - Asset loading pipeline → [data-pipeline.md](data-pipeline.md)
 
 ## Related Indexes

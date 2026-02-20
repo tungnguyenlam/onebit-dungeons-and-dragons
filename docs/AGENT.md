@@ -103,6 +103,7 @@ If you update any gameplay/architecture/content/task doc, review
 |---|---|
 | App loop / event handling | [architecture/game-loop.md](architecture/game-loop.md) |
 | UI / Ratatui screen layout | [architecture/ui-layer.md](architecture/ui-layer.md) |
+| TUI visual style (color/icons/animation) | [architecture/tui-visual-system.md](architecture/tui-visual-system.md) |
 | Data pipeline (assets → game) | [architecture/data-pipeline.md](architecture/data-pipeline.md) |
 | Dice rolling (DiceExpr) | [gameplay/dice.md](gameplay/dice.md) |
 | Combat (5e action economy) | [gameplay/combat.md](gameplay/combat.md) |

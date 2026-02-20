@@ -11,6 +11,8 @@ Game mutations happen exclusively in `src/game/` in response to `GameEvent`s
 processed by `src/app.rs`.
 
 See → [renderer.md](renderer.md) for the trait definition and launch mechanics.
+Visual style and animation planning lives in
+[tui-visual-system.md](tui-visual-system.md).
 
 ---
 

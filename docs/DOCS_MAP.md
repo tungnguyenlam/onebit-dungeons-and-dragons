@@ -26,6 +26,8 @@
   - Related: [architecture/renderer.md](architecture/renderer.md), [architecture/ui-layer.md](architecture/ui-layer.md), [tasks/current-sprint.md](tasks/current-sprint.md)
 - `architecture/ui-layer.md`
   - Related: [architecture/renderer.md](architecture/renderer.md), [gameplay/combat.md](gameplay/combat.md), [gameplay/dialog.md](gameplay/dialog.md), [gameplay/world.md](gameplay/world.md)
+- `architecture/tui-visual-system.md`
+  - Related: [architecture/ui-layer.md](architecture/ui-layer.md), [architecture/game-loop.md](architecture/game-loop.md), [testing/tui-agent-smoke.md](testing/tui-agent-smoke.md), [tasks/backlog.md](tasks/backlog.md)
 - `architecture/data-pipeline.md`
   - Related: [content/map-format.md](content/map-format.md), [content/overview.md](content/overview.md), [tasks/backlog.md](tasks/backlog.md)
 
@@ -83,6 +85,7 @@ When editing these files, also review:
   - [README.md](../README.md)
   - [architecture/overview.md](architecture/overview.md)
   - [architecture/ui-layer.md](architecture/ui-layer.md)
+  - [architecture/tui-visual-system.md](architecture/tui-visual-system.md)
   - relevant docs in [gameplay/overview.md](gameplay/overview.md)
 - Data model / TOML schema change:
   - [architecture/data-pipeline.md](architecture/data-pipeline.md)

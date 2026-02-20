@@ -130,9 +130,15 @@
 ## Milestone 12 — UX & Presentation Polish 2.0
 
 - [ ] Improve HUD/readability across key screens
+- [ ] Implement terminal capability tiers + runtime fallback policy (`T0`..`T3`)
+- [ ] Introduce shared semantic theme tokens (color roles, not hard-coded per screen)
+- [ ] Add icon atlas with portable fallback glyphs (text-first controls remain)
+- [ ] Add animation layer for transitions/combat feedback with bounded frame budget
+- [ ] Add accessibility toggles (reduced motion, high contrast)
 - [ ] Improve input help overlays and state feedback
 - [ ] Expand sound behavior only if signal/value is clear
-  - See [architecture/ui-layer.md](../architecture/ui-layer.md), [gameplay/overview.md](../gameplay/overview.md)
+- [ ] Document support matrix and configuration in README
+  - See [architecture/ui-layer.md](../architecture/ui-layer.md), [architecture/tui-visual-system.md](../architecture/tui-visual-system.md), [gameplay/overview.md](../gameplay/overview.md)
 
 ## Milestone 13 — Release Readiness
 
