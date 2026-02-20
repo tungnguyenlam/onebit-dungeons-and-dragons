@@ -24,7 +24,7 @@ See → [renderer.md](renderer.md) for the full dual-renderer design.
 
 ---
 
-## Full Source Tree
+## Full Source Tree (Current)
 
 ```
 src/
@@ -35,33 +35,14 @@ src/
 │   ├── mod.rs
 │   ├── tui/                     [feature = "tui"]
 │   │   ├── mod.rs               ← TuiRenderer: impl GameRenderer
-│   │   ├── layout.rs
 │   │   ├── screens/
-│   │   │   ├── world_map.rs
 │   │   │   ├── combat.rs
-│   │   │   ├── character_sheet.rs
 │   │   │   ├── inventory.rs
 │   │   │   ├── spellbook.rs
 │   │   │   ├── dialog.rs
 │   │   │   └── journal.rs
-│   │   └── widgets/
-│   │       ├── dice_roll.rs
-│   │       ├── log.rs
-│   │       └── hud.rs
 │   └── gui/                     [feature = "gui"]
-│       ├── mod.rs               ← GuiRenderer: impl GameRenderer + eframe::App
-│       ├── screens/
-│       │   ├── world_map.rs
-│       │   ├── combat.rs
-│       │   ├── character_sheet.rs
-│       │   ├── inventory.rs
-│       │   ├── spellbook.rs
-│       │   ├── dialog.rs
-│       │   └── journal.rs
-│       └── widgets/
-│           ├── dice_roll.rs
-│           ├── log.rs
-│           └── hud.rs
+│       └── mod.rs               ← GuiRenderer stub
 ├── game/
 │   ├── mod.rs
 │   ├── world/
@@ -71,26 +52,19 @@ src/
 │   │   └── fov.rs
 │   ├── character/
 │   │   ├── stats.rs
-│   │   ├── class.rs
-│   │   ├── race.rs
 │   │   ├── skills.rs
 │   │   ├── conditions.rs
 │   │   └── progression.rs
 │   ├── combat/
 │   │   ├── initiative.rs
-│   │   ├── actions.rs
+│   │   ├── action.rs
 │   │   ├── attack.rs
-│   │   ├── damage.rs
 │   │   ├── spells.rs
-│   │   └── economy.rs
+│   │   └── combat.rs
 │   ├── items/
 │   │   ├── inventory.rs
 │   │   ├── equipment.rs
-│   │   ├── weapons.rs
 │   │   └── armor.rs
-│   ├── npc/
-│   │   ├── monster.rs
-│   │   └── ai.rs
 │   ├── dice/
 │   │   ├── mod.rs
 │   │   └── parser.rs
@@ -101,9 +75,9 @@ src/
 │   │   ├── dialog.rs
 │   │   ├── journal.rs
 │   │   └── events.rs
-│   └── save/
-│       └── serialization.rs
+│   └── (npc/save planned in future milestones)
 └── data/
+    ├── mod.rs
     ├── loader.rs
     └── types.rs
 

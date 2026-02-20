@@ -16,28 +16,33 @@ See → [renderer.md](renderer.md) for the trait definition and launch mechanics
 
 ## Screen Modules
 
-Both renderers expose the same screen set, one per `AppState` variant.
-Each screen in `src/ui/tui/screens/` uses Ratatui; each in
-`src/ui/gui/screens/` uses egui.
+The TUI currently has dedicated screen modules for combat, dialog, journal,
+inventory, and spellbook. World map and menu-like states still use the
+placeholder renderer branch in `src/ui/tui/mod.rs`.
+
+GUI remains a stub in `src/ui/gui/mod.rs` and does not yet have per-screen
+modules.
 
 | Screen | `AppState` variant | TUI file | GUI file |
 |---|---|---|---|
-| World Map | `WorldMap` | `tui/screens/world_map.rs` | `gui/screens/world_map.rs` |
-| Combat | `Combat(_)` | `tui/screens/combat.rs` | `gui/screens/combat.rs` |
-| Dialog | `Dialog(_)` | `tui/screens/dialog.rs` | `gui/screens/dialog.rs` |
-| Journal | `Journal` | `tui/screens/journal.rs` | `gui/screens/journal.rs` |
-| Inventory | `Inventory` | `tui/screens/inventory.rs` | `gui/screens/inventory.rs` |
-| Spellbook | `Spellbook` | `tui/screens/spellbook.rs` | `gui/screens/spellbook.rs` |
-| Character Sheet | overlay | `tui/screens/character_sheet.rs` | `gui/screens/character_sheet.rs` |
+| World Map | `WorldMap` | placeholder branch in `tui/mod.rs` | stub (`gui/mod.rs`) |
+| Combat | `Combat(_)` | `tui/screens/combat.rs` | stub (`gui/mod.rs`) |
+| Dialog | `Dialog(_)` | `tui/screens/dialog.rs` | stub (`gui/mod.rs`) |
+| Journal | `Journal` | `tui/screens/journal.rs` | stub (`gui/mod.rs`) |
+| Inventory | `Inventory` | `tui/screens/inventory.rs` | stub (`gui/mod.rs`) |
+| Spellbook | `Spellbook` | `tui/screens/spellbook.rs` | stub (`gui/mod.rs`) |
+| Character Sheet | overlay | not implemented | not implemented |
 
 ---
 
 ## Layout Convention
 
-**TUI screens** define `fn render(f: &mut Frame, app: &App)`.
-**GUI screens** define `fn draw(ui: &mut egui::Ui, app: &App)`.
+TUI screen modules define `fn render(f: &mut Frame, app: &App)`. They currently
+build layouts inline per screen; shared `layout.rs` and reusable `widgets/`
+modules are deferred to a later UI polish milestone.
 
-The terminal is divided into three zones:
+Most current screens split the terminal into a main panel and secondary info
+rows similar to:
 
 ```
 ┌──────────────────────────────┐
@@ -48,16 +53,7 @@ The terminal is divided into three zones:
 └─────────────┴────────────────┘
 ```
 
-`src/ui/layout.rs` exports `Layout::split(frame_size) -> (main, log, hud)`
-so all screens share the same zones.
-
----
-
-## Reusable Widgets
-
-- `widgets/dice_roll.rs` — animated dice result pop-up (shown for 1.5 s)
-- `widgets/log.rs` — scrollable combat / story log fed from `game/story/journal.rs`
-- `widgets/hud.rs` — HP bar, AC, spell slots, conditions row
+No shared layout helper is in use yet.
 
 ---
 

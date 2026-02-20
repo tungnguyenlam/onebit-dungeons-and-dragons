@@ -11,18 +11,37 @@ A terminal-based (TUI), open-world Dungeon & Dragons game written in **Rust**, f
 
 ---
 
-## Running the Game
+## Running the Game Locally
 
 ```bash
-# TUI mode (default)
+# Build/check
+cargo check
+
+# TUI mode (default renderer)
 cargo run
 
-# GUI mode  (not yet implemented — TUI is the current focus)
+# Explicit mode flag (same as above)
+cargo run -- --mode tui
+
+# GUI mode (experimental/stub)
 cargo run --features gui -- --mode gui
 
 # Run tests
 cargo test
 ```
+
+### TUI Controls
+
+- `q` / `Ctrl-C`: quit
+- `h j k l` or arrow keys: move cursor/navigation
+- `a`: attack
+- `.`: wait / advance
+- `i`: inventory
+- `s`: spellbook
+- `n`: journal
+- `m`: world map
+- `1`..`9`: choice/select action
+- `Esc` / `Backspace`: back/cancel
 
 ---
 
@@ -60,9 +79,7 @@ onebit-dungeons-and-dragons/
 │   │   ├── mod.rs
 │   │   ├── tui/            ← Ratatui / Crossterm renderer [feature = "tui"]
 │   │   │   ├── mod.rs      ← TuiRenderer: impl GameRenderer
-│   │   │   ├── layout.rs   ← (planned) terminal zone splits
-│   │   │   ├── screens/    ← (planned) one render fn per AppState variant
-│   │   │   └── widgets/    ← (planned) HUD, log, dice-roll overlay
+│   │   │   └── screens/    ← combat/dialog/journal/inventory/spellbook
 │   │   └── gui/            ← egui / eframe renderer [feature = "gui"]
 │   │       └── mod.rs      ← GuiRenderer / GuiApp (stubbed — TUI first)
 │   │
@@ -82,9 +99,9 @@ onebit-dungeons-and-dragons/
 │   │   │   ├── inventory.rs ← Inventory, ItemInstance
 │   │   │   ├── equipment.rs ← EquipmentSlots
 │   │   │   └── armor.rs    ← AC calculation by armor type
-│   │   ├── world/          ← (planned M1) region, room, tile map, FOV
-│   │   ├── combat/         ← (planned M2) initiative, attack, action economy
-│   │   ├── story/          ← (planned M3) WorldState, quest machine, dialog
+│   │   ├── world/          ← region, room, tile map, FOV
+│   │   ├── combat/         ← initiative, attack, action economy, spell effects
+│   │   ├── story/          ← WorldState, quest machine, dialog, journal, events
 │   │   ├── npc/            ← (planned M5) monster AI
 │   │   └── save/           ← (planned M7) save / load serialization
 │   │
@@ -131,11 +148,11 @@ For the detailed design see [docs/architecture/overview.md](docs/architecture/ov
 | Milestone | Status |
 |---|---|
 | M0 — Crate bootstrap & renderer abstraction | ✅ Done |
-| M1 — Core systems (dice, character, data layer) | 🔧 In progress |
-| M2 — Combat | ⬜ Planned |
-| M3 — Story & Dialog | ⬜ Planned |
-| M4 — Items & Spells | ⬜ Planned |
-| M5 — NPC & Factions | ⬜ Planned |
+| M1 — Core systems (dice, character, data layer) | ✅ Done |
+| M2 — Combat | ✅ Done |
+| M3 — Story & Dialog | ✅ Done |
+| M4 — Items & Spells | ✅ Done |
+| M5 — NPC & Factions | 🔧 Next |
 | M6 — First Region (Valley of Ash) | ⬜ Planned |
 | M7 — Polish & Save/Load | ⬜ Planned |
 
