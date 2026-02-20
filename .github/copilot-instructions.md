@@ -2,7 +2,11 @@
 
 Terminal-based open-world D&D game in Rust (TUI via Ratatui, experimental GUI via egui), following the D&D 5e SRD ruleset.
 
-> **Before touching any code, read `docs/AGENT.md`** — it describes the session handoff workflow, which task is active, and which docs are relevant to the current sprint.
+> **Before touching any code, read `docs/AGENT.md`** — it describes the session handoff workflow, which task is active, and which docs are relevant to the current sprint. 
+>
+> **If you update any documentation, gameplay/architecture/content/task doc, or conventions, you MUST review `docs/DOCS_MAP.md` and update all linked files in the same change.**
+>
+> When you finish a task or must stop mid-task, update the `Last Session Handoff` block in `tasks/current-sprint.md` before ending: list exactly where you stopped, every file you modified, and the next concrete action for the incoming agent. Move completed tasks to `done.md` and pull the next from `backlog.md`.
 
 ---
 
