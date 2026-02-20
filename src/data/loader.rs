@@ -7,7 +7,7 @@
 use crate::data::types::*;
 use anyhow::{Context, Result};
 use serde::de::DeserializeOwned;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 // ---------------------------------------------------------------------------
 // Generic loader
@@ -16,10 +16,9 @@ use std::path::{Path, PathBuf};
 /// Read and deserialize a single TOML file.
 pub fn load<T: DeserializeOwned>(path: impl AsRef<Path>) -> Result<T> {
     let path = path.as_ref();
-    let raw = std::fs::read_to_string(path)
-        .with_context(|| format!("reading {}", path.display()))?;
-    toml::from_str(&raw)
-        .with_context(|| format!("parsing {}", path.display()))
+    let raw =
+        std::fs::read_to_string(path).with_context(|| format!("reading {}", path.display()))?;
+    toml::from_str(&raw).with_context(|| format!("parsing {}", path.display()))
 }
 
 // ---------------------------------------------------------------------------
@@ -31,11 +30,11 @@ pub fn load<T: DeserializeOwned>(path: impl AsRef<Path>) -> Result<T> {
 pub struct LoadedRegion {
     pub manifest: RegionManifest,
     /// Rooms keyed by room id.
-    pub rooms:    std::collections::HashMap<String, RoomDef>,
+    pub rooms: std::collections::HashMap<String, RoomDef>,
     /// NPCs keyed by npc id.
-    pub npcs:     std::collections::HashMap<String, NpcDef>,
+    pub npcs: std::collections::HashMap<String, NpcDef>,
     /// Dialog trees keyed by npc id.
-    pub dialogs:  std::collections::HashMap<String, DialogTree>,
+    pub dialogs: std::collections::HashMap<String, DialogTree>,
 }
 
 /// Load a full region from `assets/regions/<slug>/`.
@@ -55,9 +54,9 @@ pub fn load_region(base: impl AsRef<Path>, slug: &str) -> Result<LoadedRegion> {
     }
 
     // 3. Load NPCs and their dialog trees
-    let npc_dir    = region_dir.join("npcs");
+    let npc_dir = region_dir.join("npcs");
     let dialog_dir = region_dir.join("dialog");
-    let mut npcs    = std::collections::HashMap::new();
+    let mut npcs = std::collections::HashMap::new();
     let mut dialogs = std::collections::HashMap::new();
 
     if npc_dir.is_dir() {
@@ -81,7 +80,12 @@ pub fn load_region(base: impl AsRef<Path>, slug: &str) -> Result<LoadedRegion> {
         }
     }
 
-    Ok(LoadedRegion { manifest, rooms, npcs, dialogs })
+    Ok(LoadedRegion {
+        manifest,
+        rooms,
+        npcs,
+        dialogs,
+    })
 }
 
 // ---------------------------------------------------------------------------
@@ -92,12 +96,12 @@ pub fn load_region(base: impl AsRef<Path>, slug: &str) -> Result<LoadedRegion> {
 #[derive(Debug, Default)]
 pub struct GlobalAssets {
     pub monsters: std::collections::HashMap<String, MonsterDef>,
-    pub classes:  std::collections::HashMap<String, ClassDef>,
-    pub races:    std::collections::HashMap<String, RaceDef>,
-    pub items:    std::collections::HashMap<String, ItemDef>,
-    pub spells:   std::collections::HashMap<String, SpellDef>,
-    pub quests:   std::collections::HashMap<String, QuestDef>,
-    pub lore:     std::collections::HashMap<String, LoreEntry>,
+    pub classes: std::collections::HashMap<String, ClassDef>,
+    pub races: std::collections::HashMap<String, RaceDef>,
+    pub items: std::collections::HashMap<String, ItemDef>,
+    pub spells: std::collections::HashMap<String, SpellDef>,
+    pub quests: std::collections::HashMap<String, QuestDef>,
+    pub lore: std::collections::HashMap<String, LoreEntry>,
 }
 
 /// Load all global assets from `assets/`.
@@ -107,12 +111,12 @@ pub fn load_global_assets(base: impl AsRef<Path>) -> Result<GlobalAssets> {
     let mut ga = GlobalAssets::default();
 
     ga.monsters = load_dir(base.join("monsters"))?;
-    ga.classes  = load_dir(base.join("classes"))?;
-    ga.races    = load_dir(base.join("races"))?;
-    ga.items    = load_dir(base.join("items"))?;
-    ga.spells   = load_dir(base.join("spells"))?;
-    ga.quests   = load_dir_nested(base.join("quests"))?;
-    ga.lore     = load_dir(base.join("lore"))?;
+    ga.classes = load_dir(base.join("classes"))?;
+    ga.races = load_dir(base.join("races"))?;
+    ga.items = load_dir(base.join("items"))?;
+    ga.spells = load_dir(base.join("spells"))?;
+    ga.quests = load_dir_nested(base.join("quests"))?;
+    ga.lore = load_dir(base.join("lore"))?;
 
     Ok(ga)
 }
@@ -125,6 +129,13 @@ pub fn load_quests(base: impl AsRef<Path>) -> Result<std::collections::HashMap<S
 /// Load all lore entries from `assets/lore/`.
 pub fn load_lore(base: impl AsRef<Path>) -> Result<std::collections::HashMap<String, LoreEntry>> {
     load_dir(base.as_ref().join("lore"))
+}
+
+/// Load all monster definitions from `assets/monsters/`.
+pub fn load_monsters(
+    base: impl AsRef<Path>,
+) -> Result<std::collections::HashMap<String, MonsterDef>> {
+    load_dir(base.as_ref().join("monsters"))
 }
 
 /// Load all `*.toml` files in a directory into a `HashMap<id, T>`.
@@ -179,7 +190,9 @@ pub trait HasId {
 macro_rules! impl_has_id {
     ($t:ty) => {
         impl HasId for $t {
-            fn id(&self) -> &str { &self.id }
+            fn id(&self) -> &str {
+                &self.id
+            }
         }
     };
 }
@@ -191,3 +204,97 @@ impl_has_id!(ItemDef);
 impl_has_id!(SpellDef);
 impl_has_id!(QuestDef);
 impl_has_id!(LoreEntry);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::{
+        fs,
+        time::{SystemTime, UNIX_EPOCH},
+    };
+
+    fn unique_tmp_dir(tag: &str) -> std::path::PathBuf {
+        let nanos = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos();
+        std::env::temp_dir().join(format!("dnd-loader-{tag}-{nanos}"))
+    }
+
+    #[test]
+    fn load_monsters_reads_toml_files() {
+        let dir = unique_tmp_dir("monsters");
+        let monsters_dir = dir.join("monsters");
+        fs::create_dir_all(&monsters_dir).unwrap();
+        fs::write(
+            monsters_dir.join("goblin.toml"),
+            r#"
+id = "goblin"
+name = "Goblin"
+cr = 0.25
+size = "small"
+monster_type = "humanoid"
+alignment = "neutral_evil"
+hp = "2d6"
+ac = 13
+speed = 30
+str_score = 8
+dex_score = 14
+con_score = 10
+int_score = 10
+wis_score = 8
+cha_score = 8
+xp = 50
+
+[[actions]]
+name = "Scimitar"
+description = "Melee Weapon Attack"
+attack_bonus = 4
+damage = "1d6+2"
+damage_type = "slashing"
+"#,
+        )
+        .unwrap();
+
+        let loaded = load_monsters(&dir).unwrap();
+        assert_eq!(loaded.len(), 1);
+        assert!(loaded.contains_key("goblin"));
+
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn load_global_assets_includes_monsters() {
+        let dir = unique_tmp_dir("global-assets");
+        let monsters_dir = dir.join("monsters");
+        fs::create_dir_all(&monsters_dir).unwrap();
+        fs::write(
+            monsters_dir.join("bandit.toml"),
+            r#"
+id = "bandit"
+name = "Bandit"
+cr = 0.125
+size = "medium"
+monster_type = "humanoid"
+alignment = "chaotic_neutral"
+hp = "2d8"
+ac = 12
+speed = 30
+str_score = 11
+dex_score = 12
+con_score = 12
+int_score = 10
+wis_score = 10
+cha_score = 10
+xp = 25
+"#,
+        )
+        .unwrap();
+
+        let loaded = load_global_assets(&dir).unwrap();
+        assert_eq!(loaded.monsters.len(), 1);
+        assert!(loaded.monsters.contains_key("bandit"));
+
+        fs::remove_dir_all(&dir).unwrap();
+    }
+}

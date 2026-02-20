@@ -9,22 +9,36 @@ use crate::game::{
 };
 use std::collections::{HashMap, HashSet};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum EnemyAiRole {
+    #[default]
+    Melee,
+    Ranged,
+    Spellcaster,
+}
+
 #[derive(Debug, Clone)]
 pub struct CombatantState {
-    pub id:             String,
-    pub name:           String,
-    pub is_player:      bool,
-    pub max_hp:         i32,
-    pub current_hp:     i32,
-    pub armor_class:    i32,
-    pub speed:          u32,
+    pub id: String,
+    pub name: String,
+    pub is_player: bool,
+    pub max_hp: i32,
+    pub current_hp: i32,
+    pub armor_class: i32,
+    pub speed: u32,
     pub initiative_mod: i32,
-    pub attack_bonus:   i32,
-    pub damage_dice:    DiceExpr,
+    pub attack_bonus: i32,
+    pub damage_dice: DiceExpr,
+    pub enemy_role: EnemyAiRole,
+    pub ranged_attack_bonus: Option<i32>,
+    pub ranged_damage_dice: Option<DiceExpr>,
+    pub spell_attack_bonus: Option<i32>,
+    pub spell_damage_dice: Option<DiceExpr>,
+    pub spell_on_hit_condition: Option<Condition>,
     pub on_hit_condition: Option<Condition>,
-    pub conditions:     HashSet<Condition>,
+    pub conditions: HashSet<Condition>,
     pub condition_durations: HashMap<Condition, u8>,
-    pub action_slots:   ActionSlots,
+    pub action_slots: ActionSlots,
 }
 
 impl CombatantState {
@@ -51,6 +65,12 @@ impl CombatantState {
             initiative_mod,
             attack_bonus,
             damage_dice,
+            enemy_role: EnemyAiRole::Melee,
+            ranged_attack_bonus: None,
+            ranged_damage_dice: None,
+            spell_attack_bonus: None,
+            spell_damage_dice: None,
+            spell_on_hit_condition: None,
             on_hit_condition: None,
             conditions: HashSet::new(),
             condition_durations: HashMap::new(),
@@ -117,10 +137,10 @@ impl CombatantState {
 
 #[derive(Debug, Clone)]
 pub struct CombatState {
-    pub combatants:  HashMap<String, CombatantState>,
-    pub turn_queue:  Vec<String>,
+    pub combatants: HashMap<String, CombatantState>,
+    pub turn_queue: Vec<String>,
     pub active_turn: usize,
-    pub round:       u32,
+    pub round: u32,
 }
 
 impl CombatState {
@@ -180,7 +200,11 @@ impl CombatState {
                 self.round += 1;
             }
             let id = &self.turn_queue[self.active_turn];
-            if self.combatants.get(id).is_some_and(CombatantState::is_alive) {
+            if self
+                .combatants
+                .get(id)
+                .is_some_and(CombatantState::is_alive)
+            {
                 self.reset_current_turn_slots();
                 return self.current_combatant_id();
             }
@@ -275,7 +299,11 @@ mod tests {
     #[test]
     fn next_turn_advances_and_wraps_round() {
         let mut c = CombatState::new_with_seed(
-            vec![actor("p1", true, 2), actor("m1", false, 1), actor("m2", false, 0)],
+            vec![
+                actor("p1", true, 2),
+                actor("m1", false, 1),
+                actor("m2", false, 0),
+            ],
             42,
         );
 
@@ -292,7 +320,8 @@ mod tests {
 
     #[test]
     fn next_turn_skips_dead_combatants() {
-        let mut c = CombatState::new_with_seed(vec![actor("p1", true, 0), actor("m1", false, 0)], 7);
+        let mut c =
+            CombatState::new_with_seed(vec![actor("p1", true, 0), actor("m1", false, 0)], 7);
         c.combatants.get_mut("m1").unwrap().current_hp = 0;
         for _ in 0..5 {
             let id = c.next_turn().unwrap();
@@ -310,7 +339,11 @@ mod tests {
     #[test]
     fn next_enemy_prefers_opposing_side() {
         let c = CombatState::new_with_seed(
-            vec![actor("p1", true, 2), actor("m1", false, 1), actor("m2", false, 0)],
+            vec![
+                actor("p1", true, 2),
+                actor("m1", false, 1),
+                actor("m2", false, 0),
+            ],
             42,
         );
         assert!(matches!(c.next_enemy_id("p1"), Some("m1" | "m2")));

@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-02-20 — Milestone 5 (complete): NPC & Factions
+
+- [x] `src/data/loader.rs` — monster loader helper (`load_monsters`) with focused tests
+- [x] `src/app.rs` — data-driven encounter builder from `MonsterDef` templates
+- [x] `src/app.rs` — role-based enemy behavior loop (`melee`, `ranged`, `spellcaster`)
+- [x] `src/game/combat/combat.rs` — combatant AI role/loadout fields for runtime decisioning
+- [x] `src/game/story/world_state.rs` — faction reputation helpers (`faction_rep`, `delta_faction_rep`, etc.)
+- [x] `src/app.rs` — emergent world event engine wired to `WorldState` thresholds
+- [x] `src/ui/tui/screens/combat.rs` — combat HUD now shows enemy role
+- [x] `cargo test` passes (94 tests, 0 failures)
+
 ## 2026-02-20 — Milestone 4 (complete): Items & Spells
 
 - [x] `src/game/items/inventory.rs` — runtime inventory helpers (`set_equipped`, `is_equipped`, `use_one`) + focused tests

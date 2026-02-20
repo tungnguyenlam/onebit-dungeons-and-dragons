@@ -1,3 +1,25 @@
+use crate::data::loader::load_monsters;
+use crate::data::types::{
+    ArmorDef, ArmorType, DialogChoice, DialogEffect, DialogNode, DialogTree, ItemDef, ItemType,
+    LoreEntry, MonsterAction, MonsterDef, QuestDef, QuestKind, QuestStageDef, QuestTransition,
+    SpellDef, WeaponDef,
+};
+use crate::game::{
+    character::{AbilityScores, Character},
+    combat::{
+        apply_damage, can_cast, expend_slot, resolve_spell_effect, roll_attack, AttackProfile,
+        CombatState, CombatantState, DefenseProfile, EnemyAiRole, HitType, RollMode, SpellEffect,
+    },
+    dice::DiceExpr,
+    items::{armor::armor_class, equipment::EquipmentSlot},
+    story::{
+        dialog::{choose as dialog_choose, resolve as dialog_resolve, ResolvedNode},
+        events::{inspect_lore, EventEngine, EventTrigger, WorldEvent},
+        journal::{Category as JournalCategory, Journal},
+        quest::QuestLog,
+        WorldState,
+    },
+};
 /// Application glue layer.
 ///
 /// `App` owns the full mutable game state (`AppState`) and all game
@@ -7,52 +29,6 @@
 /// The active renderer calls `App::handle_event` to drive state transitions
 /// and reads `App::state` (and sub-system state) during rendering.
 use crate::renderer::{ControlFlow, GameEvent};
-use crate::game::{
-    character::{AbilityScores, Character},
-    combat::{
-        apply_damage,
-        can_cast,
-        expend_slot,
-        roll_attack,
-        resolve_spell_effect,
-        AttackProfile,
-        CombatState,
-        CombatantState,
-        DefenseProfile,
-        HitType,
-        RollMode,
-        SpellEffect,
-    },
-    dice::DiceExpr,
-    items::{
-        armor::armor_class,
-        equipment::EquipmentSlot,
-    },
-    story::{
-        dialog::{choose as dialog_choose, resolve as dialog_resolve, ResolvedNode},
-        events::inspect_lore,
-        journal::{Category as JournalCategory, Journal},
-        quest::QuestLog,
-        WorldState,
-    },
-};
-use crate::data::types::{
-    ArmorDef,
-    ArmorType,
-    DialogChoice,
-    DialogEffect,
-    DialogNode,
-    DialogTree,
-    ItemDef,
-    ItemType,
-    LoreEntry,
-    QuestDef,
-    QuestKind,
-    QuestStageDef,
-    QuestTransition,
-    SpellDef,
-    WeaponDef,
-};
 use anyhow::Result;
 use std::collections::HashMap;
 
@@ -79,9 +55,9 @@ pub enum AppState {
 /// Placeholder — will be expanded in `src/game/combat/`.
 #[derive(Debug, Clone)]
 pub struct CombatContext {
-    pub state:       CombatState,
+    pub state: CombatState,
     pub world_state: WorldState,
-    pub log:         Vec<String>,
+    pub log: Vec<String>,
 }
 
 impl Default for CombatContext {
@@ -126,7 +102,8 @@ impl Default for CombatContext {
         );
         let mut state = state;
         if let Some(goblin_a) = state.combatants.get_mut("goblin_a") {
-            goblin_a.on_hit_condition = Some(crate::game::character::conditions::Condition::Poisoned);
+            goblin_a.on_hit_condition =
+                Some(crate::game::character::conditions::Condition::Poisoned);
         }
         Self {
             state,
@@ -144,10 +121,10 @@ impl Default for CombatContext {
 /// Placeholder — will be expanded in `src/game/story/dialog.rs`.
 #[derive(Debug, Clone)]
 pub struct DialogContext {
-    pub npc_name:     String,
-    pub tree:         DialogTree,
+    pub npc_name: String,
+    pub tree: DialogTree,
     pub current_node: String,
-    pub resolved:     ResolvedNode,
+    pub resolved: ResolvedNode,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -158,7 +135,10 @@ pub struct JournalUiState {
 
 impl Default for JournalUiState {
     fn default() -> Self {
-        Self { category: JournalCategory::Quest, selected: 0 }
+        Self {
+            category: JournalCategory::Quest,
+            selected: 0,
+        }
     }
 }
 
@@ -173,10 +153,12 @@ pub struct App {
     pub player: Character,
     pub item_defs: HashMap<String, ItemDef>,
     pub spell_defs: HashMap<String, SpellDef>,
+    pub monster_defs: HashMap<String, MonsterDef>,
     pub known_spells: Vec<String>,
     pub world_state: WorldState,
     pub journal: Journal,
     pub quests: QuestLog,
+    pub world_events: EventEngine,
     pub journal_ui: JournalUiState,
     pub turn: u64,
 }
@@ -186,6 +168,10 @@ impl App {
     pub fn new() -> Self {
         let item_defs = sample_item_defs();
         let spell_defs = sample_spell_defs();
+        let monster_defs = load_monsters("assets")
+            .ok()
+            .filter(|m| !m.is_empty())
+            .unwrap_or_else(sample_monster_defs);
         let mut player = Character::new(
             "Theron".into(),
             "fighter".into(),
@@ -242,10 +228,16 @@ impl App {
             player,
             item_defs,
             spell_defs,
-            known_spells: vec!["cure_wounds".into(), "fire_bolt".into(), "poison_spray".into()],
+            monster_defs,
+            known_spells: vec![
+                "cure_wounds".into(),
+                "fire_bolt".into(),
+                "poison_spray".into(),
+            ],
             world_state: WorldState::new(),
             journal: Journal::default(),
             quests: QuestLog::with_defs(vec![sample_quest]),
+            world_events: demo_world_events(),
             journal_ui: JournalUiState::default(),
             turn: 0,
         }
@@ -343,7 +335,8 @@ impl App {
         match event {
             GameEvent::Attack => {
                 if let AppState::Combat(ctx) = &mut self.state {
-                    let Some(attacker_id) = ctx.state.current_combatant_id().map(str::to_string) else {
+                    let Some(attacker_id) = ctx.state.current_combatant_id().map(str::to_string)
+                    else {
                         Self::push_log(ctx, "No active combatant.");
                         return Ok(());
                     };
@@ -358,7 +351,8 @@ impl App {
                         return Ok(());
                     }
 
-                    let Some(target_id) = ctx.state.next_enemy_id(&attacker_id).map(str::to_string) else {
+                    let Some(target_id) = ctx.state.next_enemy_id(&attacker_id).map(str::to_string)
+                    else {
                         Self::push_log(ctx, "No valid target.");
                         return Ok(());
                     };
@@ -391,14 +385,17 @@ impl App {
             GameEvent::Choice(n) => {
                 let idx = n.saturating_sub(1) as usize;
                 if let AppState::Dialog(ctx) = &mut self.state {
-                    let Some(next) = dialog_choose(&ctx.tree, &ctx.current_node, idx, &mut self.world_state) else {
+                    let Some(next) =
+                        dialog_choose(&ctx.tree, &ctx.current_node, idx, &mut self.world_state)
+                    else {
                         return Ok(());
                     };
                     if next == "END" {
                         self.transition(AppState::WorldMap);
                         return Ok(());
                     }
-                    if let Some(resolved) = dialog_resolve(&ctx.tree, &next, &mut self.world_state) {
+                    if let Some(resolved) = dialog_resolve(&ctx.tree, &next, &mut self.world_state)
+                    {
                         ctx.current_node = next;
                         ctx.resolved = resolved;
                         self.journal.append(
@@ -572,7 +569,10 @@ impl App {
         }
 
         if let Some(cond) = &outcome.inflicted_condition {
-            Self::push_log(ctx, format!("{target_name} gains condition: {}.", cond.name()));
+            Self::push_log(
+                ctx,
+                format!("{target_name} gains condition: {}.", cond.name()),
+            );
         }
         true
     }
@@ -607,7 +607,10 @@ impl App {
                     .collect::<Vec<_>>()
                     .join(", ");
                 let name = attacker.name.clone();
-                Self::push_log(ctx, format!("{name} cannot act ({reasons}) and skips turn."));
+                Self::push_log(
+                    ctx,
+                    format!("{name} cannot act ({reasons}) and skips turn."),
+                );
                 let _ = Self::advance_turn(ctx);
                 continue;
             }
@@ -617,9 +620,162 @@ impl App {
                 break;
             };
 
-            let _ = Self::resolve_attack(ctx, &attacker_id, &target_id);
+            let actor = ctx.state.combatants.get(&attacker_id).cloned();
+            let Some(actor) = actor else {
+                break;
+            };
+
+            let target_id = match actor.enemy_role {
+                EnemyAiRole::Melee => target_id,
+                EnemyAiRole::Ranged | EnemyAiRole::Spellcaster => {
+                    Self::select_enemy_target(ctx, &attacker_id, true).unwrap_or(target_id)
+                }
+            };
+
+            match actor.enemy_role {
+                EnemyAiRole::Melee => {
+                    let _ = Self::resolve_attack(ctx, &attacker_id, &target_id);
+                }
+                EnemyAiRole::Ranged => {
+                    if let (Some(bonus), Some(dice)) =
+                        (actor.ranged_attack_bonus, actor.ranged_damage_dice)
+                    {
+                        let _ = Self::resolve_attack_with_stats(
+                            ctx,
+                            &attacker_id,
+                            &target_id,
+                            bonus,
+                            dice,
+                            None,
+                            "ranged",
+                        );
+                    } else {
+                        let _ = Self::resolve_attack(ctx, &attacker_id, &target_id);
+                    }
+                }
+                EnemyAiRole::Spellcaster => {
+                    if let (Some(bonus), Some(dice)) =
+                        (actor.spell_attack_bonus, actor.spell_damage_dice)
+                    {
+                        let _ = Self::resolve_attack_with_stats(
+                            ctx,
+                            &attacker_id,
+                            &target_id,
+                            bonus,
+                            dice,
+                            actor.spell_on_hit_condition.clone(),
+                            "spell",
+                        );
+                    } else {
+                        let _ = Self::resolve_attack(ctx, &attacker_id, &target_id);
+                    }
+                }
+            }
             let _ = Self::advance_turn(ctx);
         }
+    }
+
+    fn resolve_attack_with_stats(
+        ctx: &mut CombatContext,
+        attacker_id: &str,
+        target_id: &str,
+        attack_bonus: i32,
+        damage_dice: DiceExpr,
+        on_hit_condition: Option<crate::game::character::conditions::Condition>,
+        attack_label: &str,
+    ) -> bool {
+        let Some(attacker) = ctx.state.combatants.get(attacker_id) else {
+            Self::push_log(ctx, "Attacker not found.");
+            return false;
+        };
+        let Some(target) = ctx.state.combatants.get(target_id) else {
+            Self::push_log(ctx, "Target not found.");
+            return false;
+        };
+
+        let attacker_name = attacker.name.clone();
+        let target_name = target.name.clone();
+        let outcome = {
+            let attack = AttackProfile {
+                id: &attacker.id,
+                attack_bonus,
+                damage_dice: &damage_dice,
+                conditions: &attacker.conditions,
+                on_hit_condition,
+            };
+            let defense = DefenseProfile {
+                id: &target.id,
+                armor_class: target.armor_class,
+                conditions: &target.conditions,
+            };
+            roll_attack(&attack, &defense, &ctx.world_state)
+        };
+
+        if let Some(attacker_mut) = ctx.state.combatants.get_mut(attacker_id) {
+            let _ = attacker_mut.action_slots.use_action();
+        }
+
+        let mut hp_after = None;
+        if let Some(target_mut) = ctx.state.combatants.get_mut(target_id) {
+            if outcome.damage > 0 {
+                hp_after = Some(apply_damage(target_mut, outcome.damage));
+            }
+            if let Some(cond) = &outcome.inflicted_condition {
+                target_mut.apply_condition(cond.clone(), Some(2));
+            }
+        }
+
+        let verb = match attack_label {
+            "spell" => "casts at",
+            "ranged" => "shoots",
+            _ => "attacks",
+        };
+        let headline = match outcome.hit_type {
+            HitType::Miss => format!(
+                "{attacker_name} {verb} {target_name}: miss (d20={} total={}).",
+                outcome.d20, outcome.total
+            ),
+            HitType::Hit => format!(
+                "{attacker_name} {verb} {target_name} for {} damage (d20={} total={}).",
+                outcome.damage, outcome.d20, outcome.total
+            ),
+            HitType::Critical => format!(
+                "{attacker_name} {verb} {target_name} for {} critical damage (nat 20).",
+                outcome.damage
+            ),
+        };
+        Self::push_log(ctx, headline);
+
+        if let Some(hp) = hp_after {
+            if hp == 0 {
+                Self::push_log(ctx, format!("{target_name} drops to 0 HP."));
+            } else {
+                Self::push_log(ctx, format!("{target_name} now has {hp} HP."));
+            }
+        }
+        true
+    }
+
+    fn select_enemy_target(
+        ctx: &CombatContext,
+        attacker_id: &str,
+        prefer_low_hp: bool,
+    ) -> Option<String> {
+        let attacker = ctx.state.combatants.get(attacker_id)?;
+        let mut candidates: Vec<&CombatantState> = ctx
+            .state
+            .combatants
+            .values()
+            .filter(|c| c.is_alive() && c.is_player != attacker.is_player)
+            .collect();
+        if candidates.is_empty() {
+            return None;
+        }
+        if prefer_low_hp {
+            candidates.sort_by_key(|c| c.current_hp);
+            return Some(candidates[0].id.clone());
+        }
+        ctx.state.next_enemy_id(attacker_id).map(str::to_string)
     }
 
     fn advance_turn(ctx: &mut CombatContext) -> String {
@@ -642,7 +798,10 @@ impl App {
         let Some((is_over, players_alive, player_hp, ws)) = (match &self.state {
             AppState::Combat(ctx) => Some((
                 ctx.state.is_over(),
-                ctx.state.combatants.values().any(|c| c.is_player && c.is_alive()),
+                ctx.state
+                    .combatants
+                    .values()
+                    .any(|c| c.is_player && c.is_alive()),
                 ctx.state.combatants.get("player").map(|c| c.current_hp),
                 ctx.world_state.clone(),
             )),
@@ -660,8 +819,12 @@ impl App {
         self.world_state = ws;
 
         if players_alive {
+            self.world_state.set_flag("won_first_combat");
+            self.world_state.delta_faction_rep("town_guard", 1);
+            self.world_state.delta_faction_rep("goblin_tribe", -2);
             self.transition(AppState::WorldMap);
         } else {
+            self.world_state.delta_faction_rep("town_guard", -1);
             self.transition(AppState::GameOver);
         }
     }
@@ -684,6 +847,8 @@ impl App {
                 .quests
                 .tick_quest(&q, &mut self.world_state, &mut self.journal, self.turn);
         }
+        self.world_events
+            .tick(&mut self.world_state, &mut self.journal, self.turn);
     }
 
     fn make_demo_dialog(&mut self) -> Option<DialogContext> {
@@ -704,12 +869,39 @@ impl App {
                             next: "accepted".into(),
                         },
                         DialogChoice {
+                            text: "Report faction standings.".into(),
+                            condition: "counter:faction_town_guard_rep >= 1".into(),
+                            effect: vec![],
+                            next: "faction_status".into(),
+                        },
+                        DialogChoice {
                             text: "Not now.".into(),
                             condition: "".into(),
                             effect: vec![],
                             next: "END".into(),
                         },
                     ],
+                    skill: None,
+                    dc: None,
+                    on_pass: None,
+                    on_fail: None,
+                },
+                DialogNode {
+                    id: "faction_status".into(),
+                    text: "The guard appreciates your help. Keep this up and doors will open."
+                        .into(),
+                    effect: vec![DialogEffect::DeltaCounter {
+                        delta_counter: crate::data::types::CounterDelta {
+                            key: "faction_town_guard_rep".into(),
+                            delta: 1,
+                        },
+                    }],
+                    choices: vec![DialogChoice {
+                        text: "Back to business.".into(),
+                        condition: "".into(),
+                        effect: vec![],
+                        next: "END".into(),
+                    }],
                     skill: None,
                     dc: None,
                     on_pass: None,
@@ -791,7 +983,11 @@ impl App {
             return;
         };
 
-        let slot_level = if spell.level == 0 { None } else { Some(spell.level) };
+        let slot_level = if spell.level == 0 {
+            None
+        } else {
+            Some(spell.level)
+        };
         if !can_cast(&spell, &self.player.spell_slots, slot_level) {
             self.journal.append(
                 format!("spell-fail-{}-{}", spell.id, self.turn),
@@ -819,8 +1015,12 @@ impl App {
                     format!("You recover {amount} HP."),
                 );
             }
-            Some(SpellEffect::Damage { amount, damage_type }) => {
-                self.world_state.set_counter("last_spell_damage", amount as i32);
+            Some(SpellEffect::Damage {
+                amount,
+                damage_type,
+            }) => {
+                self.world_state
+                    .set_counter("last_spell_damage", amount as i32);
                 self.journal.append(
                     format!("spell-{}-{}", spell.id, self.turn),
                     self.turn,
@@ -831,7 +1031,10 @@ impl App {
                 );
             }
             Some(SpellEffect::Condition { condition }) => {
-                self.world_state.set_flag(format!("spell_inflicted_{}", condition.name().to_lowercase()));
+                self.world_state.set_flag(format!(
+                    "spell_inflicted_{}",
+                    condition.name().to_lowercase()
+                ));
                 self.journal.append(
                     format!("spell-{}-{}", spell.id, self.turn),
                     self.turn,
@@ -886,51 +1089,23 @@ impl App {
             .unwrap_or_else(|| DiceExpr::new(1, 4, 0));
         let attack_bonus = self.player.scores.str_mod() as i32 + self.player.proficiency_bonus();
 
-        let mut state = CombatState::new_with_seed(
-            vec![
-                CombatantState::new(
-                    "player",
-                    self.player.name.clone(),
-                    true,
-                    self.player.max_hp,
-                    ac,
-                    self.player.speed,
-                    self.player.scores.dex_mod() as i32,
-                    attack_bonus,
-                    damage,
-                ),
-                CombatantState::new(
-                    "goblin_a",
-                    "Goblin A",
-                    false,
-                    10,
-                    13,
-                    30,
-                    2,
-                    4,
-                    DiceExpr::new(1, 6, 2),
-                ),
-                CombatantState::new(
-                    "goblin_b",
-                    "Goblin B",
-                    false,
-                    10,
-                    13,
-                    30,
-                    2,
-                    4,
-                    DiceExpr::new(1, 6, 2),
-                ),
-            ],
-            1337,
-        );
+        let mut combatants = vec![CombatantState::new(
+            "player",
+            self.player.name.clone(),
+            true,
+            self.player.max_hp,
+            ac,
+            self.player.speed,
+            self.player.scores.dex_mod() as i32,
+            attack_bonus,
+            damage,
+        )];
+        combatants.extend(self.build_encounter_monsters());
+
+        let mut state = CombatState::new_with_seed(combatants, 1337);
         if let Some(player) = state.combatants.get_mut("player") {
             player.current_hp = self.player.current_hp;
         }
-        if let Some(goblin_a) = state.combatants.get_mut("goblin_a") {
-            goblin_a.on_hit_condition = Some(crate::game::character::conditions::Condition::Poisoned);
-        }
-
         CombatContext {
             state,
             world_state: self.world_state.clone(),
@@ -941,6 +1116,26 @@ impl App {
                 "Press Esc to leave combat.".into(),
             ],
         }
+    }
+
+    fn build_encounter_monsters(&self) -> Vec<CombatantState> {
+        let mut out = Vec::new();
+        let ids = if self.world_state.faction_rep("goblin_tribe") <= -2 {
+            vec!["goblin", "goblin_archer", "goblin_shaman"]
+        } else {
+            vec!["goblin", "goblin"]
+        };
+
+        let mut seq: HashMap<&str, usize> = HashMap::new();
+        for mid in ids {
+            let Some(def) = self.monster_defs.get(mid) else {
+                continue;
+            };
+            let n = seq.entry(mid).and_modify(|v| *v += 1).or_insert(1);
+            let cid = format!("{}_{}", mid, *n);
+            out.push(combatant_from_monster(&cid, def));
+        }
+        out
     }
 }
 
@@ -1097,6 +1292,210 @@ fn sample_spell_defs() -> HashMap<String, SpellDef> {
     map
 }
 
+fn sample_monster_defs() -> HashMap<String, MonsterDef> {
+    let mut map = HashMap::new();
+    map.insert(
+        "goblin".into(),
+        MonsterDef {
+            id: "goblin".into(),
+            name: "Goblin".into(),
+            cr: 0.25,
+            size: "small".into(),
+            monster_type: "humanoid".into(),
+            alignment: "neutral_evil".into(),
+            hp: DiceExpr::new(2, 6, 0),
+            ac: 13,
+            speed: 30,
+            str_score: 8,
+            dex_score: 14,
+            con_score: 10,
+            int_score: 10,
+            wis_score: 8,
+            cha_score: 8,
+            xp: 50,
+            actions: vec![MonsterAction {
+                name: "Scimitar".into(),
+                description: "Melee attack".into(),
+                attack_bonus: Some(4),
+                damage: Some(DiceExpr::new(1, 6, 2)),
+                damage_type: Some("slashing".into()),
+            }],
+            traits: vec![],
+        },
+    );
+    map.insert(
+        "goblin_archer".into(),
+        MonsterDef {
+            id: "goblin_archer".into(),
+            name: "Goblin Archer".into(),
+            cr: 0.25,
+            size: "small".into(),
+            monster_type: "humanoid".into(),
+            alignment: "neutral_evil".into(),
+            hp: DiceExpr::new(2, 6, 0),
+            ac: 13,
+            speed: 30,
+            str_score: 8,
+            dex_score: 14,
+            con_score: 10,
+            int_score: 10,
+            wis_score: 8,
+            cha_score: 8,
+            xp: 50,
+            actions: vec![
+                MonsterAction {
+                    name: "Scimitar".into(),
+                    description: "Melee attack".into(),
+                    attack_bonus: Some(4),
+                    damage: Some(DiceExpr::new(1, 6, 2)),
+                    damage_type: Some("slashing".into()),
+                },
+                MonsterAction {
+                    name: "Shortbow".into(),
+                    description: "Ranged attack".into(),
+                    attack_bonus: Some(4),
+                    damage: Some(DiceExpr::new(1, 6, 2)),
+                    damage_type: Some("piercing".into()),
+                },
+            ],
+            traits: vec![],
+        },
+    );
+    map.insert(
+        "goblin_shaman".into(),
+        MonsterDef {
+            id: "goblin_shaman".into(),
+            name: "Goblin Shaman".into(),
+            cr: 0.5,
+            size: "small".into(),
+            monster_type: "humanoid".into(),
+            alignment: "neutral_evil".into(),
+            hp: DiceExpr::new(3, 6, 0),
+            ac: 12,
+            speed: 30,
+            str_score: 8,
+            dex_score: 12,
+            con_score: 10,
+            int_score: 12,
+            wis_score: 14,
+            cha_score: 10,
+            xp: 100,
+            actions: vec![
+                MonsterAction {
+                    name: "Dagger".into(),
+                    description: "Melee attack".into(),
+                    attack_bonus: Some(3),
+                    damage: Some(DiceExpr::new(1, 4, 1)),
+                    damage_type: Some("piercing".into()),
+                },
+                MonsterAction {
+                    name: "Poison Bolt".into(),
+                    description: "Spell attack".into(),
+                    attack_bonus: Some(4),
+                    damage: Some(DiceExpr::new(1, 8, 1)),
+                    damage_type: Some("poison".into()),
+                },
+            ],
+            traits: vec![],
+        },
+    );
+    map
+}
+
+fn demo_world_events() -> EventEngine {
+    EventEngine {
+        triggers: vec![
+            EventTrigger {
+                condition: "counter:faction_town_guard_rep >= 3".into(),
+                event: WorldEvent::AddJournalEntry {
+                    id: "faction-town-guard-friendly".into(),
+                    category: JournalCategory::World,
+                    title: "Town Guard Trust".into(),
+                    body: "The town guard now recognizes your service and offers support.".into(),
+                },
+                once: true,
+                fired: false,
+            },
+            EventTrigger {
+                condition: "counter:faction_goblin_tribe_rep <= -4".into(),
+                event: WorldEvent::SetFlag {
+                    key: "goblin_tribe_hostile".into(),
+                },
+                once: true,
+                fired: false,
+            },
+        ],
+    }
+}
+
+fn combatant_from_monster(combat_id: &str, monster: &MonsterDef) -> CombatantState {
+    let mut melee_bonus = 2;
+    let mut melee_damage = DiceExpr::new(1, 4, 0);
+    let mut ranged_attack_bonus = None;
+    let mut ranged_damage_dice = None;
+    let mut spell_attack_bonus = None;
+    let mut spell_damage_dice = None;
+    let mut role = EnemyAiRole::Melee;
+
+    for action in &monster.actions {
+        let name = action.name.to_lowercase();
+        let desc = action.description.to_lowercase();
+        let is_spell = name.contains("spell")
+            || name.contains("bolt")
+            || name.contains("ray")
+            || desc.contains("spell");
+        let is_ranged = name.contains("bow")
+            || name.contains("sling")
+            || name.contains("shot")
+            || desc.contains("ranged");
+
+        let bonus = action.attack_bonus.unwrap_or(2);
+        let damage = action
+            .damage
+            .clone()
+            .unwrap_or_else(|| DiceExpr::new(1, 4, 0));
+
+        if is_spell {
+            spell_attack_bonus = Some(bonus);
+            spell_damage_dice = Some(damage);
+            role = EnemyAiRole::Spellcaster;
+            continue;
+        }
+        if is_ranged {
+            ranged_attack_bonus = Some(bonus);
+            ranged_damage_dice = Some(damage);
+            if role != EnemyAiRole::Spellcaster {
+                role = EnemyAiRole::Ranged;
+            }
+            continue;
+        }
+        melee_bonus = bonus;
+        melee_damage = damage;
+    }
+
+    let max_hp = monster.hp.average().max(1);
+    let mut c = CombatantState::new(
+        combat_id,
+        monster.name.clone(),
+        false,
+        max_hp,
+        monster.ac as i32,
+        monster.speed,
+        AbilityScores::modifier(monster.dex_score) as i32,
+        melee_bonus,
+        melee_damage,
+    );
+    c.enemy_role = role;
+    c.ranged_attack_bonus = ranged_attack_bonus;
+    c.ranged_damage_dice = ranged_damage_dice;
+    c.spell_attack_bonus = spell_attack_bonus;
+    c.spell_damage_dice = spell_damage_dice;
+    if role == EnemyAiRole::Spellcaster {
+        c.spell_on_hit_condition = Some(crate::game::character::conditions::Condition::Poisoned);
+    }
+    c
+}
+
 impl Default for App {
     fn default() -> Self {
         Self::new()
@@ -1177,10 +1576,7 @@ mod tests {
 
         match &app.state {
             AppState::Combat(ctx) => {
-                assert!(ctx
-                    .state
-                    .current_combatant()
-                    .is_some_and(|c| c.is_player));
+                assert!(ctx.state.current_combatant().is_some_and(|c| c.is_player));
                 assert!(ctx.log.iter().any(|line| line.contains("Goblin")));
             }
             _ => panic!("expected combat state"),
@@ -1234,12 +1630,12 @@ mod tests {
                 .apply_condition(Condition::Poisoned, Some(1));
             let _next = App::advance_turn(ctx);
             assert!(!ctx
-                    .state
-                    .combatants
-                    .get(&current_id)
-                    .unwrap()
-                    .conditions
-                    .contains(&Condition::Poisoned));
+                .state
+                .combatants
+                .get(&current_id)
+                .unwrap()
+                .conditions
+                .contains(&Condition::Poisoned));
             assert!(ctx.log.iter().any(|l| l.contains("expired")));
         } else {
             panic!("expected combat state");
@@ -1272,5 +1668,47 @@ mod tests {
         app.handle_event(GameEvent::Choice(1)).unwrap(); // cure wounds
         assert!(app.player.current_hp > 10);
         assert_eq!(app.player.spell_slots[0], before_slots - 1);
+    }
+
+    #[test]
+    fn combat_context_uses_monster_templates() {
+        let app = App::new();
+        let ctx = app.make_combat_context();
+        let enemies: Vec<&CombatantState> = ctx
+            .state
+            .combatants
+            .values()
+            .filter(|c| !c.is_player)
+            .collect();
+        assert!(!enemies.is_empty());
+        assert!(enemies.iter().all(|c| c.id.starts_with("goblin")));
+    }
+
+    #[test]
+    fn hostile_goblin_rep_adds_shaman_encounter() {
+        let mut app = App::new();
+        app.world_state.set_faction_rep("goblin_tribe", -3);
+        let ctx = app.make_combat_context();
+        assert!(ctx
+            .state
+            .combatants
+            .keys()
+            .any(|id| id.starts_with("goblin_shaman")));
+    }
+
+    #[test]
+    fn world_events_fire_from_faction_thresholds() {
+        let mut app = App::new();
+        app.world_state.set_faction_rep("town_guard", 3);
+        app.handle_event(GameEvent::Tick).unwrap();
+        assert!(app
+            .journal
+            .entries
+            .iter()
+            .any(|e| e.id == "faction-town-guard-friendly"));
+
+        app.world_state.set_faction_rep("goblin_tribe", -4);
+        app.handle_event(GameEvent::Tick).unwrap();
+        assert!(app.world_state.flag("goblin_tribe_hostile"));
     }
 }

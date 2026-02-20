@@ -61,10 +61,10 @@
 
 ## Milestone 5 — NPC & Factions
 
-- [ ] Monster stat block loader
-- [ ] Basic NPC AI (melee, ranged, spellcaster behaviours)
-- [ ] Faction reputation system
-- [ ] Emergent world events triggered by WorldState
+- [x] Monster stat block loader
+- [x] Basic NPC AI (melee, ranged, spellcaster behaviours)
+- [x] Faction reputation system
+- [x] Emergent world events triggered by WorldState
   - See [gameplay/npc-ai.md](../gameplay/npc-ai.md)
 
 ## Milestone 6 — First Region

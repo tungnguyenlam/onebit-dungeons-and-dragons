@@ -40,7 +40,7 @@ use std::collections::HashMap;
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct WorldState {
     /// Boolean flags, e.g. `"killed_bandit_lord"` → `true`.
-    pub flags:    HashMap<String, bool>,
+    pub flags: HashMap<String, bool>,
     /// Integer counters, e.g. `"faction_guild_rep"` → `12`.
     pub counters: HashMap<String, i32>,
 }
@@ -87,8 +87,28 @@ impl WorldState {
     /// Add `delta` to a counter (creates it with value 0 first if absent).
     pub fn delta_counter(&mut self, key: impl Into<String>, delta: i32) {
         let key = key.into();
-        let v   = self.counters.entry(key).or_insert(0);
+        let v = self.counters.entry(key).or_insert(0);
         *v += delta;
+    }
+
+    // -----------------------------------------------------------------------
+    // Faction reputation helpers
+    // -----------------------------------------------------------------------
+
+    pub fn faction_key(faction: &str) -> String {
+        format!("faction_{}_rep", faction)
+    }
+
+    pub fn faction_rep(&self, faction: &str) -> i32 {
+        self.counter(&Self::faction_key(faction))
+    }
+
+    pub fn set_faction_rep(&mut self, faction: &str, value: i32) {
+        self.set_counter(Self::faction_key(faction), value);
+    }
+
+    pub fn delta_faction_rep(&mut self, faction: &str, delta: i32) {
+        self.delta_counter(Self::faction_key(faction), delta);
     }
 
     // -----------------------------------------------------------------------
@@ -149,7 +169,7 @@ impl WorldState {
         // Try each operator longest first to avoid prefix ambiguity.
         for op in &[">=", "<=", "==", ">", "<"] {
             if let Some(pos) = expr.find(op) {
-                let key   = expr[..pos].trim();
+                let key = expr[..pos].trim();
                 let n_str = expr[pos + op.len()..].trim();
                 if let Ok(n) = n_str.parse::<i32>() {
                     let val = self.counter(key);
@@ -157,9 +177,9 @@ impl WorldState {
                         ">=" => val >= n,
                         "<=" => val <= n,
                         "==" => val == n,
-                        ">"  => val >  n,
-                        "<"  => val <  n,
-                        _    => false,
+                        ">" => val > n,
+                        "<" => val < n,
+                        _ => false,
                     };
                 }
             }
@@ -195,29 +215,29 @@ mod tests {
     fn flag_condition() {
         let mut ws = WorldState::new();
         ws.set_flag("met_kael");
-        assert!( ws.evaluate("flag:met_kael"));
+        assert!(ws.evaluate("flag:met_kael"));
         assert!(!ws.evaluate("not flag:met_kael"));
         assert!(!ws.evaluate("flag:other"));
-        assert!( ws.evaluate("not flag:other"));
+        assert!(ws.evaluate("not flag:other"));
     }
 
     #[test]
     fn counter_conditions() {
         let mut ws = WorldState::new();
         ws.set_counter("rep", 10);
-        assert!( ws.evaluate("counter:rep >= 10"));
-        assert!( ws.evaluate("counter:rep >  9"));
+        assert!(ws.evaluate("counter:rep >= 10"));
+        assert!(ws.evaluate("counter:rep >  9"));
         assert!(!ws.evaluate("counter:rep >  10"));
-        assert!( ws.evaluate("counter:rep <= 10"));
+        assert!(ws.evaluate("counter:rep <= 10"));
         assert!(!ws.evaluate("counter:rep <  10"));
-        assert!( ws.evaluate("counter:rep == 10"));
+        assert!(ws.evaluate("counter:rep == 10"));
         assert!(!ws.evaluate("counter:rep == 9"));
     }
 
     #[test]
     fn counter_default_zero() {
         let ws = WorldState::new();
-        assert!( ws.evaluate("counter:nonexistent == 0"));
+        assert!(ws.evaluate("counter:nonexistent == 0"));
         assert!(!ws.evaluate("counter:nonexistent > 0"));
     }
 
@@ -226,7 +246,7 @@ mod tests {
         let mut ws = WorldState::new();
         ws.set_flag("met_kael");
         ws.set_counter("rep", 5);
-        assert!( ws.evaluate("flag:met_kael && counter:rep >= 5"));
+        assert!(ws.evaluate("flag:met_kael && counter:rep >= 5"));
         assert!(!ws.evaluate("flag:met_kael && counter:rep >= 6"));
     }
 
@@ -234,7 +254,7 @@ mod tests {
     fn or_condition() {
         let mut ws = WorldState::new();
         ws.set_flag("a");
-        assert!( ws.evaluate("flag:a || flag:b"));
+        assert!(ws.evaluate("flag:a || flag:b"));
         assert!(!ws.evaluate("flag:b || flag:c"));
     }
 
@@ -252,5 +272,14 @@ mod tests {
         ws.set_flag("x");
         ws.clear_flag("x");
         assert!(!ws.flag("x"));
+    }
+
+    #[test]
+    fn faction_rep_helpers() {
+        let mut ws = WorldState::new();
+        assert_eq!(ws.faction_rep("town_guard"), 0);
+        ws.set_faction_rep("town_guard", 2);
+        ws.delta_faction_rep("town_guard", 3);
+        assert_eq!(ws.faction_rep("town_guard"), 5);
     }
 }

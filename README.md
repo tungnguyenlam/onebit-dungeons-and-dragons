@@ -152,8 +152,8 @@ For the detailed design see [docs/architecture/overview.md](docs/architecture/ov
 | M2 — Combat | ✅ Done |
 | M3 — Story & Dialog | ✅ Done |
 | M4 — Items & Spells | ✅ Done |
-| M5 — NPC & Factions | 🔧 Next |
-| M6 — First Region (Valley of Ash) | ⬜ Planned |
+| M5 — NPC & Factions | ✅ Done |
+| M6 — First Region (Valley of Ash) | 🔧 Next |
 | M7 — Polish & Save/Load | ⬜ Planned |
 
 ---

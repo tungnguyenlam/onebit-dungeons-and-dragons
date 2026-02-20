@@ -2,9 +2,13 @@
 
 ## Overview
 
-NPC/monster AI runs in `src/game/npc/ai.rs`. On the monster's turn in combat,
-`ai::decide_action(monster, combat_state) -> CombatAction` is called. No
-randomness is used except where explicitly dice-driven.
+NPC/monster AI currently runs in `src/app.rs` enemy-turn handling, using
+runtime metadata stored on `CombatantState` (`EnemyAiRole` plus optional ranged
+and spell attack profiles).
+
+Monster templates are loaded from `assets/monsters/*.toml` via
+`src/data/loader.rs::load_monsters`, then converted into combatants for
+encounters.
 
 ---
 
@@ -57,15 +61,13 @@ flee_at_hp = 0.25           # fraction of max HP — flees if below this
 
 ---
 
-## AI Behaviour Types
+## AI Behaviour Types (Current Runtime)
 
 | Behaviour | Decision logic |
 |---|---|
-| `brute` | Move toward nearest enemy, use highest-damage melee action |
-| `skirmisher` | Attack then disengage if in melee; prefer ranged if available |
-| `ranged` | Stay at maximum range, fall back to melee only if cornered |
-| `spellcaster` | Prioritise highest-level damaging/debuff spell; fall back to cantrip |
-| `coward` | Use `flee_at_hp` threshold; otherwise `brute` |
+| `melee` | Uses base melee attack profile and nearest opposing target |
+| `ranged` | Prefers ranged profile and prioritizes lowest-HP opposing target |
+| `spellcaster` | Prefers spell profile (including on-hit condition if present) and lowest-HP target |
 
 ---
 

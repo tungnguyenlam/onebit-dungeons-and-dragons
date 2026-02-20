@@ -1,4 +1,5 @@
 use crate::app::{App, AppState};
+use crate::game::combat::EnemyAiRole;
 use ratatui::{
     layout::{Constraint, Layout},
     style::{Modifier, Style},
@@ -45,7 +46,13 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     let active = ctx
         .state
         .current_combatant()
-        .map(|c| format!("{} ({})", c.name, if c.is_player { "PLAYER" } else { "ENEMY" }))
+        .map(|c| {
+            format!(
+                "{} ({})",
+                c.name,
+                if c.is_player { "PLAYER" } else { "ENEMY" }
+            )
+        })
         .unwrap_or_else(|| "Unknown".into());
     let turn_banner = Paragraph::new(Line::from(format!(
         "Round {} | Active: {} | Turn Order: {banner_text}",
@@ -90,8 +97,17 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
                 labels.sort();
                 labels.join(",")
             };
+            let role = if c.is_player {
+                "player".to_string()
+            } else {
+                match c.enemy_role {
+                    EnemyAiRole::Melee => "melee".to_string(),
+                    EnemyAiRole::Ranged => "ranged".to_string(),
+                    EnemyAiRole::Spellcaster => "spellcaster".to_string(),
+                }
+            };
             Line::from(format!(
-                "{marker} {:10} HP {:>2}/{:<2} AC {:>2} Slots {action}{bonus}{reaction} Move {:>2} Cond {}",
+                "{marker} {:10} HP {:>2}/{:<2} AC {:>2} [{role}] Slots {action}{bonus}{reaction} Move {:>2} Cond {}",
                 c.name, c.current_hp, c.max_hp, c.armor_class, c.action_slots.movement_remaining, conditions
             ))
             .style(if c.id == current_id {
