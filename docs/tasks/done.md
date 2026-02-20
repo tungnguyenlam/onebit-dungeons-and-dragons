@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-02-20 — Milestone 2 (complete): Combat Turn Lifecycle Step 6
+
+- [x] `src/game/combat/combat.rs` — timed condition storage (`condition_durations`) and expiry tick support
+- [x] `src/game/combat/combat.rs` — `advance_turn_with_condition_tick()` integrates condition lifecycle with turn transitions
+- [x] `src/app.rs` — turn advancement now logs condition expirations
+- [x] `src/app.rs` — on-hit condition application now uses timed duration helper
+- [x] `src/ui/tui/screens/combat.rs` — condition duration rendered in combat HUD
+- [x] tests: condition tick/expiry behavior in combat state + app flow
+- [x] `cargo test` passes (71 tests, 0 failures)
+
 ## 2026-02-20 — Milestone 2 (partial): Combat Conditions Step 5
 
 - [x] `src/game/combat/attack.rs` — `AttackOutcome` now reports roll mode and on-hit condition hook

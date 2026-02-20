@@ -231,12 +231,7 @@ impl App {
                         .current_combatant()
                         .map(|c| c.name.clone())
                         .unwrap_or_else(|| "Unknown".into());
-                    let _ = ctx.state.next_turn();
-                    let after = ctx
-                        .state
-                        .current_combatant()
-                        .map(|c| c.name.clone())
-                        .unwrap_or_else(|| "Unknown".into());
+                    let after = Self::advance_turn(ctx);
                     Self::push_log(ctx, format!("{before} ends turn. {after} is up."));
                 }
                 self.run_enemy_turns();
@@ -352,7 +347,7 @@ impl App {
                 hp_after = Some(apply_damage(target_mut, outcome.damage));
             }
             if let Some(cond) = &outcome.inflicted_condition {
-                target_mut.conditions.insert(cond.clone());
+                target_mut.apply_condition(cond.clone(), Some(2));
             }
         }
 
@@ -422,7 +417,7 @@ impl App {
                     .join(", ");
                 let name = attacker.name.clone();
                 Self::push_log(ctx, format!("{name} cannot act ({reasons}) and skips turn."));
-                let _ = ctx.state.next_turn();
+                let _ = Self::advance_turn(ctx);
                 continue;
             }
 
@@ -432,8 +427,24 @@ impl App {
             };
 
             let _ = Self::resolve_attack(ctx, &attacker_id, &target_id);
-            let _ = ctx.state.next_turn();
+            let _ = Self::advance_turn(ctx);
         }
+    }
+
+    fn advance_turn(ctx: &mut CombatContext) -> String {
+        let leaving_name = ctx
+            .state
+            .current_combatant()
+            .map(|c| c.name.clone())
+            .unwrap_or_else(|| "Unknown".into());
+        let (_, expired, _) = ctx.state.advance_turn_with_condition_tick();
+        for cond in expired {
+            Self::push_log(ctx, format!("{leaving_name}'s {} expired.", cond.name()));
+        }
+        ctx.state
+            .current_combatant()
+            .map(|c| c.name.clone())
+            .unwrap_or_else(|| "Unknown".into())
     }
 
     fn finish_combat_if_over(&mut self) {
@@ -579,5 +590,32 @@ mod tests {
 
         app.handle_event(GameEvent::Tick).unwrap();
         assert!(matches!(app.state, AppState::GameOver));
+    }
+
+    #[test]
+    fn timed_condition_expires_when_turn_ends() {
+        let mut app = App::new();
+        app.transition(AppState::WorldMap);
+        app.handle_event(GameEvent::Attack).unwrap(); // enter combat
+
+        if let AppState::Combat(ctx) = &mut app.state {
+            let current_id = ctx.state.current_combatant_id().unwrap().to_string();
+            ctx.state
+                .combatants
+                .get_mut(&current_id)
+                .unwrap()
+                .apply_condition(Condition::Poisoned, Some(1));
+            let _next = App::advance_turn(ctx);
+            assert!(!ctx
+                    .state
+                    .combatants
+                    .get(&current_id)
+                    .unwrap()
+                    .conditions
+                    .contains(&Condition::Poisoned));
+            assert!(ctx.log.iter().any(|l| l.contains("expired")));
+        } else {
+            panic!("expected combat state");
+        }
     }
 }

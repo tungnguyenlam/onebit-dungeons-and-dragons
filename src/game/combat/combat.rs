@@ -23,6 +23,7 @@ pub struct CombatantState {
     pub damage_dice:    DiceExpr,
     pub on_hit_condition: Option<Condition>,
     pub conditions:     HashSet<Condition>,
+    pub condition_durations: HashMap<Condition, u8>,
     pub action_slots:   ActionSlots,
 }
 
@@ -52,6 +53,7 @@ impl CombatantState {
             damage_dice,
             on_hit_condition: None,
             conditions: HashSet::new(),
+            condition_durations: HashMap::new(),
             action_slots: ActionSlots::new(speed),
         }
     }
@@ -74,6 +76,42 @@ impl CombatantState {
 
     pub fn can_take_actions(&self) -> bool {
         self.is_alive() && !self.conditions.iter().any(Condition::is_incapacitating)
+    }
+
+    pub fn apply_condition(&mut self, condition: Condition, duration_rounds: Option<u8>) {
+        self.conditions.insert(condition.clone());
+        if let Some(rounds) = duration_rounds {
+            if rounds > 0 {
+                self.condition_durations.insert(condition, rounds);
+            }
+        }
+    }
+
+    pub fn condition_duration(&self, condition: &Condition) -> Option<u8> {
+        self.condition_durations.get(condition).copied()
+    }
+
+    /// Decrement timed conditions and remove those that expire.
+    pub fn tick_condition_durations(&mut self) -> Vec<Condition> {
+        let mut expired = Vec::new();
+        let mut pending = Vec::new();
+
+        for (cond, rounds) in &self.condition_durations {
+            if *rounds <= 1 {
+                expired.push(cond.clone());
+            } else {
+                pending.push((cond.clone(), rounds - 1));
+            }
+        }
+
+        for cond in &expired {
+            self.condition_durations.remove(cond);
+            self.conditions.remove(cond);
+        }
+        for (cond, rounds) in pending {
+            self.condition_durations.insert(cond, rounds);
+        }
+        expired
     }
 }
 
@@ -149,6 +187,26 @@ impl CombatState {
         }
 
         None
+    }
+
+    /// Advance one full turn transition:
+    /// - decrement/end previous actor timed conditions
+    /// - advance to next living actor
+    /// - return expired conditions and the new active id
+    pub fn advance_turn_with_condition_tick(
+        &mut self,
+    ) -> (Option<String>, Vec<Condition>, Option<String>) {
+        let leaving_id = self.current_combatant_id().map(str::to_string);
+        let expired = if let Some(id) = &leaving_id {
+            self.combatants
+                .get_mut(id)
+                .map(CombatantState::tick_condition_durations)
+                .unwrap_or_default()
+        } else {
+            Vec::new()
+        };
+        let next = self.next_turn().map(str::to_string);
+        (leaving_id, expired, next)
     }
 
     pub fn is_over(&self) -> bool {
@@ -256,5 +314,15 @@ mod tests {
             42,
         );
         assert!(matches!(c.next_enemy_id("p1"), Some("m1" | "m2")));
+    }
+
+    #[test]
+    fn timed_condition_expires_after_tick() {
+        let mut c = actor("p1", true, 1);
+        c.apply_condition(Condition::Poisoned, Some(1));
+        assert!(c.conditions.contains(&Condition::Poisoned));
+        let expired = c.tick_condition_durations();
+        assert_eq!(expired, vec![Condition::Poisoned]);
+        assert!(!c.conditions.contains(&Condition::Poisoned));
     }
 }

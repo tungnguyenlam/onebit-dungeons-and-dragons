@@ -35,7 +35,7 @@
 - [x] Attack roll: d20 + modifier vs AC, critical hit/miss
 - [x] Damage roll with damage type
 - [x] Saving throws
-- [ ] Condition application (poisoned, stunned, etc.)
+- [x] Condition application (poisoned, stunned, etc.)
 - [x] Combat UI screen (`src/ui/screens/combat.rs`)
   - See [gameplay/combat.md](../gameplay/combat.md)
 

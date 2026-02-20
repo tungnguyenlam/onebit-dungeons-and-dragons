@@ -76,7 +76,17 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             let conditions = if c.conditions.is_empty() {
                 "-".to_string()
             } else {
-                let mut labels: Vec<String> = c.conditions.iter().map(|cond| cond.name()).collect();
+                let mut labels: Vec<String> = c
+                    .conditions
+                    .iter()
+                    .map(|cond| {
+                        if let Some(rounds) = c.condition_duration(cond) {
+                            format!("{}({rounds})", cond.name())
+                        } else {
+                            cond.name()
+                        }
+                    })
+                    .collect();
                 labels.sort();
                 labels.join(",")
             };
