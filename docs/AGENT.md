@@ -25,6 +25,10 @@ cargo check 2>&1 | head -40
 If it fails, check the handoff block — the previous agent may have noted a
 known compile error as their stopping point. Fix it before continuing.
 
+`cargo` warnings are currently **non-blocking**. Do not do broad warning-only
+cleanup unless the active task explicitly requests it. Prioritize feature and
+behavior work; warning cleanup is deferred.
+
 For a non-interactive keyboard smoke check of the TUI:
 ```bash
 scripts/agent_tui_smoke.sh

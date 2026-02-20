@@ -11,62 +11,37 @@
 
 ```
 Date:          2026-02-20
-Stopped at:    Milestone 7 complete — all planned milestones implemented
-Task in progress: Post-milestone hardening — reduce warnings and integration polish
+Stopped at:    Post-M7 roadmap reset complete; Milestone 8 selected as next track
+Task in progress: Milestone 8 — Stability & Engineering Debt kickoff
 
 What was completed this session:
-  Milestone 6:
-    - assets/regions/valley-of-ash/region.toml + rooms + npcs + dialog authored
-    - assets/quests/main + assets/quests/side authored for first-region progression
-    - assets/lore + assets/items + assets/spells + assets/monsters seeded for runtime loading
-    - src/app.rs — region/room runtime state, movement, trigger interaction, travel wiring
-    - src/data/loader.rs — authored region smoke test
-  Milestone 7:
-    - src/game/save/mod.rs — save/load TOML serialization runtime + tests
-    - src/renderer.rs + src/ui/tui/mod.rs + src/ui/gui/mod.rs — save/load/sound events and key mappings
-    - src/ui/tui/screens/ — main menu, world map, character creation, game over screens
-    - README.md — screenshots and updated controls/status
-    - cargo test — 98 tests, 0 failures
-  Milestone 6/7 status:
-    - all backlog checklist items now complete
+  Post-M7 planning and docs alignment:
+    - docs/tasks/backlog.md:
+      - added Roadmap Policy (Post-M7) with recommended defaults
+      - added Milestones 8-13 with linked reference docs
+    - docs/AGENT.md:
+      - clarified that cargo warnings are currently non-blocking
+      - documented the TUI smoke script as the default agent check
+    - docs/tasks/current-sprint.md:
+      - moved active focus to Milestone 8 stability track
 
 What is NOT done yet:
-    - warning cleanup (unused re-exports and dead-code across modules)
-    - GUI remains a functional stub compared with TUI
-    - deeper content/balance pass for Valley of Ash
+    - Milestone 8 implementation work has not started yet
+    - warning cleanup remains intentionally deferred (non-blocking until after M9)
+    - GUI parity work remains deferred unless explicitly pulled into sprint scope
 
 Next action for the incoming agent:
-  1. cargo test — must pass (98 tests) before touching anything.
-  2. Tackle warning reduction by removing stale re-exports and dead demo code.
-  3. Add end-to-end integration tests for world-map trigger -> combat/dialog transitions.
-  4. If GUI milestone is desired, mirror the new TUI screens in src/ui/gui/.
+  1. Start Milestone 8 with integration tests for:
+     - world-map -> trigger -> combat
+     - world-map -> trigger -> dialog
+     - save/load roundtrip from active runtime state
+  2. Keep warning-only cleanup out of scope unless explicitly requested.
+  3. Standardize developer/agent automation entry points under scripts/.
+  4. Update done/backlog/current-sprint together when M8 checklist items move.
 
 Files modified this session:
-  Cargo.toml
-  src/app.rs
-  src/renderer.rs
-  src/game/mod.rs
-  src/game/save/mod.rs (new)
-  src/data/loader.rs
-  src/ui/tui/mod.rs
-  src/ui/tui/screens/mod.rs
-  src/ui/tui/screens/main_menu.rs (new)
-  src/ui/tui/screens/character_creation.rs (new)
-  src/ui/tui/screens/world_map.rs (new)
-  src/ui/tui/screens/game_over.rs (new)
-  src/ui/tui/screens/combat.rs
-  src/ui/gui/mod.rs
-  assets/regions/valley-of-ash/* (new)
-  assets/quests/main/* (new)
-  assets/quests/side/* (new)
-  assets/lore/* (new)
-  assets/items/* (new)
-  assets/spells/* (new)
-  assets/monsters/* (new)
-  docs/content/regions/index.md
-  README.md
+  docs/AGENT.md
   docs/tasks/backlog.md
-  docs/tasks/done.md
   docs/tasks/current-sprint.md (this file)
 
 Blockers: none
@@ -76,23 +51,29 @@ Blockers: none
 
 ## Active Task
 
-### Task: Post-Milestone Hardening
+### Task: Milestone 8 — Stability & Engineering Debt
 
 **Files to touch:**
-- `src/game/*/mod.rs` — remove/adjust stale re-exports
-- `src/app.rs` — remove deprecated demo-only paths
-- `src/ui/gui/mod.rs` — improve parity with TUI flows
+- `src/app.rs` — stabilize runtime transitions and reduce glue paths
+- `src/game/save/mod.rs` — strengthen roundtrip stability checks
+- `src/ui/tui/mod.rs` — ensure deterministic event-driven transitions in tests
+- `tests/` (or `src/**/tests`) — add end-to-end integration coverage
+- `scripts/` — standardize agent/developer entry points for smoke/integration runs
 
 **Done when:**
+- [ ] integration tests cover world-map -> trigger -> combat
+- [ ] integration tests cover world-map -> trigger -> dialog
+- [ ] save/load roundtrip is covered from active gameplay state
 - [ ] `cargo test` passes
-- [ ] warnings materially reduced from current baseline
-- [ ] no milestone docs are stale
-- [ ] basic GUI path supports menu/world/combat transitions
+- [ ] scripts provide clear automation entry points for agents
 
 **Blocked by:** none
 
 **Relevant docs:**
 - [../DOCS_MAP.md](../DOCS_MAP.md)
+- [../AGENT.md](../AGENT.md)
+- [../testing/tui-agent-smoke.md](../testing/tui-agent-smoke.md)
+- [../architecture/game-loop.md](../architecture/game-loop.md)
 - [../architecture/ui-layer.md](../architecture/ui-layer.md)
 
 ---
