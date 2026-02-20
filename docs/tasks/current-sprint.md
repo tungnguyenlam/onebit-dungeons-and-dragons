@@ -10,57 +10,49 @@
 
 ```
 Date:          2026-02-20
-Stopped at:    Milestone 3 complete — story/dialog systems implemented
-Task in progress: Milestone 4 step 1 — inventory/equipment runtime integration
+Stopped at:    Milestone 4 complete — items/spells runtime and TUI screens implemented
+Task in progress: Milestone 5 step 1 — monster stat block loader integration
 
 What was completed this session:
-  Milestone 3:
-    - src/game/story/quest.rs        — quest stage machine + quest acceptance + transition eval
-    - src/game/story/dialog.rs       — dialog evaluator + choice resolution + skill-check sentinel
-    - src/game/story/journal.rs      — append-only journal model with category filters
-    - src/game/story/events.rs       — emergent event trigger engine + lore inspection hook
-    - src/game/story/mod.rs          — story module exports enabled
-    - src/data/loader.rs             — quest/lore loader helpers (`load_quests`, `load_lore`)
-    - src/app.rs                     — story systems wired:
-        · global `WorldState`, `Journal`, `QuestLog`
-        · demo dialog flow and choice handling
-        · quest acceptance/progression on ticks
-        · environmental lore inspect action from world map
-    - src/ui/tui/screens/dialog.rs   — dialog screen (NPC text + numbered choices)
-    - src/ui/tui/screens/journal.rs  — journal screen (category + entry list/detail)
-    - src/ui/tui/screens/mod.rs + src/ui/tui/mod.rs — render dispatch for dialog/journal screens
-    - `cargo test` — 81 tests, 0 failures
-  Milestone 3 status:
+  Milestone 4:
+    - src/game/items/inventory.rs     — runtime helpers for equipment state and consumable usage
+    - src/game/items/equipment.rs     — equip/unequip mutation helpers with explicit slot enum
+    - src/game/combat/spells.rs       — spell slot check/spend + spell effect resolution
+    - src/game/combat/mod.rs          — spells module exports
+    - src/app.rs                      — inventory + spellbook app flow, gear-based combat setup, potion and spell actions
+    - src/ui/tui/screens/inventory.rs — inventory screen
+    - src/ui/tui/screens/spellbook.rs — spellbook screen
+    - src/ui/tui/screens/mod.rs + src/ui/tui/mod.rs — render dispatch for inventory/spellbook screens
+    - `cargo test` — 88 tests, 0 failures
+  Milestone 4 status:
     - all backlog checklist items now complete
 
 What is NOT done yet:
-    - src/ui/tui/screens/ — all screen render functions
-    - src/ui/tui/layout.rs, widgets/
-    - Milestone 4 (items/spells) not implemented
+    - Milestone 5 (NPC & factions) not implemented
     - no distinct enemy behavior profiles beyond basic attack loop
-    - game/ and data/ modules still partially wired into app.rs
+    - faction reputation is not connected to dialog/quest outcomes
+    - world events are still mostly scripted stubs
 
 Next action for the incoming agent:
-  1. `cargo test` — must pass (81 tests) before touching anything.
-  2. Start Milestone 4 step 1:
-       - wire runtime inventory/equipment into app flow (loot, equip, unequip)
-       - apply armor/weapon stats to combat setup
-  3. Add spell slot tracking interactions in app flow and spellbook state.
-  4. Implement TUI spellbook screen with current slots and known spells.
+  1. `cargo test` — must pass (88 tests) before touching anything.
+  2. Start Milestone 5 step 1:
+       - implement monster stat block loading into runtime encounter builders
+       - replace hard-coded combatants with data-driven monster templates
+  3. Add basic role-driven enemy behavior (melee/ranged/spellcaster) in combat ticks.
+  4. Introduce faction reputation state and hook it into dialog condition checks.
 
 Files modified this session:
   src/app.rs
-  src/data/loader.rs
-  src/game/story/mod.rs
-  src/game/story/quest.rs (new)
-  src/game/story/dialog.rs (new)
-  src/game/story/journal.rs (new)
-  src/game/story/events.rs (new)
+  src/game/combat/mod.rs
+  src/game/combat/spells.rs (new)
+  src/game/items/equipment.rs
+  src/game/items/inventory.rs
   src/ui/tui/mod.rs
   src/ui/tui/screens/mod.rs
-  src/ui/tui/screens/dialog.rs (new)
-  src/ui/tui/screens/journal.rs (new)
+  src/ui/tui/screens/inventory.rs (new)
+  src/ui/tui/screens/spellbook.rs (new)
   docs/tasks/backlog.md
+  docs/tasks/done.md
   docs/tasks/current-sprint.md (this file)
 
 Blockers: none
@@ -70,26 +62,26 @@ Blockers: none
 
 ## Active Task
 
-### Task: Inventory Runtime (Milestone 4, step 1)
+### Task: Monster Runtime (Milestone 5, step 1)
 
 **Files to touch:**
-- `src/app.rs`                    — inventory/equipment interaction handling
-- `src/game/items/inventory.rs`   — runtime helpers for stack/equip usage
-- `src/game/items/equipment.rs`   — equip/unequip mutation helpers
-- `src/ui/tui/screens/inventory.rs` — inventory list + equip actions
+- `src/data/loader.rs`              — monster definition load helpers
+- `src/app.rs`                      — build encounter combatants from monster defs
+- `src/game/combat/combat.rs`       — optional helpers for data-driven combatant construction
+- `src/ui/tui/screens/combat.rs`    — show monster role/type where helpful
 
 **Done when:**
 - [ ] `cargo test` passes
-- [ ] player can equip/unequip weapon and armor in app flow
-- [ ] combat setup uses equipped gear stats
-- [ ] inventory mutations are reflected in TUI inventory screen
-- [ ] inventory/equipment operations have focused tests
+- [ ] encounters can be created from loaded monster definitions
+- [ ] hard-coded enemy stat values are removed from app encounter setup
+- [ ] combat flow remains stable with data-driven enemies
+- [ ] loader + app integration has focused tests
 
-**Blocked by:** `src/game/items/` (done)
+**Blocked by:** `Milestone 4` (done)
 
 **Relevant docs:**
-- [../gameplay/items.md](../gameplay/items.md)
-- [../gameplay/spells.md](../gameplay/spells.md)
+- [../gameplay/npc-ai.md](../gameplay/npc-ai.md)
+- [../architecture/data-pipeline.md](../architecture/data-pipeline.md)
 
 ---
 

@@ -4,6 +4,18 @@
 
 ---
 
+## 2026-02-20 — Milestone 4 (complete): Items & Spells
+
+- [x] `src/game/items/inventory.rs` — runtime inventory helpers (`set_equipped`, `is_equipped`, `use_one`) + focused tests
+- [x] `src/game/items/equipment.rs` — explicit `EquipmentSlot` plus equip/unequip mutation helpers + tests
+- [x] `src/game/combat/spells.rs` — spell slot checks/spending and spell effect resolution (`Damage`, `Heal`, `Condition`) + tests
+- [x] `src/game/combat/mod.rs` — spell runtime exports wired
+- [x] `src/app.rs` — inventory/spellbook app flow, gear-to-combat stat application, potion usage, spell casting, combat sync-back
+- [x] `src/ui/tui/screens/inventory.rs` — inventory UI screen implemented
+- [x] `src/ui/tui/screens/spellbook.rs` — spellbook UI screen implemented
+- [x] `src/ui/tui/mod.rs` + `src/ui/tui/screens/mod.rs` — render dispatch wired for inventory/spellbook
+- [x] `cargo test` passes (88 tests, 0 failures)
+
 ## 2026-02-20 — Milestone 3 (complete): Story & Dialog
 
 - [x] `src/game/story/quest.rs` — quest stage machine with acceptance, stage transitions, and completion state

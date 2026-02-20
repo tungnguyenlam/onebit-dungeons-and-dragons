@@ -58,6 +58,14 @@ impl GameRenderer for TuiRenderer {
                 screens::journal::render(frame, app);
                 return;
             }
+            if matches!(&app.state, AppState::Inventory) {
+                screens::inventory::render(frame, app);
+                return;
+            }
+            if matches!(&app.state, AppState::Spellbook) {
+                screens::spellbook::render(frame, app);
+                return;
+            }
 
             // Placeholder for non-combat screens.
             use ratatui::{

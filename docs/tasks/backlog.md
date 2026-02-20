@@ -51,11 +51,11 @@
 
 ## Milestone 4 — Items & Spells
 
-- [ ] Inventory system + equipment slots
-- [ ] Weapon/armor stat application
-- [ ] Spell slot tracking
-- [ ] Spell effect resolution
-- [ ] Spellbook UI screen
+- [x] Inventory system + equipment slots
+- [x] Weapon/armor stat application
+- [x] Spell slot tracking
+- [x] Spell effect resolution
+- [x] Spellbook UI screen
   - See [gameplay/items.md](../gameplay/items.md), [gameplay/spells.md](../gameplay/spells.md)
 
 ## Milestone 5 — NPC & Factions

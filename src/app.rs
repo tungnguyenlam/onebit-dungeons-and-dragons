@@ -8,17 +8,26 @@
 /// and reads `App::state` (and sub-system state) during rendering.
 use crate::renderer::{ControlFlow, GameEvent};
 use crate::game::{
+    character::{AbilityScores, Character},
     combat::{
         apply_damage,
+        can_cast,
+        expend_slot,
         roll_attack,
+        resolve_spell_effect,
         AttackProfile,
         CombatState,
         CombatantState,
         DefenseProfile,
         HitType,
         RollMode,
+        SpellEffect,
     },
     dice::DiceExpr,
+    items::{
+        armor::armor_class,
+        equipment::EquipmentSlot,
+    },
     story::{
         dialog::{choose as dialog_choose, resolve as dialog_resolve, ResolvedNode},
         events::inspect_lore,
@@ -27,8 +36,25 @@ use crate::game::{
         WorldState,
     },
 };
-use crate::data::types::{DialogChoice, DialogEffect, DialogNode, DialogTree, LoreEntry, QuestDef, QuestKind, QuestStageDef, QuestTransition};
+use crate::data::types::{
+    ArmorDef,
+    ArmorType,
+    DialogChoice,
+    DialogEffect,
+    DialogNode,
+    DialogTree,
+    ItemDef,
+    ItemType,
+    LoreEntry,
+    QuestDef,
+    QuestKind,
+    QuestStageDef,
+    QuestTransition,
+    SpellDef,
+    WeaponDef,
+};
 use anyhow::Result;
+use std::collections::HashMap;
 
 // ---------------------------------------------------------------------------
 // AppState
@@ -144,6 +170,10 @@ impl Default for JournalUiState {
 /// `render()` call; mutated only inside `handle_event()`.
 pub struct App {
     pub state: AppState,
+    pub player: Character,
+    pub item_defs: HashMap<String, ItemDef>,
+    pub spell_defs: HashMap<String, SpellDef>,
+    pub known_spells: Vec<String>,
     pub world_state: WorldState,
     pub journal: Journal,
     pub quests: QuestLog,
@@ -154,6 +184,30 @@ pub struct App {
 impl App {
     /// Create a new `App` ready to display the main menu.
     pub fn new() -> Self {
+        let item_defs = sample_item_defs();
+        let spell_defs = sample_spell_defs();
+        let mut player = Character::new(
+            "Theron".into(),
+            "fighter".into(),
+            "human".into(),
+            AbilityScores {
+                strength: 16,
+                dexterity: 14,
+                constitution: 14,
+                intelligence: 10,
+                wisdom: 12,
+                charisma: 8,
+            },
+        );
+        player.max_hp = 24;
+        player.current_hp = 24;
+        player.inventory.add("longsword", 1);
+        player.inventory.add("leather_armor", 1);
+        player.inventory.add("shield", 1);
+        player.inventory.add("healing_potion", 3);
+        player.spell_slots_max[0] = 2;
+        player.spell_slots[0] = 2;
+
         let sample_quest = QuestDef {
             id: "demo_contract".into(),
             name: "Captain's Contract".into(),
@@ -185,6 +239,10 @@ impl App {
         };
         Self {
             state: AppState::default(),
+            player,
+            item_defs,
+            spell_defs,
+            known_spells: vec!["cure_wounds".into(), "fire_bolt".into(), "poison_spray".into()],
             world_state: WorldState::new(),
             journal: Journal::default(),
             quests: QuestLog::with_defs(vec![sample_quest]),
@@ -251,7 +309,9 @@ impl App {
 
     fn handle_world_map(&mut self, event: GameEvent) -> Result<()> {
         match event {
-            GameEvent::Attack => self.transition(AppState::Combat(CombatContext::default())),
+            GameEvent::Attack => self.transition(AppState::Combat(self.make_combat_context())),
+            GameEvent::OpenInventory => self.transition(AppState::Inventory),
+            GameEvent::OpenSpellbook => self.transition(AppState::Spellbook),
             GameEvent::OpenJournal => {
                 self.journal.mark_read();
                 self.journal_ui.selected = 0;
@@ -358,8 +418,13 @@ impl App {
     }
 
     fn handle_inventory(&mut self, event: GameEvent) -> Result<()> {
-        if event == GameEvent::Back || event == GameEvent::Cancel {
-            self.transition(AppState::WorldMap);
+        match event {
+            GameEvent::Back | GameEvent::Cancel => self.transition(AppState::WorldMap),
+            GameEvent::Choice(1) => self.toggle_equip(EquipmentSlot::MainHand, "longsword"),
+            GameEvent::Choice(2) => self.toggle_equip(EquipmentSlot::Armor, "leather_armor"),
+            GameEvent::Choice(3) => self.toggle_equip(EquipmentSlot::OffHand, "shield"),
+            GameEvent::Choice(4) => self.use_healing_potion(),
+            _ => {}
         }
         Ok(())
     }
@@ -387,8 +452,10 @@ impl App {
     }
 
     fn handle_spellbook(&mut self, event: GameEvent) -> Result<()> {
-        if event == GameEvent::Back || event == GameEvent::Cancel {
-            self.transition(AppState::WorldMap);
+        match event {
+            GameEvent::Back | GameEvent::Cancel => self.transition(AppState::WorldMap),
+            GameEvent::Choice(n @ 1..=9) => self.cast_known_spell((n - 1) as usize),
+            _ => {}
         }
         Ok(())
     }
@@ -572,10 +639,12 @@ impl App {
     }
 
     fn finish_combat_if_over(&mut self) {
-        let Some((is_over, players_alive)) = (match &self.state {
+        let Some((is_over, players_alive, player_hp, ws)) = (match &self.state {
             AppState::Combat(ctx) => Some((
                 ctx.state.is_over(),
                 ctx.state.combatants.values().any(|c| c.is_player && c.is_alive()),
+                ctx.state.combatants.get("player").map(|c| c.current_hp),
+                ctx.world_state.clone(),
             )),
             _ => None,
         }) else {
@@ -585,6 +654,10 @@ impl App {
         if !is_over {
             return;
         }
+        if let Some(hp) = player_hp {
+            self.player.current_hp = hp;
+        }
+        self.world_state = ws;
 
         if players_alive {
             self.transition(AppState::WorldMap);
@@ -668,6 +741,207 @@ impl App {
             resolved,
         })
     }
+
+    fn toggle_equip(&mut self, slot: EquipmentSlot, item_id: &str) {
+        let currently = match slot {
+            EquipmentSlot::MainHand => self.player.equipment.main_hand.as_deref() == Some(item_id),
+            EquipmentSlot::OffHand => self.player.equipment.off_hand.as_deref() == Some(item_id),
+            EquipmentSlot::Armor => self.player.equipment.armor.as_deref() == Some(item_id),
+            EquipmentSlot::Helmet => self.player.equipment.helmet.as_deref() == Some(item_id),
+            EquipmentSlot::Boots => self.player.equipment.boots.as_deref() == Some(item_id),
+            EquipmentSlot::Ring1 => self.player.equipment.ring_1.as_deref() == Some(item_id),
+            EquipmentSlot::Ring2 => self.player.equipment.ring_2.as_deref() == Some(item_id),
+            EquipmentSlot::Amulet => self.player.equipment.amulet.as_deref() == Some(item_id),
+        };
+
+        if currently {
+            self.player.equipment.unequip(slot);
+            self.player.inventory.set_equipped(item_id, false);
+            return;
+        }
+        if self.player.inventory.count(item_id) == 0 {
+            return;
+        }
+        if let Some(prev) = self.player.equipment.equip(slot, item_id.to_string()) {
+            self.player.inventory.set_equipped(&prev, false);
+        }
+        self.player.inventory.set_equipped(item_id, true);
+    }
+
+    fn use_healing_potion(&mut self) {
+        if !self.player.inventory.use_one("healing_potion") {
+            return;
+        }
+        self.player.heal(8);
+        self.journal.append(
+            format!("item-heal-{}", self.turn),
+            self.turn,
+            JournalCategory::World,
+            None,
+            "Used Healing Potion",
+            "You recover 8 HP.",
+        );
+    }
+
+    fn cast_known_spell(&mut self, idx: usize) {
+        let Some(spell_id) = self.known_spells.get(idx).cloned() else {
+            return;
+        };
+        let Some(spell) = self.spell_defs.get(&spell_id).cloned() else {
+            return;
+        };
+
+        let slot_level = if spell.level == 0 { None } else { Some(spell.level) };
+        if !can_cast(&spell, &self.player.spell_slots, slot_level) {
+            self.journal.append(
+                format!("spell-fail-{}-{}", spell.id, self.turn),
+                self.turn,
+                JournalCategory::World,
+                None,
+                format!("Failed to cast {}", spell.name),
+                "Not enough spell slots.",
+            );
+            return;
+        }
+        if let Some(level) = slot_level {
+            let _ = expend_slot(&mut self.player.spell_slots, level);
+        }
+
+        match resolve_spell_effect(&spell) {
+            Some(SpellEffect::Heal { amount }) => {
+                self.player.heal(amount);
+                self.journal.append(
+                    format!("spell-{}-{}", spell.id, self.turn),
+                    self.turn,
+                    JournalCategory::World,
+                    None,
+                    format!("Cast {}", spell.name),
+                    format!("You recover {amount} HP."),
+                );
+            }
+            Some(SpellEffect::Damage { amount, damage_type }) => {
+                self.world_state.set_counter("last_spell_damage", amount as i32);
+                self.journal.append(
+                    format!("spell-{}-{}", spell.id, self.turn),
+                    self.turn,
+                    JournalCategory::World,
+                    None,
+                    format!("Cast {}", spell.name),
+                    format!("Spell deals {amount} {damage_type} damage."),
+                );
+            }
+            Some(SpellEffect::Condition { condition }) => {
+                self.world_state.set_flag(format!("spell_inflicted_{}", condition.name().to_lowercase()));
+                self.journal.append(
+                    format!("spell-{}-{}", spell.id, self.turn),
+                    self.turn,
+                    JournalCategory::World,
+                    None,
+                    format!("Cast {}", spell.name),
+                    format!("Spell may inflict {}.", condition.name()),
+                );
+            }
+            None => {
+                self.journal.append(
+                    format!("spell-{}-{}", spell.id, self.turn),
+                    self.turn,
+                    JournalCategory::World,
+                    None,
+                    format!("Cast {}", spell.name),
+                    "No direct gameplay effect resolved.",
+                );
+            }
+        }
+    }
+
+    fn make_combat_context(&self) -> CombatContext {
+        let armor_item = self
+            .player
+            .equipment
+            .armor
+            .as_ref()
+            .and_then(|id| self.item_defs.get(id))
+            .and_then(|it| it.armor.as_ref().map(|a| (a.base_ac, &a.armor_type)));
+        let shield_equipped = self
+            .player
+            .equipment
+            .off_hand
+            .as_ref()
+            .and_then(|id| self.item_defs.get(id))
+            .and_then(|it| it.armor.as_ref())
+            .is_some_and(|a| a.armor_type == ArmorType::Shield);
+        let ac = armor_class(armor_item, shield_equipped, self.player.scores.dex_mod());
+
+        let main_weapon = self
+            .player
+            .equipment
+            .main_hand
+            .as_ref()
+            .and_then(|id| self.item_defs.get(id))
+            .and_then(|it| it.weapon.as_ref())
+            .cloned();
+        let damage = main_weapon
+            .as_ref()
+            .map(|w| w.damage.clone())
+            .unwrap_or_else(|| DiceExpr::new(1, 4, 0));
+        let attack_bonus = self.player.scores.str_mod() as i32 + self.player.proficiency_bonus();
+
+        let mut state = CombatState::new_with_seed(
+            vec![
+                CombatantState::new(
+                    "player",
+                    self.player.name.clone(),
+                    true,
+                    self.player.max_hp,
+                    ac,
+                    self.player.speed,
+                    self.player.scores.dex_mod() as i32,
+                    attack_bonus,
+                    damage,
+                ),
+                CombatantState::new(
+                    "goblin_a",
+                    "Goblin A",
+                    false,
+                    10,
+                    13,
+                    30,
+                    2,
+                    4,
+                    DiceExpr::new(1, 6, 2),
+                ),
+                CombatantState::new(
+                    "goblin_b",
+                    "Goblin B",
+                    false,
+                    10,
+                    13,
+                    30,
+                    2,
+                    4,
+                    DiceExpr::new(1, 6, 2),
+                ),
+            ],
+            1337,
+        );
+        if let Some(player) = state.combatants.get_mut("player") {
+            player.current_hp = self.player.current_hp;
+        }
+        if let Some(goblin_a) = state.combatants.get_mut("goblin_a") {
+            goblin_a.on_hit_condition = Some(crate::game::character::conditions::Condition::Poisoned);
+        }
+
+        CombatContext {
+            state,
+            world_state: self.world_state.clone(),
+            log: vec![
+                "Combat started.".into(),
+                "Press 'a' to attack.".into(),
+                "Press '.' to advance turn.".into(),
+                "Press Esc to leave combat.".into(),
+            ],
+        }
+    }
 }
 
 fn next_category(c: JournalCategory) -> JournalCategory {
@@ -688,6 +962,139 @@ fn prev_category(c: JournalCategory) -> JournalCategory {
         JournalCategory::Combat => JournalCategory::World,
         JournalCategory::Dialog => JournalCategory::Combat,
     }
+}
+
+fn sample_item_defs() -> HashMap<String, ItemDef> {
+    let mut map = HashMap::new();
+    map.insert(
+        "longsword".into(),
+        ItemDef {
+            id: "longsword".into(),
+            name: "Longsword".into(),
+            item_type: ItemType::Weapon,
+            weight: 3.0,
+            value_gp: 15,
+            description: "A standard steel longsword.".into(),
+            weapon: Some(WeaponDef {
+                damage: DiceExpr::new(1, 8, 0),
+                damage_type: "slashing".into(),
+                properties: vec!["versatile".into()],
+                versatile_damage: Some(DiceExpr::new(1, 10, 0)),
+                range: None,
+            }),
+            armor: None,
+        },
+    );
+    map.insert(
+        "leather_armor".into(),
+        ItemDef {
+            id: "leather_armor".into(),
+            name: "Leather Armor".into(),
+            item_type: ItemType::Armor,
+            weight: 10.0,
+            value_gp: 10,
+            description: "Flexible light armor.".into(),
+            weapon: None,
+            armor: Some(ArmorDef {
+                base_ac: 11,
+                armor_type: ArmorType::Light,
+                stealth_disadvantage: false,
+            }),
+        },
+    );
+    map.insert(
+        "shield".into(),
+        ItemDef {
+            id: "shield".into(),
+            name: "Shield".into(),
+            item_type: ItemType::Armor,
+            weight: 6.0,
+            value_gp: 10,
+            description: "Wooden shield.".into(),
+            weapon: None,
+            armor: Some(ArmorDef {
+                base_ac: 2,
+                armor_type: ArmorType::Shield,
+                stealth_disadvantage: false,
+            }),
+        },
+    );
+    map.insert(
+        "healing_potion".into(),
+        ItemDef {
+            id: "healing_potion".into(),
+            name: "Healing Potion".into(),
+            item_type: ItemType::Consumable,
+            weight: 0.5,
+            value_gp: 50,
+            description: "Restores health.".into(),
+            weapon: None,
+            armor: None,
+        },
+    );
+    map
+}
+
+fn sample_spell_defs() -> HashMap<String, SpellDef> {
+    let mut map = HashMap::new();
+    map.insert(
+        "cure_wounds".into(),
+        SpellDef {
+            id: "cure_wounds".into(),
+            name: "Cure Wounds".into(),
+            level: 1,
+            school: "evocation".into(),
+            casting_time: "action".into(),
+            range: "touch".into(),
+            components: vec!["V".into(), "S".into()],
+            duration: "instantaneous".into(),
+            description: "Healing energy restores HP.".into(),
+            damage: None,
+            damage_type: None,
+            save: None,
+            heal: Some(DiceExpr::new(1, 8, 2)),
+            classes: vec!["cleric".into()],
+        },
+    );
+    map.insert(
+        "fire_bolt".into(),
+        SpellDef {
+            id: "fire_bolt".into(),
+            name: "Fire Bolt".into(),
+            level: 0,
+            school: "evocation".into(),
+            casting_time: "action".into(),
+            range: "120ft".into(),
+            components: vec!["V".into(), "S".into()],
+            duration: "instantaneous".into(),
+            description: "A mote of fire.".into(),
+            damage: Some(DiceExpr::new(1, 10, 0)),
+            damage_type: Some("fire".into()),
+            save: None,
+            heal: None,
+            classes: vec!["wizard".into()],
+        },
+    );
+    map.insert(
+        "poison_spray".into(),
+        SpellDef {
+            id: "poison_spray".into(),
+            name: "Poison Spray".into(),
+            level: 0,
+            school: "conjuration".into(),
+            casting_time: "action".into(),
+            range: "10ft".into(),
+            components: vec!["V".into(), "S".into()],
+            duration: "instantaneous".into(),
+            description: "Noxious gas.".into(),
+            damage: None,
+            damage_type: None,
+            save: Some("constitution".into()),
+            heal: None,
+            classes: vec!["wizard".into()],
+        },
+    );
+    map
 }
 
 impl Default for App {
@@ -837,5 +1244,33 @@ mod tests {
         } else {
             panic!("expected combat state");
         }
+    }
+
+    #[test]
+    fn inventory_toggle_equips_weapon_for_combat() {
+        let mut app = App::new();
+        app.transition(AppState::WorldMap);
+        app.handle_event(GameEvent::OpenInventory).unwrap();
+        app.handle_event(GameEvent::Choice(1)).unwrap(); // equip longsword
+        app.transition(AppState::WorldMap);
+        app.handle_event(GameEvent::Attack).unwrap(); // enter combat
+        match &app.state {
+            AppState::Combat(ctx) => {
+                let p = ctx.state.combatants.get("player").unwrap();
+                assert_eq!(p.damage_dice, DiceExpr::new(1, 8, 0));
+            }
+            _ => panic!("expected combat"),
+        }
+    }
+
+    #[test]
+    fn casting_cure_wounds_spends_slot_and_heals() {
+        let mut app = App::new();
+        app.player.current_hp = 10;
+        app.transition(AppState::Spellbook);
+        let before_slots = app.player.spell_slots[0];
+        app.handle_event(GameEvent::Choice(1)).unwrap(); // cure wounds
+        assert!(app.player.current_hp > 10);
+        assert_eq!(app.player.spell_slots[0], before_slots - 1);
     }
 }

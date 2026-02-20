@@ -3,6 +3,7 @@ pub mod action;
 pub mod attack;
 pub mod combat;
 pub mod initiative;
+pub mod spells;
 
 pub use action::ActionSlots;
 pub use attack::{
@@ -24,3 +25,4 @@ pub use initiative::{
     InitiativeCombatant,
     InitiativeOrder,
 };
+pub use spells::{can_cast, expend_slot, resolve_effect as resolve_spell_effect, SpellEffect};

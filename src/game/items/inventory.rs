@@ -48,4 +48,47 @@ impl Inventory {
             .map(|i| i.quantity)
             .sum()
     }
+
+    pub fn set_equipped(&mut self, item_id: &str, equipped: bool) -> bool {
+        if let Some(item) = self.items.iter_mut().find(|i| i.item_id == item_id) {
+            item.equipped = equipped;
+            return true;
+        }
+        false
+    }
+
+    pub fn is_equipped(&self, item_id: &str) -> bool {
+        self.items
+            .iter()
+            .find(|i| i.item_id == item_id)
+            .is_some_and(|i| i.equipped)
+    }
+
+    pub fn use_one(&mut self, item_id: &str) -> bool {
+        self.remove(item_id, 1)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn set_and_query_equipped() {
+        let mut inv = Inventory::default();
+        inv.add("longsword", 1);
+        assert!(!inv.is_equipped("longsword"));
+        assert!(inv.set_equipped("longsword", true));
+        assert!(inv.is_equipped("longsword"));
+    }
+
+    #[test]
+    fn use_one_consumes_stack() {
+        let mut inv = Inventory::default();
+        inv.add("potion", 2);
+        assert!(inv.use_one("potion"));
+        assert_eq!(inv.count("potion"), 1);
+        assert!(inv.use_one("potion"));
+        assert_eq!(inv.count("potion"), 0);
+    }
 }
