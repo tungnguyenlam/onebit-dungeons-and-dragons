@@ -13,10 +13,10 @@
 pub mod character;
 pub mod dice;
 pub mod items;
+pub mod story;
+pub mod world;
 
 // Planned — uncomment when implemented:
-// pub mod world;
 // pub mod combat;
-// pub mod story;
 // pub mod npc;
 // pub mod save;

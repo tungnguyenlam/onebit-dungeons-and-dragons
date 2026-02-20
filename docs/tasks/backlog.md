@@ -23,9 +23,9 @@
   - See [gameplay/character.md](../gameplay/character.md)
 - [x] `src/game/items/` — inventory, equipment slots, armor AC
   - See [gameplay/items.md](../gameplay/items.md)
-- [ ] `src/game/world/` — region loader, tile map, room graph, FOV  ← **NEXT**
+- [x] `src/game/world/` — region loader, tile map, room graph, FOV
   - See [gameplay/world.md](../gameplay/world.md)
-- [ ] `src/game/story/world_state.rs` — flag store, save/load
+- [x] `src/game/story/world_state.rs` — flag store, save/load
   - See [gameplay/story.md](../gameplay/story.md)
 
 ## Milestone 2 — Combat
