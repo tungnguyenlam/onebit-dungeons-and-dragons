@@ -10,42 +10,43 @@
 ## Last Session Handoff
 
 ```
-Date:          2026-02-20
-Completed:     Milestone 15 — Interactive Playtest Harness
+Date:          2026-02-21
+Completed:     Milestones 16-19 — Reliability, UX readability, consistency guards, and soak automation
 
 Tasks completed:
-  - ✅ --scenario presets (ash_gate, ember_square, river_watch) in scripts/agent_tui_smoke.sh
-  - ✅ Token-efficient capture mode (--token-efficient, --max-frames)
-  - ✅ docs/testing/reports/ash_gate_escape.md created with full escape report
-  - ✅ cargo test passes (118 tests)
+  - ✅ `cargo run -- --validate-assets` and `scripts/validate_assets.sh` entrypoints added with room/dialog/quest graph checks
+  - ✅ room traversal reliability checks cover blocked trigger tiles, missing travel targets, and unreachable rooms
+  - ✅ combat screen now includes concise timeline strip + last-turn summary panel
+  - ✅ reduced-motion-aware combat feedback styling hooks added
+  - ✅ dialog runtime now emits explicit blocked-path feedback instead of silent no-op
+  - ✅ long-session soak mode added to `scripts/agent_tui_smoke.sh` (`--soak --profile standard --minutes`)
+  - ✅ CI workflow runs asset validation and short PR soak profile
+  - ✅ milestone completion checklist template added for future handoffs
 
-Next: Ready for M16 or follow-up work
+Next: Pull next roadmap milestone after M19
 ```
 
 ---
 
 ## Active Task
 
-### Task: Milestone 15 — Interactive Playtest Harness (Token-Efficient)
+### Task: Post-M19 Follow-up Planning
 
 **Files to touch:**
-- `scripts/agent_tui_smoke.sh` — scenario presets, deterministic capture controls, compact output defaults
-- `docs/testing/tui-agent-smoke.md` — command reference and expected artifacts
-- `docs/testing/interactive-playtest-checklist.md` (new) — manual interactive checklist and report template
+- `docs/tasks/backlog.md`
+- `docs/tasks/current-sprint.md`
 
 **Done when:**
-- [x] `--scenario` presets support at least `ash_gate`, `ember_square`, and `river_watch`
-- [x] capture mode outputs token-efficient summaries with bounded frames/events
-- [x] one complete `ash_gate` escape interactive report is documented under `docs/testing/reports/`
-- [x] `cargo test` passes
+- [ ] next milestone selected
+- [ ] acceptance criteria copied from backlog template
+- [ ] handoff block updated
 
 **Blocked by:** none
 
 **Relevant docs:**
 - [../DOCS_MAP.md](../DOCS_MAP.md)
 - [../AGENT.md](../AGENT.md)
-- [../architecture/ui-layer.md](../architecture/ui-layer.md)
-- [../testing/tui-agent-smoke.md](../testing/tui-agent-smoke.md)
+- [milestone-checklist-template.md](milestone-checklist-template.md)
 
 ---
 

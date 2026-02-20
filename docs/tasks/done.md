@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-02-21 — Milestones 16-19 (complete): Reliability, Readability, Consistency, Soak
+
+- [x] `src/data/validate.rs` (new) + `src/main.rs` + `scripts/validate_assets.sh` (new) — added `--validate-assets` and validator coverage for:
+  - region room outbound travel presence
+  - blocked/out-of-bounds trigger positions
+  - missing travel/dialog targets
+  - room reachability from region entry
+  - quest stage graph consistency and reachability
+  - dialog node/link integrity checks
+- [x] `src/app.rs` — dialog softlock guardrails now emit explicit journal feedback for blocked/broken paths
+- [x] `src/ui/tui/screens/combat.rs` + `src/ui/tui/theme.rs` — combat readability upgrades:
+  - concise initiative timeline strip
+  - last-turn summary panel
+  - reduced-motion-aware style hook for semantic feedback parity
+  - added focused rendering helper tests
+- [x] `scripts/agent_tui_smoke.sh` — added long-session soak mode (`--soak --profile standard --minutes`)
+- [x] `.github/workflows/rust.yml` — CI now runs asset validation and short PR soak profile
+- [x] `docs/tasks/milestone-checklist-template.md` (new) — milestone completion checklist template for handoffs
+- [x] Verification run:
+  - `cargo test` (targeted + full)
+  - `cargo run -- --validate-assets`
+  - `scripts/agent_tui_smoke.sh --no-build`
+  - `scripts/agent_tui_smoke.sh --soak --profile standard --minutes 1 --token-efficient --no-build`
+
 ## 2026-02-20 — Milestone 14 (complete): Playtest UX & Ash Gate Flow Fixes
 
 - [x] `assets/regions/valley-of-ash/rooms/ash_gate.toml` — added deterministic travel trigger from `ash_gate` to `ember_square`

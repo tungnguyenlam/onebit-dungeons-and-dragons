@@ -40,6 +40,10 @@ scripts/agent_tui_smoke.sh
 
 # Manual interactive TUI playtest (requires TTY terminal)
 scripts/agent_tui_smoke.sh --interactive
+
+# Asset validation (rooms/quests/dialog links + reachability)
+cargo run -- --validate-assets
+scripts/validate_assets.sh
 ```
 
 ### TUI Controls

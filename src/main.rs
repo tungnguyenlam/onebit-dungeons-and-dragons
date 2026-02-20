@@ -30,6 +30,9 @@ struct Cli {
     /// Choose the rendering front-end.
     #[arg(long, default_value = "tui")]
     mode: LaunchMode,
+    /// Validate content assets and exit (no renderer loop).
+    #[arg(long, default_value_t = false)]
+    validate_assets: bool,
 }
 
 #[derive(Debug, Clone, ValueEnum)]
@@ -46,6 +49,22 @@ enum LaunchMode {
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
+
+    if cli.validate_assets {
+        let report = data::validate::validate_assets("assets")?;
+        for warn in &report.warnings {
+            eprintln!("[warn] {warn}");
+        }
+        if report.has_errors() {
+            for err in &report.errors {
+                eprintln!("[error] {err}");
+            }
+            anyhow::bail!("asset validation failed with {} error(s)", report.errors.len());
+        }
+        println!("asset validation passed ({} warning(s))", report.warnings.len());
+        return Ok(());
+    }
+
     let app = App::new();
 
     match cli.mode {

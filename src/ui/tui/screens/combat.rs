@@ -12,10 +12,11 @@ use ratatui::{
 pub fn render(frame: &mut Frame<'_>, app: &App) {
     let area = frame.area();
     let chunks = Layout::vertical([
+        Constraint::Length(4),
         Constraint::Length(3),
         Constraint::Min(8),
         Constraint::Length(8),
-        Constraint::Length(6),
+        Constraint::Length(7),
     ])
     .split(area);
 
@@ -36,19 +37,6 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
 
     // Turn order banner.
     let current_id = ctx.state.current_combatant_id().unwrap_or("?");
-    let banner_text = ctx
-        .state
-        .turn_queue
-        .iter()
-        .map(|id| {
-            if id == current_id {
-                format!("[{id}]")
-            } else {
-                id.clone()
-            }
-        })
-        .collect::<Vec<_>>()
-        .join(" -> ");
     let active = ctx
         .state
         .current_combatant()
@@ -60,10 +48,11 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             )
         })
         .unwrap_or_else(|| "Unknown".into());
-    let turn_banner = Paragraph::new(Line::from(format!(
-        "Round {} | Active: {} | Turn Order: {banner_text}",
-        ctx.state.round, active
-    )))
+    let timeline = compact_timeline(&ctx.state.turn_queue, current_id);
+    let turn_banner = Paragraph::new(vec![
+        Line::from(format!("Round {} | Active: {}", ctx.state.round, active)),
+        Line::from(format!("Timeline: {timeline}")),
+    ])
     .style(Style::default().fg(theme::theme().text_primary))
     .block(
         Block::default()
@@ -72,6 +61,16 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             .style(theme::panel_style()),
     );
     frame.render_widget(turn_banner, chunks[0]);
+
+    let summary = Paragraph::new(Line::from(last_turn_summary(&ctx.log)))
+        .style(Style::default().fg(theme::theme().accent_primary))
+        .block(
+            Block::default()
+                .title("Last Turn Summary")
+                .borders(Borders::ALL)
+                .style(theme::panel_style()),
+        );
+    frame.render_widget(summary, chunks[1]);
 
     // Battlefield placeholder.
     let battlefield = Paragraph::new(
@@ -85,7 +84,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             .borders(Borders::ALL)
             .style(theme::panel_style()),
     );
-    frame.render_widget(battlefield, chunks[1]);
+    frame.render_widget(battlefield, chunks[2]);
 
     // Combatants HUD.
     let hud_lines: Vec<Line<'_>> = ctx
@@ -143,27 +142,14 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
                 .style(theme::panel_style()),
         )
         .wrap(Wrap { trim: true });
-    frame.render_widget(hud, chunks[2]);
+    frame.render_widget(hud, chunks[3]);
 
     // Log panel (latest lines only).
-    let log_height = chunks[3].height.saturating_sub(2) as usize;
+    let log_height = chunks[4].height.saturating_sub(2) as usize;
     let start = ctx.log.len().saturating_sub(log_height);
     let log_lines: Vec<Line<'_>> = ctx.log[start..]
         .iter()
-        .map(|line| {
-            let style = if line.contains("CRITS") || line.contains("critical") {
-                Style::default().fg(theme::theme().warning).add_modifier(Modifier::BOLD)
-            } else if line.contains("miss") {
-                Style::default().fg(theme::theme().text_muted)
-            } else if line.contains("recovers") || line.contains("restoring") {
-                Style::default().fg(theme::theme().success)
-            } else if line.contains("drops to 0 HP") {
-                Style::default().fg(theme::theme().danger).add_modifier(Modifier::BOLD)
-            } else {
-                Style::default().fg(theme::theme().text_primary)
-            };
-            Line::from(line.clone()).style(style)
-        })
+        .map(|line| Line::from(line.clone()).style(style_for_log_line(line)))
         .collect();
     let log = Paragraph::new(log_lines)
         .block(
@@ -173,5 +159,75 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
                 .style(theme::panel_style()),
         )
         .wrap(Wrap { trim: true });
-    frame.render_widget(log, chunks[3]);
+    frame.render_widget(log, chunks[4]);
+}
+
+fn compact_timeline(turn_queue: &[String], current_id: &str) -> String {
+    turn_queue
+        .iter()
+        .map(|id| {
+            if id == current_id {
+                format!("[{id}]")
+            } else {
+                id.clone()
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" -> ")
+}
+
+fn last_turn_summary(log: &[String]) -> String {
+    for line in log.iter().rev() {
+        if line.contains("CRITS")
+            || line.contains("critical")
+            || line.contains("drops to 0 HP")
+            || line.contains("hits")
+            || line.contains("miss")
+            || line.contains("recovers")
+            || line.contains("restoring")
+            || line.contains("expired")
+        {
+            return line.clone();
+        }
+    }
+    "No major action yet.".to_string()
+}
+
+fn style_for_log_line(line: &str) -> Style {
+    let base = if line.contains("CRITS") || line.contains("critical") {
+        Style::default().fg(theme::theme().warning).add_modifier(Modifier::BOLD)
+    } else if line.contains("miss") {
+        Style::default().fg(theme::theme().text_muted)
+    } else if line.contains("recovers") || line.contains("restoring") {
+        Style::default().fg(theme::theme().success)
+    } else if line.contains("drops to 0 HP") {
+        Style::default().fg(theme::theme().danger).add_modifier(Modifier::BOLD)
+    } else {
+        Style::default().fg(theme::theme().text_primary)
+    };
+    if theme::reduced_motion() {
+        base.remove_modifier(Modifier::RAPID_BLINK | Modifier::SLOW_BLINK)
+    } else {
+        base
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn summary_prefers_high_signal_events() {
+        let log = vec![
+            "Goblin now has 3 HP.".to_string(),
+            "Player hits Goblin for 7 damage (d20=15 total=19).".to_string(),
+        ];
+        assert!(last_turn_summary(&log).contains("hits Goblin"));
+    }
+
+    #[test]
+    fn timeline_marks_current_actor() {
+        let t = compact_timeline(&["a".into(), "b".into(), "c".into()], "b");
+        assert_eq!(t, "a -> [b] -> c");
+    }
 }

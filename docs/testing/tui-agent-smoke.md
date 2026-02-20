@@ -76,6 +76,9 @@ scripts/agent_tui_smoke.sh --timeout 180
 
 # Capture raw terminal output while running scripted flow
 scripts/agent_tui_smoke.sh --capture-log /tmp/dnd-tui.raw.log
+
+# Deterministic long-session soak profile
+scripts/agent_tui_smoke.sh --soak --profile standard --minutes 30 --token-efficient
 ```
 
 Environment:
@@ -125,5 +128,15 @@ scripts/agent_tui_smoke.sh --capture-log /tmp/ash_gate.log --scenario ash_gate -
 - `--token-efficient`: Output compact, summary-oriented logs for review
 - `--max-frames <N>`: Limit the number of frames/events captured
 - `--list-scenarios`: List all available scenario presets
+- `--soak`: Run repeated scripted scenarios until `--minutes` is reached
+- `--profile <name>`: Soak profile (`standard`)
+- `--minutes <N>`: Soak duration in minutes
+
+Asset integrity verification:
+
+```bash
+cargo run -- --validate-assets
+scripts/validate_assets.sh
+```
 
 See also: [interactive-playtest-checklist.md](interactive-playtest-checklist.md)

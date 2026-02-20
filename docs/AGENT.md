@@ -48,6 +48,12 @@ scripts/agent_verify.sh
 scripts/agent_verify.sh --with-smoke
 ```
 
+For asset graph and progression consistency checks:
+```bash
+cargo run -- --validate-assets
+scripts/validate_assets.sh
+```
+
 **Step 3 — Read only the docs for your current task**  
 The handoff block lists which doc files are relevant. Read those and nothing
 else. Do not read the full backlog or unrelated gameplay docs.

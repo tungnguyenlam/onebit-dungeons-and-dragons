@@ -130,3 +130,11 @@ pub fn icon(key: &str) -> &'static str {
         },
     }
 }
+
+pub fn reduced_motion() -> bool {
+    let value = std::env::var("DND_REDUCED_MOTION")
+        .or_else(|_| std::env::var("REDUCED_MOTION"))
+        .unwrap_or_default()
+        .to_lowercase();
+    matches!(value.as_str(), "1" | "true" | "yes" | "on")
+}

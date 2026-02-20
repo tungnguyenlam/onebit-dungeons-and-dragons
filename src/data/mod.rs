@@ -4,5 +4,6 @@
 /// Nothing in this module contains game logic.
 pub mod loader;
 pub mod types;
+pub mod validate;
 
 pub use loader::{GlobalAssets, LoadedRegion};

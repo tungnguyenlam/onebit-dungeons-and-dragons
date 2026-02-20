@@ -10,6 +10,9 @@ SCENARIO=""
 MAX_FRAMES=""
 TOKEN_EFFICIENT=0
 TIMEOUT_SECONDS="${TUI_TIMEOUT:-120}"
+SOAK=0
+SOAK_PROFILE="standard"
+SOAK_MINUTES=0
 WITH_TESTS=0
 KEEP_SAVE=0
 NO_BUILD=0
@@ -19,7 +22,7 @@ BUILD_RUSTFLAGS="${TUI_RUSTFLAGS:--Awarnings}"
 
 
 usage() {
-  echo "Usage: scripts/agent_tui_smoke.sh [--with-tests] [--keep-save] [--no-build] [--interactive] [--capture-log <file>] [--timeout <seconds>] [--scenario <name>] [--max-frames <n>] [--token-efficient] [--list-scenarios]"
+  echo "Usage: scripts/agent_tui_smoke.sh [--with-tests] [--keep-save] [--no-build] [--interactive] [--capture-log <file>] [--timeout <seconds>] [--scenario <name>] [--max-frames <n>] [--token-efficient] [--soak] [--profile <name>] [--minutes <n>] [--list-scenarios]"
   exit 2
 }
 
@@ -60,6 +63,18 @@ while [[ $# -gt 0 ]]; do
     --token-efficient)
       TOKEN_EFFICIENT=1
       shift
+      ;;
+    --soak)
+      SOAK=1
+      shift
+      ;;
+    --profile)
+      SOAK_PROFILE="$2"
+      shift 2
+      ;;
+    --minutes)
+      SOAK_MINUTES="$2"
+      shift 2
       ;;
     --list-scenarios)
       echo "ash_gate"
@@ -117,13 +132,15 @@ fi
 
 rm -f saves/slot1.toml
 
-echo "[agent-tui] Running scripted TUI smoke flow..."
+run_scripted_flow() {
+  local scenario="$1"
+  local capture_log="$2"
 
-export TUI_TOKEN_EFFICIENT="$TOKEN_EFFICIENT"
-export TUI_MAX_FRAMES="$MAX_FRAMES"
-export TUI_SCENARIO="$SCENARIO"
-export TUI_CAPTURE_LOG="$CAPTURE_LOG"
-TUI_TIMEOUT="$TIMEOUT_SECONDS" expect <<'EXPECT_EOF'
+  export TUI_TOKEN_EFFICIENT="$TOKEN_EFFICIENT"
+  export TUI_MAX_FRAMES="$MAX_FRAMES"
+  export TUI_SCENARIO="$scenario"
+  export TUI_CAPTURE_LOG="$capture_log"
+  TUI_TIMEOUT="$TIMEOUT_SECONDS" expect <<'EXPECT_EOF'
 set timeout $env(TUI_TIMEOUT)
 log_user 0
 
@@ -175,6 +192,37 @@ send "q"
 
 expect eof
 EXPECT_EOF
+}
+
+if [[ "$SOAK" -eq 1 ]]; then
+  case "$SOAK_PROFILE" in
+    standard) ;;
+    *)
+      echo "Unknown soak profile: $SOAK_PROFILE"
+      exit 2
+      ;;
+  esac
+  if [[ "$SOAK_MINUTES" -le 0 ]]; then
+    echo "Error: --soak requires --minutes <n> with n > 0"
+    exit 2
+  fi
+
+  echo "[agent-tui] Running soak profile '$SOAK_PROFILE' for ${SOAK_MINUTES} minute(s)..."
+  start_epoch="$(date +%s)"
+  end_epoch="$((start_epoch + SOAK_MINUTES * 60))"
+  iteration=0
+  scenarios=(ash_gate ember_square river_watch)
+  while [[ "$(date +%s)" -lt "$end_epoch" ]]; do
+    scenario="${scenarios[$((iteration % ${#scenarios[@]}))]}"
+    echo "[agent-tui] Soak iteration $((iteration + 1)) scenario=$scenario"
+    run_scripted_flow "$scenario" ""
+    iteration=$((iteration + 1))
+  done
+  echo "[agent-tui] Soak complete: iterations=$iteration profile=$SOAK_PROFILE"
+else
+  echo "[agent-tui] Running scripted TUI smoke flow..."
+  run_scripted_flow "$SCENARIO" "$CAPTURE_LOG"
+fi
 
 if [[ "$KEEP_SAVE" -eq 0 ]]; then
   rm -f saves/slot1.toml

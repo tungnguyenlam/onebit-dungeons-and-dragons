@@ -525,6 +525,14 @@ impl App {
                     let Some(next) =
                         dialog_choose(&ctx.tree, &ctx.current_node, idx, &mut self.world_state)
                     else {
+                        self.journal.append(
+                            format!("dialog-blocked-{}-{}", ctx.tree.npc_id, self.turn),
+                            self.turn,
+                            JournalCategory::Dialog,
+                            None,
+                            format!("Talked with {}", ctx.npc_name),
+                            "That option is unavailable right now.",
+                        );
                         return Ok(());
                     };
                     if next == "END" {
@@ -542,6 +550,15 @@ impl App {
                             None,
                             format!("Talked with {}", ctx.npc_name),
                             ctx.resolved.text.clone(),
+                        );
+                    } else {
+                        self.journal.append(
+                            format!("dialog-broken-{}-{}", ctx.tree.npc_id, self.turn),
+                            self.turn,
+                            JournalCategory::Dialog,
+                            None,
+                            format!("Talked with {}", ctx.npc_name),
+                            "Conversation path is blocked. Try another response or return later.",
                         );
                     }
                 }
@@ -737,6 +754,15 @@ impl App {
                     current_node: "root".into(),
                     resolved,
                 }));
+            } else {
+                self.journal.append(
+                    format!("dialog-root-missing-{}-{}", npc_id, self.turn),
+                    self.turn,
+                    JournalCategory::Dialog,
+                    None,
+                    "Conversation Unavailable",
+                    "This conversation is currently unavailable due to invalid dialog data.",
+                );
             }
         }
     }
@@ -2479,6 +2505,40 @@ mod tests {
             }
             _ => panic!("expected dialog state"),
         }
+    }
+
+    #[test]
+    fn dialog_invalid_choice_adds_blocked_feedback_entry() {
+        let mut app = App::new();
+        app.transition(AppState::Dialog(DialogContext {
+            npc_name: "Test NPC".into(),
+            tree: DialogTree {
+                npc_id: "test_npc".into(),
+                nodes: vec![crate::data::types::DialogNode {
+                    id: "root".into(),
+                    text: "Hello".into(),
+                    effect: vec![],
+                    choices: vec![],
+                    skill: None,
+                    dc: None,
+                    on_pass: None,
+                    on_fail: None,
+                }],
+            },
+            current_node: "root".into(),
+            resolved: ResolvedNode {
+                id: "root".into(),
+                text: "Hello".into(),
+                choices: vec![],
+            },
+        }));
+
+        app.handle_event(GameEvent::Choice(1)).unwrap();
+        assert!(app
+            .journal
+            .entries
+            .iter()
+            .any(|e| e.body.contains("option is unavailable")));
     }
 
     #[test]
