@@ -3,6 +3,7 @@
 > **This is the first file an agent reads after AGENT.md.**  
 > The `Last Session Handoff` block is the authoritative record of where work
 > stopped. **You must update it before ending every session.**
+> Also review [../DOCS_MAP.md](../DOCS_MAP.md) when a task changes docs, architecture, or milestone state.
 
 ---
 

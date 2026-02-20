@@ -1,6 +1,7 @@
 # Done
 
 > Completed tasks, newest first.
+> Keep milestone/docs status synced using [../DOCS_MAP.md](../DOCS_MAP.md).
 
 ---
 

@@ -40,3 +40,12 @@ Status keys: 🔲 planned · 🚧 in progress · ✅ complete
 3. **IDs are kebab-case**: `iron-longsword`, `fireball`, `guard-kael`.
 4. **No hardcoded numbers in Rust**: add a new TOML field rather than special-
    casing values in code.
+
+---
+
+## Related Indexes
+
+- Gameplay systems index → [../gameplay/overview.md](../gameplay/overview.md)
+- Architecture/data index → [../architecture/overview.md](../architecture/overview.md)
+- Active tasks for content milestones → [../tasks/current-sprint.md](../tasks/current-sprint.md)
+- Documentation link map → [../DOCS_MAP.md](../DOCS_MAP.md)

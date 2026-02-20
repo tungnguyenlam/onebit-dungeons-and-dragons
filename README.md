@@ -161,3 +161,4 @@ For the detailed design see [docs/architecture/overview.md](docs/architecture/ov
 ## Contributing / Continuing Development
 
 See [docs/AGENT.md](docs/AGENT.md) — the workflow applies equally to humans and AI agents.
+For doc synchronization rules, also see [docs/DOCS_MAP.md](docs/DOCS_MAP.md).

@@ -67,6 +67,7 @@ onebit-dungeons-and-dragons/
 ```
 
 For the full source tree, see → [architecture/overview.md](architecture/overview.md)
+For doc cross-links and anti-stale update rules, see → [DOCS_MAP.md](DOCS_MAP.md)
 
 ---
 
@@ -76,6 +77,13 @@ For the full source tree, see → [architecture/overview.md](architecture/overvi
 
 Full backlog: [tasks/backlog.md](tasks/backlog.md)  
 Completed milestones: [tasks/done.md](tasks/done.md)
+
+---
+
+## Documentation Sync Rule
+
+If you update any gameplay/architecture/content/task doc, review
+[DOCS_MAP.md](DOCS_MAP.md) and update linked files in the same change.
 
 ---
 

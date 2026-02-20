@@ -2,6 +2,7 @@
 
 > Ordered roughly by dependency. Pick from the top.
 > Move items to [current-sprint.md](current-sprint.md) when starting, then to [done.md](done.md) on completion.
+> For cross-doc update dependencies, see [../DOCS_MAP.md](../DOCS_MAP.md).
 
 ---
 
