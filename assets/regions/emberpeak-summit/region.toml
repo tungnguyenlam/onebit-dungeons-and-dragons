@@ -1,0 +1,25 @@
+slug = "emberpeak-summit"
+name = "Emberpeak Summit"
+description = "A windswept volcanic ridge above the ash valley."
+entry_room = "south_slope"
+ambient = "mountain_wind"
+
+[[rooms]]
+id = "south_slope"
+file = "rooms/south_slope.toml"
+
+[[rooms]]
+id = "obsidian_bridge"
+file = "rooms/obsidian_bridge.toml"
+
+[[connections]]
+from_room = "south_slope"
+to_region = "valley-of-ash"
+to_room = "ash_gate"
+label = "Descend back to Valley of Ash"
+
+[[connections]]
+from_room = "obsidian_bridge"
+to_region = "ironhold-mines"
+to_room = "mine_entrance"
+label = "Follow the tunnel into Ironhold"

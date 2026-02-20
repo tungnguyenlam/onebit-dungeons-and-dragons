@@ -1,0 +1,20 @@
+slug = "<region-slug>"
+name = "<Region Name>"
+description = "<Short region description>"
+entry_room = "<entry-room-id>"
+ambient = "<ambient-tag>"
+
+[[rooms]]
+id = "<entry-room-id>"
+file = "rooms/<entry-room-id>.toml"
+
+[[rooms]]
+id = "<second-room-id>"
+file = "rooms/<second-room-id>.toml"
+
+[[connections]]
+from_room = "<room-id>"
+to_region = "<other-region-slug>"
+to_room = "<room-id>"
+label = "<Travel label>"
+condition = ""

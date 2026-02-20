@@ -307,4 +307,32 @@ xp = 25
         assert!(loaded.npcs.contains_key("captain_kael"));
         assert!(loaded.dialogs.contains_key("captain_kael"));
     }
+
+    #[test]
+    fn load_all_authored_regions() {
+        let regions_dir = std::path::Path::new("assets/regions");
+        let entries = std::fs::read_dir(regions_dir).unwrap();
+        let mut count = 0usize;
+        for entry in entries {
+            let path = entry.unwrap().path();
+            if !path.is_dir() {
+                continue;
+            }
+            let slug = path.file_name().unwrap().to_string_lossy().to_string();
+            let loaded = load_region("assets", &slug).unwrap();
+            assert_eq!(loaded.manifest.slug, slug);
+            assert!(!loaded.rooms.is_empty());
+            count += 1;
+        }
+        assert!(count >= 3);
+    }
+
+    #[test]
+    fn load_all_authored_quests() {
+        let quests = load_quests("assets").unwrap();
+        assert!(quests.contains_key("valley_contract"));
+        assert!(quests.contains_key("volcanic_curse"));
+        assert!(quests.contains_key("dwarven_relic"));
+        assert!(quests.contains_key("gnome_debt"));
+    }
 }

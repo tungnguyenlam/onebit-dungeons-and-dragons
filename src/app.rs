@@ -671,6 +671,19 @@ impl App {
                     self.start_dialog_with_npc(&trigger.target_id);
                 }
                 TriggerKind::Encounter => {
+                    if trigger.target_id.contains("goblin")
+                        && self.world_state.faction_rep("goblin_tribe") >= 2
+                    {
+                        self.journal.append(
+                            format!("encounter-averted-{}-{}", trigger.target_id, self.turn),
+                            self.turn,
+                            JournalCategory::World,
+                            None,
+                            "Encounter Averted",
+                            "The goblins recognize your standing and let you pass.",
+                        );
+                        return;
+                    }
                     self.pending_encounter_monster = Some(trigger.target_id.clone());
                     self.pending_beep.set(self.sound_enabled);
                     let ctx = self.make_combat_context();
@@ -679,7 +692,10 @@ impl App {
                 TriggerKind::Lore => {
                     if let Some(lore) = self.lore_defs.get(&trigger.target_id) {
                         if inspect_lore(lore, &mut self.world_state, &mut self.journal, self.turn) {
-                            self.world_state.set_flag("read_old_tablet");
+                            self.world_state.set_flag(format!("read_{}", lore.id));
+                            if lore.id == "ash_tablet" {
+                                self.world_state.set_flag("read_old_tablet");
+                            }
                         }
                     }
                 }
@@ -1087,6 +1103,10 @@ impl App {
                     }
                 }
                 EnemyAiRole::Spellcaster => {
+                    if Self::try_spellcaster_support_action(ctx, &attacker_id) {
+                        let _ = Self::advance_turn(ctx);
+                        continue;
+                    }
                     if let (Some(bonus), Some(dice)) =
                         (actor.spell_attack_bonus, actor.spell_damage_dice)
                     {
@@ -1106,6 +1126,47 @@ impl App {
             }
             let _ = Self::advance_turn(ctx);
         }
+    }
+
+    fn try_spellcaster_support_action(ctx: &mut CombatContext, attacker_id: &str) -> bool {
+        let Some(attacker) = ctx.state.combatants.get(attacker_id).cloned() else {
+            return false;
+        };
+        if attacker.enemy_role != EnemyAiRole::Spellcaster || !attacker.action_slots.action {
+            return false;
+        }
+
+        let ally_to_heal = ctx
+            .state
+            .combatants
+            .values()
+            .filter(|c| c.is_alive() && c.is_player == attacker.is_player && c.id != attacker_id)
+            .filter(|c| c.current_hp * 2 <= c.max_hp)
+            .min_by_key(|c| c.current_hp)
+            .map(|c| c.id.clone());
+        let Some(ally_id) = ally_to_heal else {
+            return false;
+        };
+
+        let heal = DiceExpr::new(1, 6, 2).roll().max(1);
+        if let Some(ally) = ctx.state.combatants.get_mut(&ally_id) {
+            ally.current_hp = (ally.current_hp + heal).min(ally.max_hp);
+        }
+        if let Some(attacker_mut) = ctx.state.combatants.get_mut(attacker_id) {
+            let _ = attacker_mut.action_slots.use_action();
+        }
+        let caster_name = attacker.name;
+        let ally_name = ctx
+            .state
+            .combatants
+            .get(&ally_id)
+            .map(|c| c.name.clone())
+            .unwrap_or_else(|| ally_id.clone());
+        Self::push_log(
+            ctx,
+            format!("{caster_name} casts a support spell on {ally_name}, restoring {heal} HP."),
+        );
+        true
     }
 
     fn resolve_attack_with_stats(
@@ -1543,6 +1604,24 @@ impl App {
             attack_bonus,
             damage,
         )];
+        if self.world_state.faction_rep("town_guard") >= 3
+            || self.world_state.flag("request_guard_support")
+        {
+            let mut ally = CombatantState::new(
+                "ally_guard",
+                "Guard Ally",
+                true,
+                16,
+                15,
+                30,
+                1,
+                4,
+                DiceExpr::new(1, 8, 2),
+            );
+            ally.enemy_role = EnemyAiRole::Melee;
+            combatants.push(ally);
+            self.world_state.clear_flag("request_guard_support");
+        }
         let queued = self.pending_encounter_monster.take();
         combatants.extend(self.build_encounter_monsters(queued.as_deref()));
 
@@ -1929,9 +2008,38 @@ fn demo_world_events() -> EventEngine {
                 fired: false,
             },
             EventTrigger {
+                condition: "counter:faction_town_guard_rep >= 2".into(),
+                event: WorldEvent::SetFlag {
+                    key: "town_guard_trusted".into(),
+                },
+                once: true,
+                fired: false,
+            },
+            EventTrigger {
                 condition: "counter:faction_goblin_tribe_rep <= -4".into(),
                 event: WorldEvent::SetFlag {
                     key: "goblin_tribe_hostile".into(),
+                },
+                once: true,
+                fired: false,
+            },
+            EventTrigger {
+                condition: "flag:town_guard_trusted && flag:read_ember_rune".into(),
+                event: WorldEvent::AddJournalEntry {
+                    id: "chain-emberpeak-briefing".into(),
+                    category: JournalCategory::World,
+                    title: "Joint War Council".into(),
+                    body: "The guard and summit wardens coordinate supply lines through Emberpeak."
+                        .into(),
+                },
+                once: true,
+                fired: false,
+            },
+            EventTrigger {
+                condition: "flag:town_guard_trusted && counter:faction_goblin_tribe_rep <= -3"
+                    .into(),
+                event: WorldEvent::SetFlag {
+                    key: "valley_warfront".into(),
                 },
                 once: true,
                 fired: false,
@@ -2305,6 +2413,46 @@ mod tests {
         app.world_state.set_faction_rep("goblin_tribe", -4);
         app.handle_event(GameEvent::Tick).unwrap();
         assert!(app.world_state.flag("goblin_tribe_hostile"));
+    }
+
+    #[test]
+    fn event_chain_sets_followup_flags_and_entries() {
+        let mut app = App::new();
+        app.world_state.set_faction_rep("town_guard", 2);
+        app.world_state.set_flag("read_ember_rune");
+        app.world_state.set_faction_rep("goblin_tribe", -3);
+        app.handle_event(GameEvent::Tick).unwrap();
+        assert!(app.world_state.flag("town_guard_trusted"));
+        assert!(app.world_state.flag("valley_warfront"));
+        assert!(app
+            .journal
+            .entries
+            .iter()
+            .any(|e| e.id == "chain-emberpeak-briefing"));
+    }
+
+    #[test]
+    fn positive_goblin_rep_averts_goblin_encounter_trigger() {
+        let mut app = App::new();
+        app.transition(AppState::WorldMap);
+        app.current_room_id = "ember_square".into();
+        app.player_pos = trigger_position(&app, "ember_square", TriggerKind::Encounter);
+        app.world_state.set_faction_rep("goblin_tribe", 2);
+        app.handle_event(GameEvent::Confirm).unwrap();
+        assert!(matches!(app.state, AppState::WorldMap));
+        assert!(app
+            .journal
+            .entries
+            .iter()
+            .any(|e| e.id.contains("encounter-averted")));
+    }
+
+    #[test]
+    fn guard_support_flag_adds_combat_ally() {
+        let mut app = App::new();
+        app.world_state.set_flag("request_guard_support");
+        let ctx = app.make_combat_context();
+        assert!(ctx.state.combatants.contains_key("ally_guard"));
     }
 
     #[test]

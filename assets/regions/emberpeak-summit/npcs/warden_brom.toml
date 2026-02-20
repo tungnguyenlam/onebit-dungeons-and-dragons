@@ -1,0 +1,5 @@
+id = "warden_brom"
+name = "Warden Brom"
+monster_ref = ""
+faction = "emberpeak_dwarves"
+dialog_ref = "warden_brom"

@@ -1,0 +1,20 @@
+id = "<room-id>"
+name = "<Room Name>"
+description = "<Room description>"
+grid = """
+##########
+#........#
+#..@..!..#
+#....v...#
+##########
+"""
+
+[[npcs]]
+id = "<npc-id>"
+position = [3, 2]
+
+[[triggers]]
+position = [6, 2]
+type = "dialog"
+target_id = "<npc-id>"
+once = false

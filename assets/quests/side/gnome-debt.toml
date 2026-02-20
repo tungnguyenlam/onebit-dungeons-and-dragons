@@ -1,0 +1,10 @@
+id = "gnome_debt"
+name = "The Gnome's Debt"
+type = "side"
+
+[[stages]]
+id = "start"
+label = "Recover the mine ledger"
+condition = ""
+journal_entry = "Foreman Tarik asked you to recover records from the deep shaft."
+next = [{ condition = "flag:read_mine_ledger", stage = "DONE" }]

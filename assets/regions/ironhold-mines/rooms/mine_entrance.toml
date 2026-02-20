@@ -1,0 +1,26 @@
+id = "mine_entrance"
+name = "Mine Entrance"
+description = "Rusting rails vanish into darkness."
+grid = """
+##########
+#..@..!..#
+#........#
+#....v...#
+##########
+"""
+
+[[npcs]]
+id = "foreman_tarik"
+position = [3, 1]
+
+[[triggers]]
+position = [6, 1]
+type = "dialog"
+target_id = "foreman_tarik"
+once = false
+
+[[triggers]]
+position = [5, 3]
+type = "travel"
+target_id = "deep_shaft"
+once = false

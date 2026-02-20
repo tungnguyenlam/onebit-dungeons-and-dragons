@@ -11,49 +11,38 @@
 
 ```
 Date:          2026-02-20
-Stopped at:    Milestone 9 complete
-Task in progress: Milestone 10 — Content Production Pipeline kickoff
+Stopped at:    Milestone 11 complete
+Task in progress: Milestone 12 — UX & Presentation Polish 2.0 kickoff
 
 What was completed this session:
-  Milestone 9:
+  Milestone 11:
     - src/app.rs:
-      - added runtime XP gain + deterministic level-up flow from combat victories
-      - added class progression hooks (HP gain, slot refresh/expansion, ASI note logging)
-      - switched item/spell defs to prefer loaded global assets at startup
-      - added data-driven equipment bonus aggregation into combat/spell/runtime math
-      - added combat action variety via numeric actions:
-        - 1 attack
-        - 2 healing potion (action)
-        - 3 second wind (bonus action)
-    - src/game/character/progression.rs:
-      - added class hit die and spell-slot progression helpers
-      - added cantrip scaling helper
-    - src/game/combat/spells.rs:
-      - added cantrip scaling by level and upcast scaling by slot level
-    - src/data/types.rs:
-      - added ItemBonuses schema for data-driven equipment effects
-    - src/ui/tui/screens/combat.rs:
-      - updated controls help for expanded combat actions
+      - added spellcaster support AI behavior archetype (ally-heal decision path)
+      - faction reputation now affects hostility/support:
+        - positive goblin rep can avert goblin encounters
+        - trusted/requested guard support can join combat as ally
+      - added emergent event chain triggers (`town_guard_trusted`, ember briefing, `valley_warfront`)
+    - assets/regions/valley-of-ash/dialog/captain_kael.toml:
+      - added reputation-gated support request branch
+    - tests:
+      - added event-chain and faction-driven behavior coverage in app tests
     - cargo test:
-      - 108 tests, 0 failures
+      - 113 tests, 0 failures
 
 What is NOT done yet:
     - warning cleanup remains intentionally deferred (non-blocking, backlog policy)
-    - Milestone 10 implementation has not started
+    - Milestone 12 implementation has not started
     - GUI parity work remains deferred unless explicitly pulled into sprint scope
 
 Next action for the incoming agent:
-  1. Start Milestone 10 with region authoring templates + validation helpers.
-  2. Add two additional authored regions beyond valley-of-ash.
-  3. Ensure new regions/quests/dialog load with zero runtime code edits.
+  1. Start Milestone 12 with HUD/readability improvements on core screens.
+  2. Add terminal capability tiers and fallback policy (`T0`..`T3`) in the TUI layer.
+  3. Introduce shared semantic theme tokens and portable icon fallback glyphs.
   4. Keep warning-only cleanup out of scope unless explicitly requested.
 
 Files modified this session:
+  assets/regions/valley-of-ash/dialog/captain_kael.toml
   src/app.rs
-  src/game/character/progression.rs
-  src/game/combat/spells.rs
-  src/data/types.rs
-  src/ui/tui/screens/combat.rs
   docs/tasks/backlog.md
   docs/tasks/done.md
   docs/tasks/current-sprint.md (this file)
@@ -65,28 +54,27 @@ Blockers: none
 
 ## Active Task
 
-### Task: Milestone 10 — Content Production Pipeline
+### Task: Milestone 12 — UX & Presentation Polish 2.0
 
 **Files to touch:**
-- `assets/regions/*` — add at least two new region packs with manifests/rooms/npcs/dialog
-- `assets/quests/*` + `assets/lore/*` — reusable authored content bound to new regions
-- `docs/content/*` — document region templates/workflow and validation usage
-- `scripts/*` (if needed) — content validation helpers for region/quest/dialog integrity
+- `src/ui/tui/*` + `src/renderer.rs` — terminal capability tiers and fallback policy
+- `src/ui/tui/screens/*` — HUD/readability improvements and help overlays
+- shared style token location (`src/ui/tui/...`) — semantic color roles/icons with fallback glyphs
+- docs in `docs/architecture/` + `README.md` — support matrix and presentation config
 
 **Done when:**
-- [ ] region authoring templates and validation helpers are in place
-- [ ] two additional regions are authored and loadable
-- [ ] quest/dialog content for new regions is authored via reusable workflow
-- [ ] new content loads without runtime code edits
+- [ ] HUD/readability improves across key screens
+- [ ] terminal capability tiers + fallback policy are implemented
+- [ ] semantic theme tokens + icon fallback glyphs are in use
+- [ ] support matrix/config docs are updated
 - [ ] `cargo test` passes
 
 **Blocked by:** none
 
 **Relevant docs:**
 - [../DOCS_MAP.md](../DOCS_MAP.md)
-- [../content/regions/index.md](../content/regions/index.md)
-- [../content/map-format.md](../content/map-format.md)
-- [../content/quests.md](../content/quests.md)
+- [../architecture/ui-layer.md](../architecture/ui-layer.md)
+- [../architecture/tui-visual-system.md](../architecture/tui-visual-system.md)
 
 ---
 

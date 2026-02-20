@@ -1,0 +1,26 @@
+id = "south_slope"
+name = "South Slope"
+description = "Narrow switchbacks cut through cooled lava flows."
+grid = """
+##########
+#..@..!..#
+#........#
+#....v...#
+##########
+"""
+
+[[npcs]]
+id = "warden_brom"
+position = [3, 1]
+
+[[triggers]]
+position = [6, 1]
+type = "dialog"
+target_id = "warden_brom"
+once = false
+
+[[triggers]]
+position = [5, 3]
+type = "travel"
+target_id = "obsidian_bridge"
+once = false

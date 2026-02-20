@@ -1,0 +1,5 @@
+id = "archivist_nyra"
+name = "Archivist Nyra"
+monster_ref = ""
+faction = "emberpeak_dwarves"
+dialog_ref = "archivist_nyra"

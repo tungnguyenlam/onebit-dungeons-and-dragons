@@ -1,0 +1,25 @@
+npc_id = "warden_brom"
+
+[[nodes]]
+id = "root"
+text = "The summit shakes at night. If you can read the rune on the bridge, we may hold this pass."
+
+[[nodes.choices]]
+text = "I will inspect the bridge rune."
+condition = ""
+next = "accept"
+effect = [{ set_flag = "accept_emberpeak_rune_task" }]
+
+[[nodes.choices]]
+text = "Not now."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "accept"
+text = "Return once you have seen the rune's script."
+
+[[nodes.choices]]
+text = "Understood."
+condition = ""
+next = "END"

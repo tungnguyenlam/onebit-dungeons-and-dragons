@@ -10,12 +10,21 @@
 | # | Slug | Name | Status | Connections |
 |---|---|---|---|---|
 | 1 | `valley-of-ash` | Valley of Ash | ✅ complete | local rooms (`ash_gate` ↔ `ember_square`) |
-| 2 | `emberpeak-summit` | Emberpeak Summit | 🔲 planned | ← `valley-of-ash`, → `ironhold-mines` |
-| 3 | `ironhold-mines` | The Ironhold Mines | 🔲 planned | ← `emberpeak-summit`, → `underdark-shelf` |
+| 2 | `emberpeak-summit` | Emberpeak Summit | ✅ complete | ← `valley-of-ash`, → `ironhold-mines` |
+| 3 | `ironhold-mines` | The Ironhold Mines | ✅ complete | ← `emberpeak-summit`, → `underdark-shelf` |
 | 4 | `underdark-shelf` | The Underdark Shelf | 🔲 planned | ← `ironhold-mines` |
 | 5 | `tidewatch-coast` | Tidewatch Coast | 🔲 planned | standalone starter alt |
 
 Status keys: 🔲 planned · 🚧 in progress · ✅ complete
+
+Validation helper:
+- `scripts/validate_content.sh` validates authored regions and quests load via the data loader.
+
+Authoring templates:
+- `docs/content/regions/templates/region-template.toml`
+- `docs/content/regions/templates/room-template.toml`
+- `docs/content/regions/templates/npc-template.toml`
+- `docs/content/regions/templates/dialog-template.toml`
 
 ---
 

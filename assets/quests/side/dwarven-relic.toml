@@ -1,0 +1,10 @@
+id = "dwarven_relic"
+name = "A Dwarven Relic"
+type = "side"
+
+[[stages]]
+id = "start"
+label = "Inspect the summit rune"
+condition = ""
+journal_entry = "Archivist Nyra believes the summit rune marks a hidden relic trail."
+next = [{ condition = "flag:read_ember_rune", stage = "DONE" }]

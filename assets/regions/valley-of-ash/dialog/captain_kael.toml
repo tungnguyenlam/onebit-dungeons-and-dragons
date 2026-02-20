@@ -11,6 +11,12 @@ next = "accept"
 effect = [{ set_flag = "accept_demo_quest" }]
 
 [[nodes.choices]]
+text = "Call in extra guard support for the next fight."
+condition = "counter:faction_town_guard_rep >= 2"
+next = "support"
+effect = [{ set_flag = "request_guard_support" }]
+
+[[nodes.choices]]
 text = "Not right now."
 condition = ""
 next = "END"
@@ -21,5 +27,14 @@ text = "Then clear Ember Square and report back."
 
 [[nodes.choices]]
 text = "Understood."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "support"
+text = "You have earned our trust. A guard squad will reinforce your next patrol."
+
+[[nodes.choices]]
+text = "I appreciate it."
 condition = ""
 next = "END"

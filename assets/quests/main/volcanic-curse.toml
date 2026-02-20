@@ -1,0 +1,17 @@
+id = "volcanic_curse"
+name = "The Volcanic Curse"
+type = "main"
+
+[[stages]]
+id = "start"
+label = "Secure Emberpeak routes"
+condition = ""
+journal_entry = "Warden Brom asked you to inspect summit runes and stabilize mountain routes."
+next = [{ condition = "flag:read_ember_rune", stage = "into_mines" }]
+
+[[stages]]
+id = "into_mines"
+label = "Follow the route into Ironhold"
+condition = "flag:read_ember_rune"
+journal_entry = "The rune markings point toward the Ironhold tunnels."
+next = [{ condition = "flag:learned_ironhold_route", stage = "DONE" }]

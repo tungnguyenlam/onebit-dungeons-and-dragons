@@ -9,6 +9,8 @@
 ## Folder Layout for One Region
 
 ```
+
+Starter templates for these files live in `docs/content/regions/templates/`.
 assets/regions/<slug>/
 ├── region.toml             ← required: manifest
 ├── rooms/
@@ -133,3 +135,16 @@ hp = 18
 | `!` | Trigger zone (invisible at runtime unless debug mode) |
 | `T` | Tree / pillar (impassable, provides cover) |
 | `=` | Counter / table (impassable) |
+
+---
+
+## Validation Workflow
+
+Run:
+
+```bash
+scripts/validate_content.sh
+```
+
+This executes loader-backed tests that verify all authored regions and quests
+in `assets/` deserialize correctly.

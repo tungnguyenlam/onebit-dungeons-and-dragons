@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-02-20 — Milestone 11 (complete): NPC/Faction Simulation 2.0
+
+- [x] `src/app.rs` — added spellcaster support behavior archetype (enemy AI can prioritize healing wounded allies)
+- [x] `src/app.rs` — faction reputation now materially affects hostility/support:
+  - goblin encounters can be averted at positive goblin reputation
+  - guard ally support can be requested/consumed and auto-joined via trusted reputation
+- [x] `assets/regions/valley-of-ash/dialog/captain_kael.toml` — added reputation-gated support dialog branch
+- [x] `src/app.rs` — added multi-step emergent event chain (`town_guard_trusted` -> ember briefing -> `valley_warfront`)
+- [x] tests: added focused coverage for event chains, encounter aversion, and ally-support spawning
+- [x] `cargo test` passes (113 tests, 0 failures)
+
+## 2026-02-20 — Milestone 10 (complete): Content Production Pipeline
+
+- [x] `assets/regions/emberpeak-summit/*` (new) — authored second region with manifest, rooms, NPCs, and dialog
+- [x] `assets/regions/ironhold-mines/*` (new) — authored third region with manifest, rooms, NPCs, and dialog
+- [x] `assets/quests/main/volcanic-curse.toml` (new) — authored mainline Act 2 quest scaffolding
+- [x] `assets/quests/side/dwarven-relic.toml` + `assets/quests/side/gnome-debt.toml` (new) — reusable side-quest content pipeline examples
+- [x] `assets/lore/ember_rune.toml` + `assets/lore/mine_ledger.toml` (new) — region-linked lore assets for trigger-driven progression
+- [x] `docs/content/regions/templates/*` (new) — region/room/NPC/dialog templates for repeatable authoring
+- [x] `scripts/validate_content.sh` (new) + `src/data/loader.rs` tests — validation helpers for authored regions/quests loader compatibility
+- [x] `src/app.rs` — lore-trigger flagging generalized to `read_<lore_id>` to support newly authored content without bespoke runtime edits
+- [x] `cargo test` passes (110 tests, 0 failures); `scripts/validate_content.sh` passes
+
 ## 2026-02-20 — Milestone 9 (complete): Core RPG Depth
 
 - [x] `src/app.rs` — runtime XP gain + level-up flow wired from combat victory, with HP/slot progression hooks and journal entries

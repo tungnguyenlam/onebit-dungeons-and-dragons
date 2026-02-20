@@ -114,17 +114,17 @@
 
 ## Milestone 10 — Content Production Pipeline
 
-- [ ] Region authoring templates and validation helpers
-- [ ] Author two additional regions beyond `valley-of-ash`
-- [ ] Author quest/dialog content with reusable content workflow
-- [ ] Ensure new content loads without runtime code edits
+- [x] Region authoring templates and validation helpers
+- [x] Author two additional regions beyond `valley-of-ash`
+- [x] Author quest/dialog content with reusable content workflow
+- [x] Ensure new content loads without runtime code edits
   - See [content/regions/index.md](../content/regions/index.md), [content/map-format.md](../content/map-format.md), [content/quests.md](../content/quests.md)
 
 ## Milestone 11 — NPC/Faction Simulation 2.0
 
-- [ ] Expand behavior archetypes carefully (moderate-complexity target)
-- [ ] Make faction reputation materially affect dialog/hostility/support
-- [ ] Add emergent event chains driven by faction and world-state thresholds
+- [x] Expand behavior archetypes carefully (moderate-complexity target)
+- [x] Make faction reputation materially affect dialog/hostility/support
+- [x] Add emergent event chains driven by faction and world-state thresholds
   - See [gameplay/npc-ai.md](../gameplay/npc-ai.md), [gameplay/story.md](../gameplay/story.md)
 
 ## Milestone 12 — UX & Presentation Polish 2.0

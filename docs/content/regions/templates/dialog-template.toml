@@ -1,0 +1,10 @@
+npc_id = "<npc-id>"
+
+[[nodes]]
+id = "root"
+text = "<Opening line>"
+
+[[nodes.choices]]
+text = "<Primary response>"
+condition = ""
+next = "END"

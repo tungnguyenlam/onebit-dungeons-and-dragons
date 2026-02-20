@@ -54,8 +54,8 @@ Details TBD pending Act 2 outcomes.
 | ID | Name | Region | Giver | Status |
 |---|---|---|---|---|
 | `missing-merchant` | The Missing Merchant | Valley of Ash | Innkeeper Mara | 🔲 |
-| `dwarven-relic` | A Dwarven Relic | Emberpeak Summit | Ghost of Thurin | 🔲 |
-| `gnome-debt` | The Gnome's Debt | Ironhold Mines | Deep Gnome Pip | 🔲 |
+| `dwarven_relic` | A Dwarven Relic | Emberpeak Summit | Archivist Nyra | ✅ |
+| `gnome_debt` | The Gnome's Debt | Ironhold Mines | Foreman Tarik | ✅ |
 | `spider-silk` | Spider Silk for Sable | Ironhold Mines | Merchant Sable | 🔲 |
 | `tidewatch-smugglers` | Smuggler's Ledger | Tidewatch Coast | Harbormaster | 🔲 |
 

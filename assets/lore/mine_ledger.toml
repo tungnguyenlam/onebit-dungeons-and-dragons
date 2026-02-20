@@ -1,0 +1,4 @@
+id = "mine_ledger"
+title = "Ironhold Shift Ledger"
+text = "The ledger records abrupt tunnel collapses and missing crews near the deep shaft."
+tags = ["ironhold", "mines", "survey"]

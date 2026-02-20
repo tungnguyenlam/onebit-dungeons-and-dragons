@@ -1,0 +1,32 @@
+id = "deep_shaft"
+name = "Deep Shaft"
+description = "A vertical cavern where ropes sway over black water."
+grid = """
+##########
+#..!...!.#
+#..@.....#
+#....v...#
+##########
+"""
+
+[[npcs]]
+id = "scout_pip"
+position = [3, 2]
+
+[[triggers]]
+position = [3, 1]
+type = "lore"
+target_id = "mine_ledger"
+once = true
+
+[[triggers]]
+position = [7, 1]
+type = "encounter"
+target_id = "goblin_archer"
+once = false
+
+[[triggers]]
+position = [5, 3]
+type = "travel"
+target_id = "mine_entrance"
+once = false

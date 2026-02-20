@@ -1,0 +1,25 @@
+npc_id = "scout_pip"
+
+[[nodes]]
+id = "root"
+text = "The shaft groans before cave-ins. If you hear three cracks, run."
+
+[[nodes.choices]]
+text = "Any safe route through here?"
+condition = ""
+next = "route"
+
+[[nodes.choices]]
+text = "Good warning."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "route"
+text = "Hug the west wall and avoid the center catwalk."
+
+[[nodes.choices]]
+text = "Got it."
+condition = ""
+next = "END"
+effect = [{ set_flag = "learned_shaft_route" }]

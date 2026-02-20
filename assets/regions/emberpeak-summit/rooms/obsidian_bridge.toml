@@ -1,0 +1,32 @@
+id = "obsidian_bridge"
+name = "Obsidian Bridge"
+description = "A black glass span crossing a magma fissure."
+grid = """
+##########
+#..!...!.#
+#..@.....#
+#....v...#
+##########
+"""
+
+[[npcs]]
+id = "archivist_nyra"
+position = [3, 2]
+
+[[triggers]]
+position = [3, 1]
+type = "lore"
+target_id = "ember_rune"
+once = true
+
+[[triggers]]
+position = [7, 1]
+type = "encounter"
+target_id = "goblin_shaman"
+once = false
+
+[[triggers]]
+position = [5, 3]
+type = "travel"
+target_id = "south_slope"
+once = false

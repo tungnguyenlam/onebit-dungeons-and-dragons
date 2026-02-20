@@ -1,0 +1,5 @@
+id = "foreman_tarik"
+name = "Foreman Tarik"
+monster_ref = ""
+faction = "deep_gnomes"
+dialog_ref = "foreman_tarik"

@@ -1,0 +1,5 @@
+id = "<npc-id>"
+name = "<NPC Name>"
+monster_ref = ""
+faction = "<faction-id>"
+dialog_ref = "<npc-id>"

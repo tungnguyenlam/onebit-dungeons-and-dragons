@@ -1,0 +1,25 @@
+npc_id = "archivist_nyra"
+
+[[nodes]]
+id = "root"
+text = "These glyphs map old mine routes. We can reopen Ironhold if the path is stable."
+
+[[nodes.choices]]
+text = "Show me the route markings."
+condition = ""
+next = "route"
+
+[[nodes.choices]]
+text = "I will come back later."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "route"
+text = "Follow the lower tunnel and avoid the collapsed shafts."
+
+[[nodes.choices]]
+text = "Thanks."
+condition = ""
+next = "END"
+effect = [{ set_flag = "learned_ironhold_route" }]
