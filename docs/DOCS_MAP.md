@@ -11,6 +11,7 @@
 - Architecture index: [architecture/overview.md](architecture/overview.md)
 - Gameplay index: [gameplay/overview.md](gameplay/overview.md)
 - Content index: [content/overview.md](content/overview.md)
+- Testing docs: [testing/tui-agent-smoke.md](testing/tui-agent-smoke.md)
 - Task tracking: [tasks/current-sprint.md](tasks/current-sprint.md), [tasks/backlog.md](tasks/backlog.md), [tasks/done.md](tasks/done.md)
 
 ---
@@ -67,6 +68,11 @@
 - `tasks/done.md`
   - Related: [tasks/backlog.md](tasks/backlog.md), [tasks/current-sprint.md](tasks/current-sprint.md), [README.md](../README.md)
 
+### Testing docs
+
+- `testing/tui-agent-smoke.md`
+  - Related: [AGENT.md](AGENT.md), [README.md](../README.md), `scripts/agent_tui_smoke.sh`
+
 ---
 
 ## Update Checklist (Anti-Stale)
@@ -87,4 +93,3 @@ When editing these files, also review:
   - [tasks/backlog.md](tasks/backlog.md)
   - [tasks/done.md](tasks/done.md)
   - status table in [README.md](../README.md)
-

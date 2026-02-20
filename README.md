@@ -28,6 +28,9 @@ cargo run --features gui -- --mode gui
 
 # Run tests
 cargo test
+
+# Agent-run automated TUI smoke flow
+scripts/agent_tui_smoke.sh
 ```
 
 ### TUI Controls
@@ -197,3 +200,4 @@ For the detailed design see [docs/architecture/overview.md](docs/architecture/ov
 
 See [docs/AGENT.md](docs/AGENT.md) — the workflow applies equally to humans and AI agents.
 For doc synchronization rules, also see [docs/DOCS_MAP.md](docs/DOCS_MAP.md).
+For automated non-interactive TUI validation, see [docs/testing/tui-agent-smoke.md](docs/testing/tui-agent-smoke.md).

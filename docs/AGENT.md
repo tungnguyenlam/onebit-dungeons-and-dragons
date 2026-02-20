@@ -25,6 +25,12 @@ cargo check 2>&1 | head -40
 If it fails, check the handoff block — the previous agent may have noted a
 known compile error as their stopping point. Fix it before continuing.
 
+For a non-interactive keyboard smoke check of the TUI:
+```bash
+scripts/agent_tui_smoke.sh
+```
+Guide: [testing/tui-agent-smoke.md](testing/tui-agent-smoke.md)
+
 **Step 3 — Read only the docs for your current task**  
 The handoff block lists which doc files are relevant. Read those and nothing
 else. Do not read the full backlog or unrelated gameplay docs.
@@ -113,6 +119,7 @@ If you update any gameplay/architecture/content/task doc, review
 | Lore & environmental text | [content/lore.md](content/lore.md) |
 | Region index (world map) | [content/regions/index.md](content/regions/index.md) |
 | Map & region file format | [content/map-format.md](content/map-format.md) |
+| Automated TUI smoke tool | [testing/tui-agent-smoke.md](testing/tui-agent-smoke.md) |
 
 ---
 
