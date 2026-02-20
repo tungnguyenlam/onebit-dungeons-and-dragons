@@ -37,6 +37,9 @@ scripts/release_check.sh
 
 # Agent-run automated TUI smoke flow
 scripts/agent_tui_smoke.sh
+
+# Manual interactive TUI playtest (requires TTY terminal)
+scripts/agent_tui_smoke.sh --interactive
 ```
 
 ### TUI Controls

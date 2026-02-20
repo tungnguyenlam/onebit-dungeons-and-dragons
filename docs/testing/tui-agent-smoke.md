@@ -40,6 +40,25 @@ scripts/agent_tui_smoke.sh
 scripts/agent_tui_smoke.sh --interactive
 ```
 
+### Interactive Mode and TTY Requirements
+
+`--interactive` launches the real TUI process and requires a terminal TTY.
+
+- Works: local terminal sessions (normal shell), PTY-backed agent sessions.
+- Fails by design: non-TTY command runners (piped/backgrounded headless exec).
+
+If `--interactive` is run without a TTY, the script now exits with:
+
+```text
+Error: --interactive requires a TTY (stdin/stdout must be terminals).
+Run this directly in a terminal, or omit --interactive for scripted smoke mode.
+```
+
+Use these modes intentionally:
+
+- Manual interactive inspection: `scripts/agent_tui_smoke.sh --interactive`
+- Deterministic automated smoke: `scripts/agent_tui_smoke.sh`
+
 Options:
 
 ```bash
@@ -67,8 +86,9 @@ Environment:
 
 ## Requirements
 
-- `expect` must be installed.
+- `expect` must be installed for scripted smoke mode.
   - macOS: `brew install expect`
+- `expect` is not required for `--interactive`.
 
 ---
 

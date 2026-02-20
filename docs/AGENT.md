@@ -35,6 +35,13 @@ scripts/agent_tui_smoke.sh
 ```
 Guide: [testing/tui-agent-smoke.md](testing/tui-agent-smoke.md)
 
+For manual interactive playtest:
+```bash
+scripts/agent_tui_smoke.sh --interactive
+```
+Note: this requires a TTY terminal session. If you run commands in a non-TTY
+agent exec context, use scripted smoke mode instead.
+
 For standard automated verification (tests first, optional smoke):
 ```bash
 scripts/agent_verify.sh

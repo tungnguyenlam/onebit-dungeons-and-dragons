@@ -73,12 +73,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if ! command -v expect >/dev/null 2>&1; then
-  echo "Error: 'expect' is required for automated TUI keyboard driving."
-  echo "Install with: brew install expect"
-  exit 1
-fi
-
 if [[ "$NO_BUILD" -eq 0 ]]; then
   echo "[agent-tui] Building binary..."
   RUSTFLAGS="$BUILD_RUSTFLAGS" cargo build --quiet --bin dnd
@@ -103,11 +97,22 @@ if [[ -n "$SCENARIO" ]]; then
 fi
 
 if [[ "$INTERACTIVE" -eq 1 ]]; then
+  if [[ ! -t 0 || ! -t 1 ]]; then
+    echo "Error: --interactive requires a TTY (stdin/stdout must be terminals)."
+    echo "Run this directly in a terminal, or omit --interactive for scripted smoke mode."
+    exit 2
+  fi
   if [[ -n "$SCENARIO" ]]; then
     echo "[agent-tui] Interactive mode with scenario preset: $SCENARIO"
   fi
   echo "[agent-tui] Interactive mode: launching ./target/debug/dnd --mode tui"
   exec ./target/debug/dnd --mode tui
+fi
+
+if ! command -v expect >/dev/null 2>&1; then
+  echo "Error: 'expect' is required for automated TUI keyboard driving."
+  echo "Install with: brew install expect"
+  exit 1
 fi
 
 rm -f saves/slot1.toml
