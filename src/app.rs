@@ -8,7 +8,16 @@
 /// and reads `App::state` (and sub-system state) during rendering.
 use crate::renderer::{ControlFlow, GameEvent};
 use crate::game::{
-    combat::{apply_damage, roll_attack, AttackProfile, CombatState, CombatantState, DefenseProfile, HitType},
+    combat::{
+        apply_damage,
+        roll_attack,
+        AttackProfile,
+        CombatState,
+        CombatantState,
+        DefenseProfile,
+        HitType,
+        RollMode,
+    },
     dice::DiceExpr,
     story::WorldState,
 };
@@ -82,6 +91,10 @@ impl Default for CombatContext {
             ],
             1337,
         );
+        let mut state = state;
+        if let Some(goblin_a) = state.combatants.get_mut("goblin_a") {
+            goblin_a.on_hit_condition = Some(crate::game::character::conditions::Condition::Poisoned);
+        }
         Self {
             state,
             world_state: WorldState::new(),
@@ -283,9 +296,16 @@ impl App {
         };
 
         if !attacker_view.can_take_actions() {
+            let reasons = attacker_view
+                .conditions
+                .iter()
+                .filter(|c| c.is_incapacitating())
+                .map(|c| c.name())
+                .collect::<Vec<_>>()
+                .join(", ");
             Self::push_log(
                 ctx,
-                format!("{} cannot act (incapacitated).", attacker_view.name),
+                format!("{} cannot act ({reasons}).", attacker_view.name),
             );
             return false;
         }
@@ -312,6 +332,7 @@ impl App {
                 attack_bonus: attacker_view.attack_bonus,
                 damage_dice: &attacker_view.damage_dice,
                 conditions: &attacker_view.conditions,
+                on_hit_condition: attacker_view.on_hit_condition.clone(),
             };
             let defense = DefenseProfile {
                 id: &target_view.id,
@@ -326,24 +347,32 @@ impl App {
         }
 
         let mut hp_after = None;
-        if outcome.damage > 0 {
-            if let Some(target_mut) = ctx.state.combatants.get_mut(target_id) {
+        if let Some(target_mut) = ctx.state.combatants.get_mut(target_id) {
+            if outcome.damage > 0 {
                 hp_after = Some(apply_damage(target_mut, outcome.damage));
+            }
+            if let Some(cond) = &outcome.inflicted_condition {
+                target_mut.conditions.insert(cond.clone());
             }
         }
 
+        let roll_mode_suffix = match outcome.roll_mode {
+            RollMode::Normal => "",
+            RollMode::Advantage => " with advantage",
+            RollMode::Disadvantage => " with disadvantage",
+        };
         let headline = match outcome.hit_type {
             HitType::Miss => format!(
-                "{attacker_name} attacks {target_name}: miss (d20={} total={}).",
-                outcome.d20, outcome.total
+                "{attacker_name} attacks {target_name}{roll_mode_suffix}: miss (d20={} total={}).",
+                outcome.d20, outcome.total,
             ),
             HitType::Hit => format!(
-                "{attacker_name} hits {target_name} for {} damage (d20={} total={}).",
-                outcome.damage, outcome.d20, outcome.total
+                "{attacker_name} hits {target_name}{roll_mode_suffix} for {} damage (d20={} total={}).",
+                outcome.damage, outcome.d20, outcome.total,
             ),
             HitType::Critical => format!(
-                "{attacker_name} CRITS {target_name} for {} damage (nat 20).",
-                outcome.damage
+                "{attacker_name} CRITS {target_name}{roll_mode_suffix} for {} damage (nat 20).",
+                outcome.damage,
             ),
         };
         Self::push_log(ctx, headline);
@@ -354,6 +383,10 @@ impl App {
             } else {
                 Self::push_log(ctx, format!("{target_name} now has {hp} HP."));
             }
+        }
+
+        if let Some(cond) = &outcome.inflicted_condition {
+            Self::push_log(ctx, format!("{target_name} gains condition: {}.", cond.name()));
         }
         true
     }
@@ -380,8 +413,15 @@ impl App {
             }
 
             if !attacker.can_take_actions() {
+                let reasons = attacker
+                    .conditions
+                    .iter()
+                    .filter(|c| c.is_incapacitating())
+                    .map(|c| c.name())
+                    .collect::<Vec<_>>()
+                    .join(", ");
                 let name = attacker.name.clone();
-                Self::push_log(ctx, format!("{name} cannot act and skips turn."));
+                Self::push_log(ctx, format!("{name} cannot act ({reasons}) and skips turn."));
                 let _ = ctx.state.next_turn();
                 continue;
             }
@@ -472,6 +512,7 @@ mod tests {
         match &app.state {
             AppState::Combat(ctx) => {
                 assert!(ctx.log.iter().any(|line| line.contains("cannot act")));
+                assert!(ctx.log.iter().any(|line| line.contains("Stunned")));
             }
             _ => panic!("expected combat state"),
         }

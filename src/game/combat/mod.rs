@@ -14,6 +14,7 @@ pub use attack::{
     AttackProfile,
     DefenseProfile,
     HitType,
+    RollMode,
     SaveOutcome,
 };
 pub use combat::{CombatState, CombatantState};

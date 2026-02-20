@@ -21,6 +21,7 @@ pub struct CombatantState {
     pub initiative_mod: i32,
     pub attack_bonus:   i32,
     pub damage_dice:    DiceExpr,
+    pub on_hit_condition: Option<Condition>,
     pub conditions:     HashSet<Condition>,
     pub action_slots:   ActionSlots,
 }
@@ -49,6 +50,7 @@ impl CombatantState {
             initiative_mod,
             attack_bonus,
             damage_dice,
+            on_hit_condition: None,
             conditions: HashSet::new(),
             action_slots: ActionSlots::new(speed),
         }

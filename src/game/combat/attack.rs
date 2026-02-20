@@ -15,14 +15,23 @@ pub enum HitType {
     Critical,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RollMode {
+    Normal,
+    Advantage,
+    Disadvantage,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AttackOutcome {
     pub attacker_id: String,
     pub target_id:   String,
     pub d20:         i32,
     pub total:       i32,
+    pub roll_mode:   RollMode,
     pub hit_type:    HitType,
     pub damage:      u32,
+    pub inflicted_condition: Option<Condition>,
 }
 
 #[derive(Debug, Clone)]
@@ -31,6 +40,7 @@ pub struct AttackProfile<'a> {
     pub attack_bonus: i32,
     pub damage_dice: &'a DiceExpr,
     pub conditions:  &'a HashSet<Condition>,
+    pub on_hit_condition: Option<Condition>,
 }
 
 #[derive(Debug, Clone)]
@@ -88,28 +98,36 @@ fn roll_attack_with_rng<R: Rng + ?Sized>(
         .iter()
         .any(Condition::grants_advantage_to_attackers);
 
-    let d20 = if attacker_disadv == target_grants_adv {
-        rng.random_range(1..=20) as i32
+    let (d20, roll_mode) = if attacker_disadv == target_grants_adv {
+        (rng.random_range(1..=20) as i32, RollMode::Normal)
     } else if target_grants_adv {
         let a = rng.random_range(1..=20) as i32;
         let b = rng.random_range(1..=20) as i32;
-        a.max(b)
+        (a.max(b), RollMode::Advantage)
     } else {
         let a = rng.random_range(1..=20) as i32;
         let b = rng.random_range(1..=20) as i32;
-        a.min(b)
+        (a.min(b), RollMode::Disadvantage)
     };
 
     let total = d20 + attacker.attack_bonus;
 
-    let (hit_type, damage) = if d20 == 1 {
-        (HitType::Miss, 0)
+    let (hit_type, damage, inflicted_condition) = if d20 == 1 {
+        (HitType::Miss, 0, None)
     } else if d20 == 20 {
-        (HitType::Critical, roll_damage(attacker.damage_dice, true, rng))
+        (
+            HitType::Critical,
+            roll_damage(attacker.damage_dice, true, rng),
+            attacker.on_hit_condition.clone(),
+        )
     } else if total >= target.armor_class {
-        (HitType::Hit, roll_damage(attacker.damage_dice, false, rng))
+        (
+            HitType::Hit,
+            roll_damage(attacker.damage_dice, false, rng),
+            attacker.on_hit_condition.clone(),
+        )
     } else {
-        (HitType::Miss, 0)
+        (HitType::Miss, 0, None)
     };
 
     AttackOutcome {
@@ -117,8 +135,10 @@ fn roll_attack_with_rng<R: Rng + ?Sized>(
         target_id: target.id.to_string(),
         d20,
         total,
+        roll_mode,
         hit_type,
         damage,
+        inflicted_condition,
     }
 }
 
@@ -170,6 +190,7 @@ mod tests {
             attack_bonus: 5,
             damage_dice: &dice,
             conditions: &atk_conds,
+            on_hit_condition: None,
         };
         let def = DefenseProfile {
             id: "t",
@@ -211,6 +232,7 @@ mod tests {
             attack_bonus: 5,
             damage_dice: &dice,
             conditions: &atk_conds,
+            on_hit_condition: None,
         };
         let def = DefenseProfile {
             id: "t",
@@ -230,5 +252,50 @@ mod tests {
                 assert!((1..=20).contains(&d20));
             }
         }
+    }
+
+    #[test]
+    fn roll_mode_marks_disadvantage_from_poisoned_attacker() {
+        let dice = DiceExpr::new(1, 6, 0);
+        let mut atk_conds = HashSet::new();
+        atk_conds.insert(Condition::Poisoned);
+        let def_conds = HashSet::new();
+        let atk = AttackProfile {
+            id: "a",
+            attack_bonus: 4,
+            damage_dice: &dice,
+            conditions: &atk_conds,
+            on_hit_condition: None,
+        };
+        let def = DefenseProfile {
+            id: "t",
+            armor_class: 12,
+            conditions: &def_conds,
+        };
+        let out = roll_attack_with_seed(&atk, &def, 42);
+        assert_eq!(out.roll_mode, RollMode::Disadvantage);
+    }
+
+    #[test]
+    fn on_hit_condition_is_reported_on_hit() {
+        let dice = DiceExpr::new(1, 6, 0);
+        let atk_conds = HashSet::new();
+        let def_conds = HashSet::new();
+        let atk = AttackProfile {
+            id: "a",
+            attack_bonus: 100,
+            damage_dice: &dice,
+            conditions: &atk_conds,
+            on_hit_condition: Some(Condition::Poisoned),
+        };
+        let def = DefenseProfile {
+            id: "t",
+            armor_class: -10,
+            conditions: &def_conds,
+        };
+        // Seed chosen to avoid natural 1.
+        let out = roll_attack_with_seed(&atk, &def, 2);
+        assert!(matches!(out.hit_type, HitType::Hit | HitType::Critical));
+        assert_eq!(out.inflicted_condition, Some(Condition::Poisoned));
     }
 }

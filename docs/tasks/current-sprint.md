@@ -10,45 +10,42 @@
 
 ```
 Date:          2026-02-20
-Stopped at:    Milestone 2 step 4 complete — enemy auto-turn loop added
-Task in progress: M2 combat step 5 — broaden condition effects in combat
+Stopped at:    Milestone 2 step 5 complete — condition hooks expanded
+Task in progress: M2 combat step 6 — polish combat flow + final condition pass
 
 What was completed this session:
-  Milestone 2 step 4:
-    - src/app.rs                     — combat tick now processes enemy turns automatically
-        · non-player combatants auto-attack valid player targets
-        · enemy turns auto-advance until a player turn is reached
-        · incapacitated enemies skip turn with combat-log entry
-        · combat end now transitions to:
-            - `WorldMap` on player-side victory
-            - `GameOver` on player-side defeat
-    - src/app.rs                     — refactored combat action flow via helper methods
-      (`resolve_attack`, `run_enemy_turns`, `finish_combat_if_over`)
-    - src/game/combat/combat.rs      — helper usage extended in app flow
-    - src/ui/tui/screens/combat.rs   — initiative banner now shows active side
-      (`PLAYER` vs `ENEMY`)
+  Milestone 2 step 5:
+    - src/game/combat/attack.rs      — attack outcome now includes:
+        · roll mode (`Normal`/`Advantage`/`Disadvantage`)
+        · on-hit condition hook (`inflicted_condition`)
+    - src/game/combat/combat.rs      — CombatantState now supports `on_hit_condition`
+    - src/app.rs                     — combat log now surfaces:
+        · advantage/disadvantage context on attack lines
+        · specific incap condition names in skip messages
+        · on-hit condition application messages
+    - src/app.rs                     — seeded demo data: Goblin A inflicts `Poisoned` on hit
     - tests added:
-        · enemy turn executes on tick and returns to player turn
-        · tick transitions to world map / game over on combat end
-    - `cargo test` — 67 tests, 0 failures
+        · roll-mode disadvantage from poisoned attacker
+        · on-hit condition hook propagation
+        · incap message includes specific condition
+    - `cargo test` — 69 tests, 0 failures
 
 What is NOT done yet:
     - src/ui/tui/screens/ — all screen render functions
     - src/ui/tui/layout.rs, widgets/
-    - condition application breadth is still partial (beyond incap/disadvantage hooks)
+    - condition application breadth is still partial (no timed durations/resolution pipeline)
     - no distinct enemy behavior profiles (all enemies use same basic attack loop)
     - game/ and data/ modules mostly not wired into app.rs yet
     - src/game/story/quest.rs, dialog.rs, journal.rs, events.rs  (Milestone 3)
 
 Next action for the incoming agent:
-  1. `cargo test` — must pass (67 tests) before touching anything.
-  2. Expand condition effects in combat execution:
-       - prevent attack while `Prone`/`Poisoned`/`Restrained` where applicable
-       - model on-hit condition infliction hooks in combat resolution
-  3. Add richer combat messaging:
-       - explicit skip-turn messages for each incap condition
-       - attack summaries include condition-driven advantage/disadvantage reason
-  4. Add targeted tests for new condition branches.
+  1. `cargo test` — must pass (69 tests) before touching anything.
+  2. Add turn lifecycle condition processing:
+       - begin-turn and end-turn condition effect hook points
+       - per-condition duration decrement support
+  3. Implement minimal enemy behavior profiles:
+       - basic melee profile and cautious/wait profile
+  4. Continue UI wiring for non-combat screens (main menu/world map/dialog stubs).
 
 Files modified this session:
   src/app.rs
@@ -63,20 +60,20 @@ Blockers: none
 
 ## Active Task
 
-### Task: Combat Conditions Expansion (Milestone 2, step 5)
+### Task: Combat Turn Lifecycle (Milestone 2, step 6)
 
 **Files to touch:**
-- `src/game/combat/attack.rs`     — condition-aware roll metadata and hooks
-- `src/app.rs`                    — consume condition metadata in combat log
-- `src/game/combat/combat.rs`     — optional helper(s) for turn-skip condition messaging
-- `src/ui/tui/screens/combat.rs`  — expose condition effects in HUD/log context
+- `src/game/combat/combat.rs`     — turn lifecycle hooks + condition duration support
+- `src/app.rs`                    — invoke lifecycle hooks at turn start/end
+- `src/game/character/conditions.rs` — helper APIs for per-turn processing
+- `src/ui/tui/screens/combat.rs`  — display condition duration where present
 
 **Done when:**
 - [ ] `cargo test` passes
-- [ ] Condition-driven advantage/disadvantage reason is visible in combat log
-- [ ] Turn skip reason is specific to condition name
-- [ ] At least one condition-application hook exists in attack resolution path
-- [ ] New condition branches have dedicated tests
+- [ ] turn start/end hooks run for both player and enemies
+- [ ] at least one condition duration decrements each round
+- [ ] expired conditions are removed and logged
+- [ ] lifecycle logic has focused unit tests
 
 **Blocked by:** `src/game/combat/` (done)
 

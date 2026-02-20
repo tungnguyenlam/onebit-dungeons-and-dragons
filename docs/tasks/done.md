@@ -4,6 +4,15 @@
 
 ---
 
+## 2026-02-20 — Milestone 2 (partial): Combat Conditions Step 5
+
+- [x] `src/game/combat/attack.rs` — `AttackOutcome` now reports roll mode and on-hit condition hook
+- [x] `src/game/combat/combat.rs` — `CombatantState` now supports `on_hit_condition`
+- [x] `src/app.rs` — combat log now includes advantage/disadvantage and specific incapacitation condition names
+- [x] `src/app.rs` — on-hit condition application now updates target conditions and logs it
+- [x] tests: roll-mode and on-hit condition behavior coverage added
+- [x] `cargo test` passes (69 tests, 0 failures)
+
 ## 2026-02-20 — Milestone 2 (partial): Combat AI Step 4
 
 - [x] `src/app.rs` — tick-driven enemy auto-turn loop added
