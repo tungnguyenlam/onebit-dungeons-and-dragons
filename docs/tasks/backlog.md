@@ -41,12 +41,12 @@
 
 ## Milestone 3 — Story & Dialog
 
-- [ ] Quest stage machine + TOML quest loader
-- [ ] Dialog tree evaluator
-- [ ] Journal entry system
-- [ ] Environmental lore (inspect action)
-- [ ] Dialog UI screen
-- [ ] Journal UI screen
+- [x] Quest stage machine + TOML quest loader
+- [x] Dialog tree evaluator
+- [x] Journal entry system
+- [x] Environmental lore (inspect action)
+- [x] Dialog UI screen
+- [x] Journal UI screen
   - See [gameplay/story.md](../gameplay/story.md), [gameplay/dialog.md](../gameplay/dialog.md)
 
 ## Milestone 4 — Items & Spells

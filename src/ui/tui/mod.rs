@@ -50,6 +50,14 @@ impl GameRenderer for TuiRenderer {
                 screens::combat::render(frame, app);
                 return;
             }
+            if matches!(&app.state, AppState::Dialog(_)) {
+                screens::dialog::render(frame, app);
+                return;
+            }
+            if matches!(&app.state, AppState::Journal) {
+                screens::journal::render(frame, app);
+                return;
+            }
 
             // Placeholder for non-combat screens.
             use ratatui::{

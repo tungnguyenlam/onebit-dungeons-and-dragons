@@ -19,8 +19,15 @@ use crate::game::{
         RollMode,
     },
     dice::DiceExpr,
-    story::WorldState,
+    story::{
+        dialog::{choose as dialog_choose, resolve as dialog_resolve, ResolvedNode},
+        events::inspect_lore,
+        journal::{Category as JournalCategory, Journal},
+        quest::QuestLog,
+        WorldState,
+    },
 };
+use crate::data::types::{DialogChoice, DialogEffect, DialogNode, DialogTree, LoreEntry, QuestDef, QuestKind, QuestStageDef, QuestTransition};
 use anyhow::Result;
 
 // ---------------------------------------------------------------------------
@@ -109,8 +116,25 @@ impl Default for CombatContext {
 }
 
 /// Placeholder — will be expanded in `src/game/story/dialog.rs`.
-#[derive(Debug, Clone, Default)]
-pub struct DialogContext;
+#[derive(Debug, Clone)]
+pub struct DialogContext {
+    pub npc_name:     String,
+    pub tree:         DialogTree,
+    pub current_node: String,
+    pub resolved:     ResolvedNode,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct JournalUiState {
+    pub category: JournalCategory,
+    pub selected: usize,
+}
+
+impl Default for JournalUiState {
+    fn default() -> Self {
+        Self { category: JournalCategory::Quest, selected: 0 }
+    }
+}
 
 // ---------------------------------------------------------------------------
 // App
@@ -120,18 +144,52 @@ pub struct DialogContext;
 /// `render()` call; mutated only inside `handle_event()`.
 pub struct App {
     pub state: AppState,
-    // TODO: add game sub-system handles here as they are implemented:
-    //   pub world:     world::World,
-    //   pub character: character::Character,
-    //   pub journal:   story::Journal,
-    //   ...
+    pub world_state: WorldState,
+    pub journal: Journal,
+    pub quests: QuestLog,
+    pub journal_ui: JournalUiState,
+    pub turn: u64,
 }
 
 impl App {
     /// Create a new `App` ready to display the main menu.
     pub fn new() -> Self {
+        let sample_quest = QuestDef {
+            id: "demo_contract".into(),
+            name: "Captain's Contract".into(),
+            kind: QuestKind::Main,
+            stages: vec![
+                QuestStageDef {
+                    id: "start".into(),
+                    label: "Speak with the captain".into(),
+                    condition: "".into(),
+                    on_enter: vec![],
+                    next: vec![QuestTransition {
+                        condition: "flag:read_old_tablet".into(),
+                        stage: "investigate".into(),
+                    }],
+                    journal_entry: "You accepted the captain's contract.".into(),
+                },
+                QuestStageDef {
+                    id: "investigate".into(),
+                    label: "Investigate the old tablet".into(),
+                    condition: "flag:read_old_tablet".into(),
+                    on_enter: vec![],
+                    next: vec![QuestTransition {
+                        condition: "flag:won_first_combat".into(),
+                        stage: "DONE".into(),
+                    }],
+                    journal_entry: "The old tablet mentions a hidden vault.".into(),
+                },
+            ],
+        };
         Self {
             state: AppState::default(),
+            world_state: WorldState::new(),
+            journal: Journal::default(),
+            quests: QuestLog::with_defs(vec![sample_quest]),
+            journal_ui: JournalUiState::default(),
+            turn: 0,
         }
     }
 
@@ -148,6 +206,7 @@ impl App {
             GameEvent::Quit => return Ok(ControlFlow::Exit),
 
             GameEvent::Tick => {
+                self.turn += 1;
                 self.handle_tick()?;
             }
 
@@ -160,6 +219,7 @@ impl App {
     fn handle_tick(&mut self) -> Result<()> {
         self.run_enemy_turns();
         self.finish_combat_if_over();
+        self.tick_story_systems();
         Ok(())
     }
 
@@ -190,8 +250,30 @@ impl App {
     }
 
     fn handle_world_map(&mut self, event: GameEvent) -> Result<()> {
-        if event == GameEvent::Attack {
-            self.transition(AppState::Combat(CombatContext::default()));
+        match event {
+            GameEvent::Attack => self.transition(AppState::Combat(CombatContext::default())),
+            GameEvent::OpenJournal => {
+                self.journal.mark_read();
+                self.journal_ui.selected = 0;
+                self.transition(AppState::Journal);
+            }
+            GameEvent::Confirm => {
+                let lore = LoreEntry {
+                    id: "old_tablet".into(),
+                    title: "Old Tablet".into(),
+                    text: "A cracked tablet describes a vault beneath the city.".into(),
+                    tags: vec!["history".into()],
+                };
+                if inspect_lore(&lore, &mut self.world_state, &mut self.journal, self.turn) {
+                    self.world_state.set_flag("read_old_tablet");
+                }
+            }
+            GameEvent::OpenMap => {
+                if let Some(dialog) = self.make_demo_dialog() {
+                    self.transition(AppState::Dialog(dialog));
+                }
+            }
+            _ => {}
         }
         // TODO: movement, interact, open overlays
         Ok(())
@@ -243,8 +325,35 @@ impl App {
         Ok(())
     }
 
-    fn handle_dialog(&mut self, _event: GameEvent) -> Result<()> {
-        // TODO: Choice(n) advances dialog tree
+    fn handle_dialog(&mut self, event: GameEvent) -> Result<()> {
+        match event {
+            GameEvent::Cancel | GameEvent::Back => self.transition(AppState::WorldMap),
+            GameEvent::Choice(n) => {
+                let idx = n.saturating_sub(1) as usize;
+                if let AppState::Dialog(ctx) = &mut self.state {
+                    let Some(next) = dialog_choose(&ctx.tree, &ctx.current_node, idx, &mut self.world_state) else {
+                        return Ok(());
+                    };
+                    if next == "END" {
+                        self.transition(AppState::WorldMap);
+                        return Ok(());
+                    }
+                    if let Some(resolved) = dialog_resolve(&ctx.tree, &next, &mut self.world_state) {
+                        ctx.current_node = next;
+                        ctx.resolved = resolved;
+                        self.journal.append(
+                            format!("dialog-{}-{}", ctx.tree.npc_id, ctx.current_node),
+                            self.turn,
+                            JournalCategory::Dialog,
+                            None,
+                            format!("Talked with {}", ctx.npc_name),
+                            ctx.resolved.text.clone(),
+                        );
+                    }
+                }
+            }
+            _ => {}
+        }
         Ok(())
     }
 
@@ -256,8 +365,23 @@ impl App {
     }
 
     fn handle_journal(&mut self, event: GameEvent) -> Result<()> {
-        if event == GameEvent::Back || event == GameEvent::Cancel {
-            self.transition(AppState::WorldMap);
+        match event {
+            GameEvent::Back | GameEvent::Cancel => self.transition(AppState::WorldMap),
+            GameEvent::MoveUp => {
+                self.journal_ui.selected = self.journal_ui.selected.saturating_sub(1);
+            }
+            GameEvent::MoveDown => {
+                self.journal_ui.selected = self.journal_ui.selected.saturating_add(1);
+            }
+            GameEvent::MoveLeft => {
+                self.journal_ui.category = prev_category(self.journal_ui.category);
+                self.journal_ui.selected = 0;
+            }
+            GameEvent::MoveRight => {
+                self.journal_ui.category = next_category(self.journal_ui.category);
+                self.journal_ui.selected = 0;
+            }
+            _ => {}
         }
         Ok(())
     }
@@ -467,6 +591,102 @@ impl App {
         } else {
             self.transition(AppState::GameOver);
         }
+    }
+
+    fn tick_story_systems(&mut self) {
+        if self.world_state.flag("accept_demo_quest")
+            && !self.quests.states.contains_key("demo_contract")
+        {
+            self.quests.accept_quest(
+                "demo_contract",
+                &mut self.world_state,
+                &mut self.journal,
+                self.turn,
+            );
+        }
+
+        let quest_ids: Vec<String> = self.quests.states.keys().cloned().collect();
+        for q in quest_ids {
+            let _ = self
+                .quests
+                .tick_quest(&q, &mut self.world_state, &mut self.journal, self.turn);
+        }
+    }
+
+    fn make_demo_dialog(&mut self) -> Option<DialogContext> {
+        let tree = DialogTree {
+            npc_id: "captain_kael".into(),
+            nodes: vec![
+                DialogNode {
+                    id: "root".into(),
+                    text: "The city is in danger. Will you help us?".into(),
+                    effect: vec![],
+                    choices: vec![
+                        DialogChoice {
+                            text: "I accept the contract.".into(),
+                            condition: "".into(),
+                            effect: vec![DialogEffect::SetFlag {
+                                set_flag: "accept_demo_quest".into(),
+                            }],
+                            next: "accepted".into(),
+                        },
+                        DialogChoice {
+                            text: "Not now.".into(),
+                            condition: "".into(),
+                            effect: vec![],
+                            next: "END".into(),
+                        },
+                    ],
+                    skill: None,
+                    dc: None,
+                    on_pass: None,
+                    on_fail: None,
+                },
+                DialogNode {
+                    id: "accepted".into(),
+                    text: "Good. Start by reading the old tablet in the square.".into(),
+                    effect: vec![],
+                    choices: vec![DialogChoice {
+                        text: "Understood.".into(),
+                        condition: "".into(),
+                        effect: vec![],
+                        next: "END".into(),
+                    }],
+                    skill: None,
+                    dc: None,
+                    on_pass: None,
+                    on_fail: None,
+                },
+            ],
+        };
+
+        let resolved = dialog_resolve(&tree, "root", &mut self.world_state)?;
+        Some(DialogContext {
+            npc_name: "Captain Kael".into(),
+            tree,
+            current_node: "root".into(),
+            resolved,
+        })
+    }
+}
+
+fn next_category(c: JournalCategory) -> JournalCategory {
+    match c {
+        JournalCategory::Quest => JournalCategory::Lore,
+        JournalCategory::Lore => JournalCategory::World,
+        JournalCategory::World => JournalCategory::Combat,
+        JournalCategory::Combat => JournalCategory::Dialog,
+        JournalCategory::Dialog => JournalCategory::Quest,
+    }
+}
+
+fn prev_category(c: JournalCategory) -> JournalCategory {
+    match c {
+        JournalCategory::Quest => JournalCategory::Dialog,
+        JournalCategory::Lore => JournalCategory::Quest,
+        JournalCategory::World => JournalCategory::Lore,
+        JournalCategory::Combat => JournalCategory::World,
+        JournalCategory::Dialog => JournalCategory::Combat,
     }
 }
 

@@ -4,6 +4,20 @@
 
 ---
 
+## 2026-02-20 — Milestone 3 (complete): Story & Dialog
+
+- [x] `src/game/story/quest.rs` — quest stage machine with acceptance, stage transitions, and completion state
+- [x] `src/data/loader.rs` — quest/lore loading helpers (`load_quests`, `load_lore`)
+- [x] `src/game/story/dialog.rs` — dialog evaluator, condition-filtered choices, and skill-check branch resolution
+- [x] `src/game/story/journal.rs` — append-only journal entries with category filtering
+- [x] `src/game/story/events.rs` — emergent event trigger evaluation + lore inspection hook
+- [x] `src/game/story/mod.rs` — story modules exported and enabled
+- [x] `src/app.rs` — quest ticking, dialog advancement, journal integration, and world-map lore inspect action wired
+- [x] `src/ui/tui/screens/dialog.rs` — dialog UI screen implemented
+- [x] `src/ui/tui/screens/journal.rs` — journal UI screen implemented
+- [x] `src/ui/tui/mod.rs` + `src/ui/tui/screens/mod.rs` — render dispatch wired for dialog/journal screens
+- [x] `cargo test` passes (81 tests, 0 failures)
+
 ## 2026-02-20 — Milestone 2 (complete): Combat Turn Lifecycle Step 6
 
 - [x] `src/game/combat/combat.rs` — timed condition storage (`condition_durations`) and expiry tick support

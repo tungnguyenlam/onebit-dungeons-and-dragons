@@ -117,6 +117,16 @@ pub fn load_global_assets(base: impl AsRef<Path>) -> Result<GlobalAssets> {
     Ok(ga)
 }
 
+/// Load all quest definitions from `assets/quests/` (supports nested folders).
+pub fn load_quests(base: impl AsRef<Path>) -> Result<std::collections::HashMap<String, QuestDef>> {
+    load_dir_nested(base.as_ref().join("quests"))
+}
+
+/// Load all lore entries from `assets/lore/`.
+pub fn load_lore(base: impl AsRef<Path>) -> Result<std::collections::HashMap<String, LoreEntry>> {
+    load_dir(base.as_ref().join("lore"))
+}
+
 /// Load all `*.toml` files in a directory into a `HashMap<id, T>`.
 /// `T` must have an `id: String` field (accessed via a helper trait).
 fn load_dir<T: DeserializeOwned + HasId>(
