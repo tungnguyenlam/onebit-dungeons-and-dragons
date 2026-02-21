@@ -178,7 +178,10 @@ impl App {
             return;
         };
 
-        while let Some(current_id) = ctx.state.current_combatant_id().map(str::to_string) {
+        while !ctx.state.is_over() {
+            let Some(current_id) = ctx.state.current_combatant_id().map(str::to_string) else {
+                break;
+            };
             let is_player = ctx
                 .state
                 .combatants

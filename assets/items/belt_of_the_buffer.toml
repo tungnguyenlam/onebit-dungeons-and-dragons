@@ -7,7 +7,7 @@ description = "A belt that reinforces the user's physical presence, granting gre
 
 [armor]
 base_ac = 0
-armor_type = "Light"
+type = "light"
 stealth_disadvantage = false
 
 [bonuses]

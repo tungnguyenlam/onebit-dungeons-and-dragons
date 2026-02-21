@@ -7,7 +7,7 @@ description = "A shield that drips with toxic data, poisoning those who strike i
 
 [armor]
 base_ac = 2
-armor_type = "Shield"
+type = "shield"
 stealth_disadvantage = false
 
 [on_hit]

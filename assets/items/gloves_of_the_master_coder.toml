@@ -7,7 +7,7 @@ description = "Gloves that grant uncanny precision and dexterity."
 
 [armor]
 base_ac = 0
-armor_type = "Light"
+type = "light"
 stealth_disadvantage = false
 
 [bonuses]

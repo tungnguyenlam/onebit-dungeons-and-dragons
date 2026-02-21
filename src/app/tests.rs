@@ -28,6 +28,14 @@ fn combat_attack_consumes_action() {
     let mut app = App::new();
     app.transition(AppState::WorldMap);
     app.handle_event(GameEvent::Attack).unwrap(); // enter combat
+    if let AppState::Combat(ctx) = &mut app.state {
+        ctx.state.active_turn = ctx
+            .state
+            .turn_queue
+            .iter()
+            .position(|id| id == "player")
+            .unwrap_or(0);
+    }
 
     let attacker_id = match &app.state {
         AppState::Combat(ctx) => ctx.state.current_combatant_id().unwrap().to_string(),
@@ -51,6 +59,12 @@ fn incapacitated_combatant_cannot_attack() {
     app.handle_event(GameEvent::Attack).unwrap(); // enter combat
 
     if let AppState::Combat(ctx) = &mut app.state {
+        ctx.state.active_turn = ctx
+            .state
+            .turn_queue
+            .iter()
+            .position(|id| id == "player")
+            .unwrap_or(0);
         let id = ctx.state.current_combatant_id().unwrap().to_string();
         ctx.state
             .combatants

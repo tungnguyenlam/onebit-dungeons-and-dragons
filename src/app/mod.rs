@@ -341,10 +341,7 @@ impl App {
     }
 
     pub fn equipped_item_ids(&self) -> impl Iterator<Item = &str> {
-        self.player
-            .equipment
-            .iter()
-            .map(|(_, id)| id.as_str())
+        self.player.equipment.iter().map(|(_, id)| id.as_str())
     }
 
     pub fn equipment_bonus_totals(&self) -> (i32, crate::game::dice::DiceExpr, i32, i32, i32, i32) {

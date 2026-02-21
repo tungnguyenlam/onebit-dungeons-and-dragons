@@ -7,7 +7,7 @@ description = "Extremely heavy plate armor that provides massive protection but 
 
 [armor]
 base_ac = 20
-armor_type = "Heavy"
+type = "heavy"
 stealth_disadvantage = true
 
 [bonuses]

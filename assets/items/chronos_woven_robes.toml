@@ -7,7 +7,7 @@ description = "Robes woven from the strands of time itself, allowing the wearer 
 
 [armor]
 base_ac = 12
-armor_type = "Light"
+type = "light"
 stealth_disadvantage = false
 
 [bonuses]
