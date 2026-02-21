@@ -13,7 +13,7 @@ src/ui/gui/  ← egui/eframe rendering      [feature = "gui"]. Reads game state 
 src/game/    ← Pure game logic. No renderer imports whatsoever.
 src/data/    ← TOML deserialization + typed asset structs. No game logic.
 src/renderer.rs ← GameRenderer trait + GameEvent enum (renderer-agnostic).
-src/app.rs   ← Glue: owns AppState, wires GameEvent → game → renderer.
+src/app/    ← Glue: owns AppState, wires GameEvent → game → renderer.
 src/main.rs  ← CLI flag parsing, selects TuiRenderer or GuiRenderer at launch.
 ```
 
@@ -33,7 +33,13 @@ src/
 │   ├── mod.rs
 │   ├── handlers.rs
 │   ├── combat.rs
-│   └── samples.rs
+│   ├── samples.rs
+│   ├── navigation.rs
+│   ├── equipment.rs
+│   ├── progression.rs
+│   ├── systems.rs
+│   ├── actions.rs
+│   └── debug.rs
 ├── renderer.rs      ← GameRenderer trait, GameEvent enum
 
 ├── ui/

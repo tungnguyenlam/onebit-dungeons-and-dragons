@@ -5,7 +5,7 @@
 
 ## Decision
 
-`AppState` is an enum owned by `App` in `src/app.rs`. Each variant holds only
+`AppState` is an enum owned by `App` in `src/app/mod.rs`. Each variant holds only
 the context needed for that screen (e.g. `Combat(CombatContext)`,
 `Dialog(DialogContext)`). The UI layer matches on `AppState` to decide which
 screen to render.

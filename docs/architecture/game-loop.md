@@ -10,7 +10,7 @@ cooldowns, emergent event checks).
 
 ## AppState Enum
 
-`src/app.rs` owns an `AppState` enum that determines which UI screen is active
+`src/app/mod.rs` owns an `AppState` enum that determines which UI screen is active
 and which game subsystems receive input:
 
 ```rust

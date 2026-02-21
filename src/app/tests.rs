@@ -2,7 +2,7 @@ use super::*;
 use crate::data::types::TriggerKind;
 use crate::data::types::{ItemBonuses, ItemDef, ItemType};
 use crate::game::character::conditions::Condition;
-use crate::game::combat::{roll_attack, AttackProfile, DefenseProfile};
+use crate::game::combat::{roll_attack, roll_attack_with_seed, AttackProfile, DefenseProfile};
 use crate::game::dice::DiceExpr;
 use crate::game::items::equipment::EquipmentSlot;
 use crate::renderer::GameEvent;
@@ -143,6 +143,27 @@ fn tick_transitions_to_game_over_on_player_defeat() {
 
     app.handle_event(GameEvent::Tick).unwrap();
     assert!(matches!(app.state, AppState::GameOver));
+}
+
+#[test]
+fn functional_smoke_test_main_menu_to_world() {
+    let mut app = App::new();
+    assert!(matches!(app.state, AppState::MainMenu));
+
+    // Confirm "New Game"
+    app.handle_event(GameEvent::Confirm).unwrap();
+    assert!(matches!(app.state, AppState::CharacterCreation));
+
+    // Navigate to "Start Adventure"
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    assert_eq!(app.char_creation_ui.selected, 3);
+
+    // Confirm adventure start
+    app.handle_event(GameEvent::Confirm).unwrap();
+    assert!(matches!(app.state, AppState::WorldMap));
+    assert!(app.current_room().is_some());
 }
 
 #[test]
@@ -320,7 +341,7 @@ fn equipment_resistance_halves_elemental_damage() {
             immunities: &p.immunities,
         };
 
-        let out = roll_attack(&atk_profile, &def_profile, &ctx.world_state);
+        let out = roll_attack_with_seed(&atk_profile, &def_profile, 42);
         assert!(
             out.damage >= 5 && out.damage <= 10,
             "Damage {} should be halved (orig 11-20)",

@@ -10,7 +10,7 @@ The game supports two front-ends that can be selected at launch:
 | **GUI** | `--mode gui` | egui + eframe | Desktop windowed app |
 
 The game back-end (`src/game/`) has **zero knowledge** of which renderer is
-active. `src/app.rs` is also renderer-agnostic; it only operates on
+active. `src/app/` is also renderer-agnostic; it only operates on
 `AppState` and `GameEvent`.
 
 ---
@@ -95,9 +95,10 @@ Implemented behind `#[cfg(feature = "tui")]`.
 | File | Responsibility |
 |---|---|
 | `mod.rs` | `TuiRenderer` struct, `impl GameRenderer` |
-| `layout.rs` | Terminal zone split (main / log / hud) |
+| `theme.rs` | Color/icon themes, capability tiers |
+| `vfx.rs` | Visual effects (animations, particles) |
 | `screens/` | One `render(f, app)` fn per `AppState` variant |
-| `widgets/` | Reusable Ratatui widgets (dice roll, log, HUD) |
+| `widgets/` | Reusable Ratatui widgets |
 
 `TuiRenderer::poll_event` reads from a crossterm event stream with a 250 ms
 timeout; timeout returns `GameEvent::Tick`.
@@ -129,7 +130,7 @@ game — just a windowed rendering of the same `AppState`.
 
 ## `GameEvent` — Renderer-Agnostic Input
 
-`src/events.rs` defines events in game terms, not raw key codes:
+`src/renderer.rs` defines events in game terms, not raw key codes:
 
 ```rust
 pub enum GameEvent {
@@ -149,7 +150,7 @@ pub enum GameEvent {
 
 Each renderer maps its own raw events to `GameEvent`. If a key has no mapping
 it is silently ignored. This means the game logic in `src/game/` and
-`src/app.rs` never sees platform-specific key codes.
+`src/app/` never sees platform-specific key codes.
 
 ---
 
@@ -160,7 +161,7 @@ it is silently ignored. This means the game logic in `src/game/` and
 3. Add a new `LaunchMode::Web` variant in `src/main.rs` and a match arm in
    the CLI dispatch.
 
-No changes are required to `src/app.rs` or any `src/game/` module.
+No changes are required to `src/app/` or any `src/game/` module.
 
 ---
 

@@ -30,10 +30,11 @@ fn test_feature() {
 }
 ```
 
-## Smoke & Soak Tests
-For UI-level verification, use the agent smoke scripts:
-- **Standard Check**: `scripts/agent_verify.sh --with-smoke`
-- **Soak (stress test)**: `scripts/agent_tui_smoke.sh --soak --minutes 5`
+## Functional Smoke Tests
+We use Rust integration tests in `src/app/tests.rs` to verify full gameplay flows (e.g., `functional_smoke_test_main_menu_to_world`). These are headless and run as part of `cargo test`.
+
+## Verification
+- **Standard Check**: `scripts/agent_verify.sh` (runs all tests + asset validation)
 
 ## Validation
 To verify all TOML assets have valid cross-references (NPCs exist, Dialog files are linked, etc.):

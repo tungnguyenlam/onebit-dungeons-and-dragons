@@ -9,7 +9,10 @@ pub mod spells;
 
 // pub use action::ActionSlots;
 // pub use ai::{choose_target, EncounterTier};
-pub use attack::{apply_damage, roll_attack, AttackProfile, DefenseProfile, HitType, RollMode};
+pub use attack::{
+    apply_damage, roll_attack, roll_attack_with_seed, AttackProfile, DefenseProfile, HitType,
+    RollMode,
+};
 pub use combat::{CombatState, CombatantState, EnemyAiRole};
 // pub use initiative::{
 //    roll_initiative, roll_initiative_with_seed, InitiativeCombatant, InitiativeOrder,

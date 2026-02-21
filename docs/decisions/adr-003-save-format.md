@@ -5,7 +5,10 @@
 
 ## Decision
 
-Save files are serialised as TOML and stored in the OS config directory
+Save files are serialised as TOML. For development and testing, they are currently
+stored as `save.toml` in the working directory.
+
+Planned production path: OS config directory
 (via the `dirs` crate: `~/.config/onebit-dnd/saves/<slot>.toml` on Linux/Mac,
 `%APPDATA%\onebit-dnd\saves\` on Windows).
 
@@ -40,4 +43,4 @@ from `assets/` on load — it is never duplicated in the save file.
 - Save files are easy to inspect and manually edit (useful for testing).
 - Must version the save schema; breaking changes need a migration script (or
   simply warn + offer to start a new game — acceptable for early development).
-- The `src/game/save/serialization.rs` module owns all save/load logic.
+- The `src/game/save/mod.rs` module owns all save/load logic.

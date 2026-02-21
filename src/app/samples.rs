@@ -501,3 +501,14 @@ pub fn combatant_from_monster(
     c.condition_immunities = monster.condition_immunities.iter().cloned().collect();
     c
 }
+
+pub fn find_spawn_pos_for_room(room: &crate::game::world::room::Room) -> (u32, u32) {
+    if let Some((col, row, _)) = room
+        .grid
+        .iter()
+        .find(|(_, _, tile)| *tile == crate::game::world::map::Tile::NpcSpawn)
+    {
+        return (col, row);
+    }
+    (1, 1)
+}

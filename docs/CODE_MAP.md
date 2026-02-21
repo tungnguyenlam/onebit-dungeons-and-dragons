@@ -8,14 +8,15 @@ This guide helps agents and developers locate specific logic quickly.
 |---|---|
 | **Damage Calculation** | `src/game/combat/attack.rs` |
 | **HP & Death Mechanics** | `src/game/combat/combat.rs` (CombatantState) |
-| **XP & Leveling Charts** | `src/game/character/progression.rs` |
-| **Granting XP Logic** | `src/app/mod.rs` (`grant_player_xp`) |
+| **XP & Leveling Charts** | `src/game/character/progression.rs` (data) + `src/app/progression.rs` (app logic) |
+| **Granting XP Logic** | `src/app/progression.rs` (`grant_player_xp`) |
 | **AC Formula** | `src/game/items/armor.rs` |
 | **To-Hit Formula** | `src/game/combat/attack.rs` (`roll_attack`) |
 | **Saving Throws** | `src/game/combat/attack.rs` (`roll_saving_throw`) |
 | **Condition Effects** | `src/game/character/conditions.rs` |
-| **Spell Resolution** | `src/game/combat/spells.rs` (logic) + `src/app/mod.rs` (casting) |
-| **Inventory & Equipment** | `src/game/items/` |
+| **Spell Resolution** | `src/game/combat/spells.rs` (logic) + `src/app/actions.rs` (casting) |
+| **Inventory & Equipment** | `src/game/items/` + `src/app/equipment.rs` (app logic) |
+| **Navigation & Travel** | `src/app/navigation.rs` |
 | **TOML Deserialization** | `src/data/types.rs` |
 | **Asset Loading** | `src/data/loader.rs` |
 
@@ -27,6 +28,7 @@ This guide helps agents and developers locate specific logic quickly.
 | **Active Quest Tracking** | `src/game/story/quest.rs` |
 | **UI Screen Definitions** | `src/app/state.rs` |
 | **Event Dispatcher** | `src/app/handlers.rs` |
+| **App Logic Submodules** | `src/app/{actions,debug,equipment,navigation,progression,systems}.rs` |
 
 ## Common Tasks
 
@@ -41,3 +43,4 @@ This guide helps agents and developers locate specific logic quickly.
     1. Add a variant to `AppState` in `src/app/state.rs`.
     2. Add a handler in `src/app/handlers.rs`.
     3. Add a renderer in `src/ui/tui/screens/`.
+    4. Link in `src/app/mod.rs` event dispatcher if needed.
