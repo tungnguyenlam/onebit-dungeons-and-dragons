@@ -8,7 +8,7 @@
 pub mod screens;
 pub mod theme;
 pub mod vfx;
-// pub mod widgets;
+pub mod widgets;
 
 use crate::app::{App, AppState};
 use crate::renderer::{GameEvent, GameRenderer};

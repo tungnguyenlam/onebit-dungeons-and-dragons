@@ -76,6 +76,7 @@ pub struct VfxEngine {
     effects: Vec<VfxEffect>,
     tier: VfxTier,
     frame_interval: Duration,
+    ui_animations: Vec<UiAnimation>,
 }
 
 impl VfxEngine {
@@ -91,6 +92,7 @@ impl VfxEngine {
             effects: Vec::new(),
             tier,
             frame_interval,
+            ui_animations: Vec::new(),
         }
     }
 
@@ -167,6 +169,8 @@ impl VfxEngine {
             };
             lifetime
         });
+
+        self.tick_animations();
     }
 
     pub fn effects(&self) -> &[VfxEffect] {
@@ -248,5 +252,152 @@ impl VfxEngine {
                 }
             })
             .collect()
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum UiAnimationType {
+    FadeIn,
+    FadeOut,
+    SlideLeft,
+    SlideRight,
+    Blink,
+    Pulse,
+    Shake,
+}
+
+pub struct UiAnimation {
+    pub id: String,
+    pub animation_type: UiAnimationType,
+    pub started_at: Instant,
+    pub duration_ms: u64,
+    pub target_element: String,
+}
+
+impl UiAnimation {
+    pub fn new(
+        id: &str,
+        animation_type: UiAnimationType,
+        duration_ms: u64,
+        target_element: &str,
+    ) -> Self {
+        Self {
+            id: id.to_string(),
+            animation_type,
+            started_at: Instant::now(),
+            duration_ms,
+            target_element: target_element.to_string(),
+        }
+    }
+
+    pub fn progress(&self) -> f32 {
+        let elapsed = self.started_at.elapsed().as_millis() as f32;
+        (elapsed / self.duration_ms as f32).min(1.0)
+    }
+
+    pub fn is_complete(&self) -> bool {
+        self.progress() >= 1.0
+    }
+
+    pub fn value(&self) -> f32 {
+        let p = self.progress();
+        match self.animation_type {
+            UiAnimationType::FadeIn => p,
+            UiAnimationType::FadeOut => 1.0 - p,
+            UiAnimationType::SlideLeft => p,
+            UiAnimationType::SlideRight => p,
+            UiAnimationType::Blink => (p * 4.0).sin().abs(),
+            UiAnimationType::Pulse => (p * std::f32::consts::PI * 2.0).sin().abs(),
+            UiAnimationType::Shake => {
+                if p < 0.3 {
+                    ((p * 50.0).sin() * (1.0 - p * 3.0)).abs()
+                } else {
+                    0.0
+                }
+            }
+        }
+    }
+}
+
+impl VfxEngine {
+    pub fn add_ui_animation(&mut self, animation: UiAnimation) {
+        if !self.tier.supports_animations() {
+            return;
+        }
+        self.ui_animations.push(animation);
+    }
+
+    pub fn trigger_fade_in(&mut self, element: &str, duration_ms: u64) {
+        self.add_ui_animation(UiAnimation::new(
+            &format!("fade_in_{}", element),
+            UiAnimationType::FadeIn,
+            duration_ms,
+            element,
+        ));
+    }
+
+    pub fn trigger_fade_out(&mut self, element: &str, duration_ms: u64) {
+        self.add_ui_animation(UiAnimation::new(
+            &format!("fade_out_{}", element),
+            UiAnimationType::FadeOut,
+            duration_ms,
+            element,
+        ));
+    }
+
+    pub fn trigger_slide(&mut self, element: &str, left: bool, duration_ms: u64) {
+        let anim_type = if left {
+            UiAnimationType::SlideLeft
+        } else {
+            UiAnimationType::SlideRight
+        };
+        self.add_ui_animation(UiAnimation::new(
+            &format!("slide_{}", element),
+            anim_type,
+            duration_ms,
+            element,
+        ));
+    }
+
+    pub fn trigger_pulse(&mut self, element: &str, duration_ms: u64) {
+        self.add_ui_animation(UiAnimation::new(
+            &format!("pulse_{}", element),
+            UiAnimationType::Pulse,
+            duration_ms,
+            element,
+        ));
+    }
+
+    pub fn trigger_blink(&mut self, element: &str, duration_ms: u64) {
+        self.add_ui_animation(UiAnimation::new(
+            &format!("blink_{}", element),
+            UiAnimationType::Blink,
+            duration_ms,
+            element,
+        ));
+    }
+
+    pub fn trigger_shake(&mut self, element: &str, duration_ms: u64) {
+        self.add_ui_animation(UiAnimation::new(
+            &format!("shake_{}", element),
+            UiAnimationType::Shake,
+            duration_ms,
+            element,
+        ));
+    }
+
+    pub fn tick_animations(&mut self) {
+        self.ui_animations.retain(|a| !a.is_complete());
+    }
+
+    pub fn get_animations_for_element(&self, element: &str) -> Vec<&UiAnimation> {
+        self.ui_animations
+            .iter()
+            .filter(|a| a.target_element == element)
+            .collect()
+    }
+
+    pub fn has_active_animations(&self) -> bool {
+        !self.ui_animations.is_empty()
     }
 }
