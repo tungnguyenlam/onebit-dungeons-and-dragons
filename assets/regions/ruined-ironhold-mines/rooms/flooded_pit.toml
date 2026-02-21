@@ -31,6 +31,5 @@ once = false
 [[triggers]]
 position = [9, 3]
 type = "travel"
-auto_trigger = true
 target_id = "ore_chamber"
 once = false

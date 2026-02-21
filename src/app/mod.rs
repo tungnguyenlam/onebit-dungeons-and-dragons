@@ -241,12 +241,16 @@ impl App {
             }
 
             GameEvent::Tick => {
-                self.turn += 1;
-                self.handle_tick()?;
+                // Ticks are for real-time VFX updates only, they do not pass a turn.
             }
             other => self.dispatch(other)?,
         }
         Ok(ControlFlow::Continue)
+    }
+
+    pub fn pass_turn(&mut self) -> Result<()> {
+        self.turn += 1;
+        self.handle_tick()
     }
 
     fn handle_tick(&mut self) -> Result<()> {

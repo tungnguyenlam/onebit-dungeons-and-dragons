@@ -124,10 +124,11 @@ impl App {
             GameEvent::OpenHelp => {
                 self.show_help = !self.show_help;
             }
-            GameEvent::MoveUp => self.try_move_player(0, -1),
-            GameEvent::MoveDown => self.try_move_player(0, 1),
-            GameEvent::MoveLeft => self.try_move_player(-1, 0),
-            GameEvent::MoveRight => self.try_move_player(1, 0),
+            GameEvent::Wait => self.pass_turn()?,
+            GameEvent::MoveUp => self.try_move_player(0, -1)?,
+            GameEvent::MoveDown => self.try_move_player(0, 1)?,
+            GameEvent::MoveLeft => self.try_move_player(-1, 0)?,
+            GameEvent::MoveRight => self.try_move_player(1, 0)?,
             GameEvent::Confirm | GameEvent::OpenMap => self.interact_current_tile(),
             _ => {}
         }
@@ -222,8 +223,7 @@ impl App {
                     let after = Self::advance_turn(ctx);
                     Self::push_log(ctx, format!("{before} ends turn. {after} is up."));
                 }
-                self.run_enemy_turns();
-                self.finish_combat_if_over();
+                self.pass_turn()?;
             }
             GameEvent::Cancel | GameEvent::Back => self.transition(AppState::WorldMap),
             _ => {}

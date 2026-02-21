@@ -6,28 +6,20 @@ use crate::game::{
 };
 use crate::renderer::SoundEffect;
 
+use anyhow::Result;
+
 impl App {
-    pub fn try_move_player(&mut self, dx: i32, dy: i32) {
+    pub fn try_move_player(&mut self, dx: i32, dy: i32) -> Result<()> {
         let Some(room) = self.current_room() else {
-            return;
+            return Ok(());
         };
         let next_col = self.player_pos.0 as i32 + dx;
         let next_row = self.player_pos.1 as i32 + dy;
         if room.grid.is_passable(next_col, next_row) {
             self.player_pos = (next_col as u32, next_row as u32);
-            
-            // Check for auto-triggers at the new position
-            let room_id = self.current_room_id.clone();
-            if let Some(trigger) = self
-                .region
-                .room(&room_id)
-                .and_then(|r| r.trigger_at(next_col as u32, next_row as u32).cloned())
-            {
-                if trigger.auto_trigger {
-                    self.execute_trigger(&trigger);
-                }
-            }
+            self.pass_turn()?;
         }
+        Ok(())
     }
 
     pub fn handle_travel(&mut self, target_id: &str) {
@@ -186,7 +178,7 @@ impl App {
             }
         }
 
-        // Check adjacent for doors/chests/travel/dialog/NPCs
+        // Check adjacent for doors/chests/travel
         let mut interactable_found = false;
         for dy in -1..=1 {
             for dx in -1..=1 {
@@ -199,26 +191,12 @@ impl App {
                     let nx = nx as u32;
                     let ny = ny as u32;
 
-                    // Check for adjacent NPCs
-                    if let Some(room) = self.region.room(&room_id) {
-                        if let Some(npc_id) = room
-                            .npcs
-                            .iter()
-                            .find(|n| n.position[0] == nx && n.position[1] == ny)
-                            .map(|n| n.id.clone())
-                        {
-                            self.start_dialog_with_npc(&npc_id);
-                            interactable_found = true;
-                            break;
-                        }
-                    }
-
                     if let Some(trigger) = self
                         .region
                         .room(&room_id)
                         .and_then(|r| r.trigger_at(nx, ny).cloned())
                     {
-                        if matches!(trigger.kind, TriggerKind::Travel | TriggerKind::Dialog) {
+                        if matches!(trigger.kind, TriggerKind::Travel) {
                             self.execute_trigger(&trigger);
                             interactable_found = true;
                             break;

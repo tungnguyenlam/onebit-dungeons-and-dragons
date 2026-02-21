@@ -14,14 +14,12 @@ grid = """
 [[triggers]]
 position = [9, 4]
 type = "travel"
-auto_trigger = true
 target_id = "valley-of-ash"
 once = false
 
 [[triggers]]
 position = [1, 2]
 type = "travel"
-auto_trigger = true
 target_id = "sunken_glade"
 once = false
 

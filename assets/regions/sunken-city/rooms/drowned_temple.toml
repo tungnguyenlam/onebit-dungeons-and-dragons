@@ -12,7 +12,6 @@ description = "The sacred space is desecrated by sea growth. At the far end, an 
 [[triggers]]
 position = [5, 1]
 type = "travel"
-auto_trigger = true
 target_id = "submerged_aqueduct"
 once = false
 

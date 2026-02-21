@@ -102,7 +102,7 @@ fn enemy_turn_executes_on_tick_and_returns_to_player() {
         }
     }
 
-    app.handle_event(GameEvent::Tick).unwrap();
+    app.pass_turn().unwrap();
 
     match &app.state {
         AppState::Combat(ctx) => {
@@ -125,7 +125,7 @@ fn tick_transitions_to_world_map_on_player_victory() {
         }
     }
 
-    app.handle_event(GameEvent::Tick).unwrap();
+    app.pass_turn().unwrap();
     assert!(matches!(app.state, AppState::WorldMap));
 }
 
@@ -141,7 +141,7 @@ fn tick_transitions_to_game_over_on_player_defeat() {
         }
     }
 
-    app.handle_event(GameEvent::Tick).unwrap();
+    app.pass_turn().unwrap();
     assert!(matches!(app.state, AppState::GameOver));
 }
 

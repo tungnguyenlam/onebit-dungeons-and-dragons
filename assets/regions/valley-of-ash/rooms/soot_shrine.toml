@@ -25,6 +25,5 @@ once = true
 [[triggers]]
 position = [9, 3]
 type = "travel"
-auto_trigger = true
 target_id = "ash_hollow"
 once = false

@@ -8,3 +8,4 @@ Cargo.lock
 
 ./.vscode/
 saves/
+test_outputs/

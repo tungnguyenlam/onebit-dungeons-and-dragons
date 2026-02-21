@@ -227,6 +227,10 @@ mod tests {
             room_id: "ash_gate".into(),
             player_pos: (3, 4),
             state: AppState::WorldMap,
+            menu_ui: Default::default(),
+            char_creation_ui: Default::default(),
+            journal_ui: Default::default(),
+            settings_ui: Default::default(),
         }
     }
 
