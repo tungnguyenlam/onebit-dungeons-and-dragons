@@ -11,36 +11,38 @@
 
 ```
 Date:          2026-02-21
-Completed:     Milestone 37 — Bestiary & Item Pool Expansion Part 2.
+Completed:     Milestones 38, 39, and 40.
 
 Tasks completed:
-  M37 — Bestiary & Item Pool Expansion Part 2
-  - ✅ Enemies with immunities correctly shrug off applied conditions in combat.
-  - ✅ Aboleths and Water Elementals function cleanly in combat.
-  - ✅ Artifacts provide correct complex bonuses.
+  M38 — Epic Threat Escalation
+  - ✅ Assassination squads (ghostly_knight, orc_warchief, forest_goblin) ambush based on threat level
+  - ✅ Ruined hubs (ruined-ironhold-mines) load when macguffin acquired
+  - ✅ World events trigger journal entries when macguffins obtained
+  
+  M39 — v0.3.0 Release Candidate & Polish
+  - ✅ Added ambient cue to sunken-city region
+  - ✅ Enhanced validate_assets.sh script
+  - ✅ XP curve follows standard 5e SRD
+  
+  M40 — Retained-Mode VFX Engine
+  - ✅ Created VfxEngine in src/ui/tui/vfx.rs
+  - ✅ Added GameEvent::Frame for 30 FPS updates
+  - ✅ Added damage floaters, tile pulses, screen wipes primitives
+  - ✅ Added DND_REDUCED_MOTION and DND_VFX_TIER environment variables
+
+Files modified:
+  - src/app/mod.rs: Enhanced epic threat escalation logic
+  - src/renderer.rs: Added Frame event
+  - src/ui/tui/mod.rs: Added VfxEngine integration
+  - src/ui/tui/vfx.rs: New VFX engine module
+  - assets/regions/sunken-city/region.toml: Added ambient
+  - scripts/validate_assets.sh: Enhanced validation
 
 Tests at close: 136 passed, 0 failed
 
 Next for incoming agent:
-  - Start next milestone.
+  - All 40 milestones complete!
 ```
-
----
-
-## Active Task
-
-### Task: Finish Milestones
-
-**Files to touch:**
-- Check next milestones
-
-**Done when:**
-- All 40 milestones done
-
-**Blocked by:** none
-
-**Relevant docs:**
-- docs/tasks/milestones/
 
 ---
 

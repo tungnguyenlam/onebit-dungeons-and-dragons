@@ -45,6 +45,8 @@ pub enum GameEvent {
     /// Fired every ~250 ms when there is no keyboard input. Used to advance
     /// animations, cooldowns, and timed world events.
     Tick,
+    /// Fired every ~33 ms for high-frequency VFX updates.
+    Frame,
     /// Tells the main loop to exit cleanly.
     Quit,
 }

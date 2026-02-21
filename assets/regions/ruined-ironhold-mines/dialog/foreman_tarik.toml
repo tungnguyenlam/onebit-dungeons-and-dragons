@@ -1,0 +1,25 @@
+npc_id = "foreman_tarik"
+
+[[nodes]]
+id = "root"
+text = "Our surveyors vanished near the lower shaft. Bring back the old ledger if you find it."
+
+[[nodes.choices]]
+text = "I will search the shaft."
+condition = ""
+next = "accept"
+effect = [{ set_flag = "accept_mine_ledger_task" }]
+
+[[nodes.choices]]
+text = "Not now."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "accept"
+text = "Keep your lantern high and your steps light."
+
+[[nodes.choices]]
+text = "I'll return."
+condition = ""
+next = "END"

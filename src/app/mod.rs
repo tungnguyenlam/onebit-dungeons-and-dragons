@@ -289,18 +289,127 @@ impl App {
                 }
                 crate::data::types::TriggerKind::QuestStage => {
                     self.world_state.set_flag(trigger.target_id.clone());
+
+                    let macguffins = [
+                        "has_obsidian_eye",
+                        "has_obsidian_heart",
+                        "has_sylvan_glitch_key",
+                        "has_null_scepter",
+                    ];
+
+                    if macguffins.iter().any(|m| *m == trigger.target_id) {
+                        if !self.world_state.flag("macguffin_acquired") {
+                            self.world_state.set_flag("macguffin_acquired");
+                            let macguffin_count = macguffins
+                                .iter()
+                                .filter(|m| self.world_state.flag(m))
+                                .count();
+                            self.world_state
+                                .delta_counter("epic_quest_progress", macguffin_count as i32);
+
+                            self.journal.append(
+                                format!("macguffin-acquired-{}", self.turn),
+                                self.turn,
+                                JournalCategory::World,
+                                None,
+                                "The Antagonist Stirs",
+                                "Dark forces have detected your acquisition. The enemy grows stronger against you.",
+                            );
+                        }
+                    }
                 }
                 crate::data::types::TriggerKind::Travel => {
+                    let epic_progress = self.world_state.counter("epic_quest_progress");
+                    let macguffin_acquired = self.world_state.flag("macguffin_acquired");
+                    let threat_level = if self.world_state.flag("macguffin_acquired") {
+                        3
+                    } else if epic_progress >= 2 {
+                        2
+                    } else if epic_progress >= 1 {
+                        1
+                    } else {
+                        0
+                    };
+
+                    if threat_level > 0 {
+                        use rand::Rng;
+                        let mut rng = rand::rng();
+                        let ambush_chance = match threat_level {
+                            3 => 4,
+                            2 => 5,
+                            1 => 6,
+                            _ => 0,
+                        };
+
+                        if rng.random_range(1..=ambush_chance) == 1 {
+                            self.queue_sound(SoundEffect::Beep);
+                            let ambush_monster = match threat_level {
+                                3 => "ghostly_knight",
+                                2 => "orc_warchief",
+                                _ => "forest_goblin",
+                            };
+                            self.pending_encounter_monster = Some(ambush_monster.into());
+                            let ctx = self.make_combat_context();
+                            self.transition(AppState::Combat(ctx));
+
+                            if threat_level >= 2 && !self.world_state.flag("antagonist_noticed") {
+                                self.world_state.set_flag("antagonist_noticed");
+                                self.journal.append(
+                                    format!("antagonist-notice-{}", self.turn),
+                                    self.turn,
+                                    JournalCategory::World,
+                                    None,
+                                    "The Antagonist Notices You",
+                                    "Dark scouts have reported your movements. Expect increased hostility.",
+                                );
+                            }
+                            return;
+                        }
+                    }
+
                     if self.region.room(&trigger.target_id).is_some() {
                         self.current_room_id = trigger.target_id.clone();
                         if let Some(new_room) = self.current_room() {
                             self.player_pos = find_spawn_pos_for_room(new_room);
                             self.check_room_hostilities();
                         }
-                    } else if let Some(_conn) = self.region.connections.iter().find(|c| {
-                        c.from_room == self.current_room_id
-                            && (c.to_region == trigger.target_id || c.to_room == trigger.target_id)
-                    }) {
+                    } else if let Some(conn) = self
+                        .region
+                        .connections
+                        .iter()
+                        .find(|c| {
+                            c.from_room == self.current_room_id
+                                && (c.to_region == trigger.target_id
+                                    || c.to_room == trigger.target_id)
+                        })
+                        .cloned()
+                    {
+                        let mut target_region = conn.to_region.clone();
+
+                        let ruined_map = [("ironhold-mines", "ruined-ironhold-mines")];
+
+                        for (normal, ruined) in ruined_map {
+                            if macguffin_acquired && target_region == normal {
+                                target_region = ruined.into();
+                                break;
+                            }
+                        }
+
+                        if let Ok(loaded) =
+                            crate::data::loader::load_region("assets", &target_region)
+                        {
+                            self.region = Region::from_loaded(&loaded);
+                            self.region_npcs = loaded.npcs;
+                            self.region_dialogs = loaded.dialogs;
+                            self.current_room_id = conn.to_room.clone();
+                            if !self.region.rooms.contains_key(&self.current_room_id) {
+                                self.current_room_id = loaded.manifest.entry_room;
+                            }
+                            if let Some(new_room) = self.current_room() {
+                                self.player_pos = find_spawn_pos_for_room(new_room);
+                                self.check_room_hostilities();
+                            }
+                        }
                         self.queue_sound(SoundEffect::Beep);
                     }
                 }

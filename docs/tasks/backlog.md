@@ -45,12 +45,12 @@
 | M32 | Bestiary Expansion Part 1 | ✅ done | [milestones/m32.md](milestones/m32.md) |
 | M33 | Item Pool Expansion Part 1 | ✅ done | [milestones/m33.md](milestones/m33.md) |
 | M34 | Multi-Region Quest Chains | ✅ done | [milestones/m34.md](milestones/m34.md) |
-| M35 | Character Progression Level 5-10 | 🔲 planned | [milestones/m35.md](milestones/m35.md) |
-| M36 | The Sunken City | 🔲 planned | [milestones/m36.md](milestones/m36.md) |
-| M37 | Bestiary & Item Pool Expansion Part 2 | 🔲 planned | [milestones/m37.md](milestones/m37.md) |
-| M38 | Epic Threat Escalation | 🔲 planned | [milestones/m38.md](milestones/m38.md) |
-| M39 | v0.3.0 Release Candidate & Polish | 🔲 planned | [milestones/m39.md](milestones/m39.md) |
-| M40 | Retained-Mode VFX Engine | 🔲 planned | [milestones/m40.md](milestones/m40.md) |
+| M35 | Character Progression Level 5-10 | ✅ done | [milestones/m35.md](milestones/m35.md) |
+| M36 | The Sunken City | ✅ done | [milestones/m36.md](milestones/m36.md) |
+| M37 | Bestiary & Item Pool Expansion Part 2 | ✅ done | [milestones/m37.md](milestones/m37.md) |
+| M38 | Epic Threat Escalation | ✅ done | [milestones/m38.md](milestones/m38.md) |
+| M39 | v0.3.0 Release Candidate & Polish | ✅ done | [milestones/m39.md](milestones/m39.md) |
+| M40 | Retained-Mode VFX Engine | ✅ done | [milestones/m40.md](milestones/m40.md) |
 
 Status: ✅ done · 🚧 in progress · 🔲 next / planned
 

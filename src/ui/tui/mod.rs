@@ -7,6 +7,7 @@
 // pub mod layout;
 pub mod screens;
 pub mod theme;
+pub mod vfx;
 // pub mod widgets;
 
 use crate::app::{App, AppState};
@@ -29,6 +30,8 @@ use std::{
 
 pub struct TuiRenderer {
     terminal: Terminal<CrosstermBackend<Stdout>>,
+    vfx: vfx::VfxEngine,
+    last_tick: std::time::Instant,
 }
 
 impl TuiRenderer {
@@ -41,7 +44,19 @@ impl TuiRenderer {
         execute!(stdout, EnterAlternateScreen)?;
         let backend = CrosstermBackend::new(stdout);
         let terminal = Terminal::new(backend)?;
-        Ok(Self { terminal })
+        Ok(Self {
+            terminal,
+            vfx: vfx::VfxEngine::new(),
+            last_tick: std::time::Instant::now(),
+        })
+    }
+
+    pub fn vfx_mut(&mut self) -> &mut vfx::VfxEngine {
+        &mut self.vfx
+    }
+
+    pub fn vfx(&self) -> &vfx::VfxEngine {
+        &self.vfx
     }
 }
 
@@ -77,12 +92,23 @@ impl GameRenderer for TuiRenderer {
     }
 
     fn poll_event(&mut self) -> Result<GameEvent> {
-        if event::poll(Duration::from_millis(250))? {
+        let frame_interval = self.vfx.frame_interval();
+
+        if event::poll(frame_interval)? {
             if let Event::Key(key) = event::read()? {
                 return Ok(map_key(key));
             }
         }
-        Ok(GameEvent::Tick)
+
+        self.vfx.tick();
+
+        let elapsed = self.last_tick.elapsed();
+        if elapsed.as_millis() >= 250 {
+            self.last_tick = std::time::Instant::now();
+            Ok(GameEvent::Tick)
+        } else {
+            Ok(GameEvent::Frame)
+        }
     }
 
     fn teardown(mut self: Box<Self>) -> Result<()> {

@@ -1,0 +1,27 @@
+slug = "ruined-ironhold-mines"
+name = "Ruined Ironhold Mines"
+description = "Collapsed dwarven tunnels where old furnaces once glowed; now completely overrun by the antagonist's forces."
+entry_room = "mine_entrance"
+ambient = "dark_rumble"
+
+[[rooms]]
+id = "mine_entrance"
+file = "rooms/mine_entrance.toml"
+
+[[rooms]]
+id = "deep_shaft"
+file = "rooms/deep_shaft.toml"
+
+[[rooms]]
+id = "ore_chamber"
+file = "rooms/ore_chamber.toml"
+
+[[rooms]]
+id = "flooded_pit"
+file = "rooms/flooded_pit.toml"
+
+[[connections]]
+from_room = "mine_entrance"
+to_region = "emberpeak-summit"
+to_room = "obsidian_bridge"
+label = "Climb back toward Emberpeak"

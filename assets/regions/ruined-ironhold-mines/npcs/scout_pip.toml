@@ -1,0 +1,5 @@
+id = "scout_pip"
+name = "Scout Pip"
+monster_ref = ""
+faction = "deep_gnomes"
+dialog_ref = "scout_pip"
