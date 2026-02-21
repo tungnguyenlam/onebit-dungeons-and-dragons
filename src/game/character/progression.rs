@@ -90,33 +90,57 @@ pub fn class_hit_die(class_id: &str) -> u8 {
     }
 }
 
+/// Standard 5e full-caster spell slots by level (Wizard/Cleric).
+fn full_caster_slots(level: u8) -> [u8; 9] {
+    let mut s = [0; 9];
+    if level == 0 {
+        return s;
+    }
+    // 1st level
+    s[0] = match level {
+        1 => 2,
+        2 => 3,
+        _ => 4,
+    };
+    // 2nd level
+    if level >= 3 {
+        s[1] = if level >= 4 { 3 } else { 2 };
+    }
+    // 3rd level
+    if level >= 5 {
+        s[2] = if level >= 6 { 3 } else { 2 };
+    }
+    // 4th level
+    if level >= 7 {
+        s[3] = if level >= 9 {
+            3
+        } else if level >= 8 {
+            2
+        } else {
+            1
+        };
+    }
+    // 5th level
+    if level >= 9 {
+        s[4] = if level >= 10 { 2 } else { 1 };
+    }
+    s
+}
+
 /// Runtime spell-slot table (index 0 = 1st-level slots).
 pub fn spell_slots_for_class_level(class_id: &str, level: u8) -> [u8; 9] {
-    let mut slots = [0; 9];
     match class_id {
-        "wizard" => {
-            let l1 = match level {
-                1 => 2,
-                2 => 3,
-                _ => 4,
-            };
-            slots[0] = l1;
-            if level >= 3 {
-                slots[1] = if level >= 4 { 3 } else { 2 };
-            }
-            if level >= 5 {
-                slots[2] = if level >= 6 { 3 } else { 2 };
-            }
-        }
-        "cleric" => {
-            slots[0] = if level >= 2 { 3 } else { 2 };
-            if level >= 3 {
-                slots[1] = if level >= 4 { 3 } else { 2 };
-            }
-        }
-        _ => {}
+        "wizard" | "cleric" => full_caster_slots(level),
+        _ => [0; 9],
     }
-    slots
+}
+
+/// Whether the class/level combination grants the Extra Attack feature.
+pub fn has_extra_attack(class_id: &str, level: u8) -> bool {
+    match class_id {
+        "fighter" => level >= 5,
+        _ => false,
+    }
 }
 
 /// Cantrip damage scaling tier by level.

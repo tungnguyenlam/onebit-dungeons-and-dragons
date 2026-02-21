@@ -1,0 +1,13 @@
+id = "fireball"
+name = "Fireball"
+level = 3
+school = "evocation"
+casting_time = "action"
+range = "150ft"
+components = ["V", "S", "M"]
+duration = "instantaneous"
+description = "A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame."
+damage = "8d6"
+damage_type = "fire"
+save = "dexterity"
+classes = ["wizard"]

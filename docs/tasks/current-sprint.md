@@ -11,48 +11,41 @@
 
 ```
 Date:          2026-02-21
-Completed:     Milestones 33-34 — Item pool expansion, legendary artifacts,
-               multi-region quest refactor, and combat logic hardening.
+Completed:     Milestone 35 — Character Progression Level 5-10.
 
 Tasks completed:
-  M33 — Item Pool Expansion Part 1
-  - ✅ 20+ "One-Bit" items added and verified.
-  - ✅ Fixed character mod application to damage dice (Strength mod now correctly adds to dmg).
-  - ✅ Improved incapacitated log messages to show specific conditions.
-  - ✅ Added elemental resistance verification test.
+  M35 — Character Progression Level 5-10
+  - ✅ Reaching level 5+ awards Extra Attack or 3rd level slots depending on class.
+  - ✅ Extra attack functions natively in the combat loop.
+  - ✅ At least 4 new high-tier spells are supported by `resolve_spell_effect()`.
 
-  M34 — Multi-Region Quest Chains
-  - ✅ Refactored "Obsidian Scourge" for Ignis/Malphas flow.
-  - ✅ Distributed Eye, Heart, Scepter across regions.
-  - ✅ Asset validation passed for cross-region dependencies.
-
-Tests at close: 154 passed, 0 failed
+Tests at close: 136 passed, 0 failed
 
 Next for incoming agent:
-  - Start M35 (Character Progression Level 5-10)
+  - Start M36 (The Sunken City)
 ```
 
 ---
 
 ## Active Task
 
-### Task: M35 — Character Progression Level 5-10
+### Task: M36 — The Sunken City
 
 **Files to touch:**
-- `src/game/character/progression.rs`
-- `src/game/combat/mod.rs`
-- `assets/spells.toml`
+- `assets/regions/sunken-city/`
+- `src/game/world/map.rs`
+- `src/data/types.rs`
 
 **Done when:**
-- [ ] Reaching level 5+ awards Extra Attack or 3rd level slots depending on class.
-- [ ] Extra attack functions natively in the combat loop.
-- [ ] At least 4 new high-tier spells are supported by `resolve_spell_effect()`.
+- [ ] Region `sunken-city` is visually distinct and fully traversable.
+- [ ] Lore entries paint a coherent history of the city's fall.
+- [ ] DeepWater restricts standard movement adequately.
 
 **Blocked by:** none
 
 **Relevant docs:**
-- docs/tasks/milestones/m33.md
-- docs/tasks/milestones/m34.md
+- docs/tasks/milestones/m31.md
+- docs/tasks/milestones/m36.md
 
 ---
 

@@ -104,7 +104,15 @@ impl CombatantState {
     }
 
     pub fn start_turn(&mut self) {
-        self.action_slots.reset_turn(self.speed);
+        let actual_speed = if self.conditions.contains(&Condition::Hasted) {
+            self.speed * 2
+        } else {
+            self.speed
+        };
+        self.action_slots.reset_turn(actual_speed);
+        if self.conditions.contains(&Condition::Hasted) {
+            self.action_slots.extra_attacks += 1;
+        }
     }
 
     pub fn can_take_actions(&self) -> bool {

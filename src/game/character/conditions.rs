@@ -24,6 +24,7 @@ pub enum Condition {
     Restrained,
     Stunned,
     Unconscious,
+    Hasted,
 }
 
 impl Condition {
@@ -45,6 +46,7 @@ impl Condition {
             Condition::Restrained => "Restrained".into(),
             Condition::Stunned => "Stunned".into(),
             Condition::Unconscious => "Unconscious".into(),
+            Condition::Hasted => "Hasted".into(),
         }
     }
 

@@ -7,6 +7,9 @@ pub struct ActionSlots {
     pub bonus_action: bool,
     pub reaction: bool,
     pub movement_remaining: u32,
+    pub base_extra_attacks: u8,
+    pub extra_attacks: u8, // total extra attacks allowed per Attack action (e.g. 1 if char has Extra Attack)
+    pub attacks_made: u8,
 }
 
 impl ActionSlots {
@@ -17,12 +20,18 @@ impl ActionSlots {
             bonus_action: true,
             reaction: true,
             movement_remaining: speed,
+            base_extra_attacks: 0,
+            extra_attacks: 0,
+            attacks_made: 0,
         }
     }
 
     /// Reset to a new turn's full budget.
     pub fn reset_turn(&mut self, speed: u32) {
+        let base = self.base_extra_attacks;
         *self = Self::new(speed);
+        self.base_extra_attacks = base;
+        self.extra_attacks = base;
     }
 
     pub fn use_action(&mut self) -> bool {
@@ -30,6 +39,20 @@ impl ActionSlots {
             return false;
         }
         self.action = false;
+        self.attacks_made = self.extra_attacks; // prevent further attacks if another action used
+        true
+    }
+
+    /// Specifically for the Attack action. Consumes extra attacks before the full action.
+    pub fn use_attack_action(&mut self) -> bool {
+        if !self.action {
+            return false;
+        }
+        if self.attacks_made < self.extra_attacks {
+            self.attacks_made += 1;
+        } else {
+            self.action = false;
+        }
         true
     }
 

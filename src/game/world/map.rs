@@ -9,7 +9,8 @@
 ///   `.`  Floor
 ///   `+`  Door (closed)
 ///   `-`  Door (open)
-///   `~`  Water
+///   `~`  DeepWater
+///   `,`  ShallowWater
 ///   `^`  Stairs up
 ///   `v`  Stairs down
 ///   `X`  Chest / interactable object
@@ -27,7 +28,8 @@ pub enum Tile {
     Floor,
     DoorClosed,
     DoorOpen,
-    Water,
+    DeepWater,
+    ShallowWater,
     StairsUp,
     StairsDown,
     Chest,
@@ -44,6 +46,7 @@ impl Tile {
             self,
             Tile::Floor
                 | Tile::DoorOpen
+                | Tile::ShallowWater
                 | Tile::StairsUp
                 | Tile::StairsDown
                 | Tile::Chest
@@ -64,7 +67,8 @@ impl Tile {
             Tile::Floor => '.',
             Tile::DoorClosed => '+',
             Tile::DoorOpen => '-',
-            Tile::Water => '~',
+            Tile::DeepWater => '~',
+            Tile::ShallowWater => ',',
             Tile::StairsUp => '^',
             Tile::StairsDown => 'v',
             Tile::Chest => 'X',
@@ -82,7 +86,8 @@ impl From<char> for Tile {
             '.' => Tile::Floor,
             '+' => Tile::DoorClosed,
             '-' => Tile::DoorOpen,
-            '~' => Tile::Water,
+            '~' => Tile::DeepWater,
+            ',' => Tile::ShallowWater,
             '^' => Tile::StairsUp,
             'v' => Tile::StairsDown,
             'X' => Tile::Chest,

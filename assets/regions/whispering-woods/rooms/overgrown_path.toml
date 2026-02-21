@@ -3,7 +3,7 @@ name = "Overgrown Path"
 description = "Vines obscure the dirt trail leading toward a rocky outcropping."
 grid = """
 ##############
-#~...~.......#
+#,...~.......#
 #........~...#
 #...~........#
 #........~...#

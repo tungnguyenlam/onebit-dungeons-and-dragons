@@ -1,0 +1,31 @@
+id = "aboleth_echo"
+name = "Echo of the Aboleth"
+cr = 10.0
+size = "large"
+monster_type = "aberration"
+alignment = "lawful_evil"
+hp = "18d10+36"
+ac = 17
+speed = 10
+str_score = 21
+dex_score = 9
+con_score = 15
+int_score = 18
+wis_score = 15
+cha_score = 18
+xp = 5900
+
+resistances = ["cold"]
+vulnerabilities = ["lightning"]
+
+[[actions]]
+name = "Tentacle"
+description = "Melee weapon attack."
+attack_bonus = 9
+damage = "2d6+5"
+damage_type = "bludgeoning"
+on_hit_condition = "poisoned"
+
+[[traits]]
+name = "Telepathic"
+description = "It speaks directly into the minds of its prey."

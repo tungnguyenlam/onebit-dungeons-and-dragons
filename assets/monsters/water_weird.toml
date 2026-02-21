@@ -1,0 +1,31 @@
+id = "water_weird"
+name = "Water Weird"
+cr = 3.0
+size = "large"
+monster_type = "elemental"
+alignment = "neutral"
+hp = "10d10+3"
+ac = 13
+speed = 30
+str_score = 17
+dex_score = 16
+con_score = 13
+int_score = 11
+wis_score = 10
+cha_score = 10
+xp = 700
+
+resistances = ["fire", "bludgeoning", "piercing", "slashing"]
+immunities = ["poison"]
+
+[[actions]]
+name = "Constrict"
+description = "Melee weapon attack."
+attack_bonus = 5
+damage = "3d6+3"
+damage_type = "bludgeoning"
+on_hit_condition = "grappled"
+
+[[traits]]
+name = "Invisible in Water"
+description = "The water weird is invisible while fully immersed in water."

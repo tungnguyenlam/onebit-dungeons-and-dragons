@@ -1,0 +1,11 @@
+id = "banishment"
+name = "Banishment"
+level = 4
+school = "abjuration"
+casting_time = "action"
+range = "60ft"
+components = ["V", "S", "M"]
+duration = "1 minute"
+description = "You attempt to send one creature that you can see within range to another plane of existence."
+save = "charisma"
+classes = ["cleric", "wizard"]

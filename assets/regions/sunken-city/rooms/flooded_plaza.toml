@@ -1,0 +1,32 @@
+id = "flooded_plaza"
+name = "Flooded Plaza"
+grid = """
+##########
+#~~~..@..#
+#~~~,,!,,#
+#~~~~....#
+##########
+"""
+description = "The central plaza, now a basin for cold ocean currents. Ruined pillars stand like skeletal fingers."
+
+[[triggers]]
+position = [5, 1]
+type = "travel"
+target_id = "submerged_aqueduct"
+once = false
+
+[[triggers]]
+position = [4, 1]
+type = "travel"
+target_id = "whispering-woods"
+once = false
+
+[[triggers]]
+position = [6, 2]
+type = "lore"
+target_id = "lore_sunkencity_fall"
+once = true
+
+[[npcs]]
+position = [6, 1]
+id = "water_weird"

@@ -90,6 +90,12 @@ fn infer_condition(id: &str) -> Option<Condition> {
         Some(Condition::Stunned)
     } else if id.contains("blind") {
         Some(Condition::Blinded)
+    } else if id.contains("haste") {
+        Some(Condition::Hasted)
+    } else if id.contains("invisib") {
+        Some(Condition::Invisible)
+    } else if id.contains("banish") {
+        Some(Condition::Incapacitated)
     } else {
         None
     }

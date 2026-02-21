@@ -169,7 +169,7 @@ impl App {
             .get_mut(attacker_id)
             .unwrap()
             .action_slots
-            .action = false;
+            .use_attack_action();
         true
     }
 
@@ -603,6 +603,12 @@ impl App {
         );
         p_combatant.current_hp = self.player.current_hp;
         p_combatant.resistances = resistances;
+        if crate::game::character::progression::has_extra_attack(
+            &self.player.class_id,
+            self.player.level,
+        ) {
+            p_combatant.action_slots.base_extra_attacks = 1;
+        }
 
         // Find damage type of main hand weapon
         if let Some(weapon_id) = self.player.equipment.main_hand.as_deref() {

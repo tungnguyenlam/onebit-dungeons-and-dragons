@@ -1,0 +1,11 @@
+id = "haste"
+name = "Haste"
+level = 3
+school = "transmutation"
+casting_time = "action"
+range = "30ft"
+components = ["V", "S", "M"]
+duration = "1 minute"
+description = "Choose a willing creature that you can see within range. Until the spell ends, the target's speed is doubled, it gains a +2 bonus to AC, it has advantage on Dexterity saving throws, and it gains an additional action on each of its turns."
+classes = ["wizard"]
+# No damage/heal, resolve_effect will map id to Condition::Hasted

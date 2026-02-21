@@ -270,7 +270,7 @@ fn parse_grid_rows(grid: &str) -> Vec<Vec<char>> {
 }
 
 fn is_passable(tile: char) -> bool {
-    matches!(tile, '.' | '-' | '~' | '^' | 'v' | 'X' | '@' | '!')
+    matches!(tile, '.' | '-' | ',' | '^' | 'v' | 'X' | '@' | '!')
 }
 
 #[cfg(test)]

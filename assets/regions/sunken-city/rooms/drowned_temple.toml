@@ -1,0 +1,30 @@
+id = "drowned_temple"
+name = "Drowned Temple"
+grid = """
+##########
+#.,,@X.,.#
+#,~~~~~,.#
+#.,,@.,,.#
+##########
+"""
+description = "The sacred space is desecrated by sea growth. At the far end, an altar hints at a lost artifact."
+
+[[triggers]]
+position = [5, 1]
+type = "travel"
+target_id = "submerged_aqueduct"
+once = false
+
+[[npcs]]
+position = [4, 1]
+id = "aboleth_echo"
+
+[[npcs]]
+position = [4, 3]
+id = "water_weird"
+
+[[triggers]]
+position = [2, 1]
+type = "lore"
+target_id = "lore_sunkencity_temple"
+once = true

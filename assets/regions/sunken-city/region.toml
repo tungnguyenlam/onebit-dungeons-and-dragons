@@ -1,0 +1,22 @@
+slug = "sunken-city"
+name = "The Sunken City"
+description = "A magnificent drowned metropolis, its coral-encrusted spires reaching dimly towards a distant, watery surface."
+entry_room = "flooded_plaza"
+
+[[rooms]]
+id = "flooded_plaza"
+file = "rooms/flooded_plaza.toml"
+
+[[rooms]]
+id = "submerged_aqueduct"
+file = "rooms/submerged_aqueduct.toml"
+
+[[rooms]]
+id = "drowned_temple"
+file = "rooms/drowned_temple.toml"
+
+[[connections]]
+from_room = "flooded_plaza"
+to_region = "whispering-woods"
+to_room = "woods_edge"
+label = "Ascend to the Woods"

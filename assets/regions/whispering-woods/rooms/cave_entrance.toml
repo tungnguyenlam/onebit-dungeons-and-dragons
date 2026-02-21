@@ -4,7 +4,7 @@ description = "A gaping maw in the earth, breathing cool, damp air."
 terminal = true
 grid = """
 ##############
-#~...~.......#
+#,...~.......#
 #........~...#
 #...~........#
 #........~...#
