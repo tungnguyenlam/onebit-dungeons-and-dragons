@@ -90,3 +90,11 @@ pub enum ControlFlow {
     Continue,
     Exit,
 }
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SoundEffect {
+    Beep,
+    LowBeep,
+    HighBeep,
+    DoubleBeep,
+}

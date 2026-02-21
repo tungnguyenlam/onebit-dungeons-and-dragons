@@ -1,9 +1,9 @@
-use crate::{app::App, game::story::journal::Category as JournalCategory};
+use crate::{app::{App, FocusedPane}, game::story::journal::Category as JournalCategory, ui::tui::theme};
 use ratatui::{
     layout::{Constraint, Layout},
     style::{Modifier, Style},
     text::Line,
-    widgets::{Block, Borders, Paragraph, Wrap},
+    widgets::{Block, Borders, Paragraph, Wrap, Scrollbar, ScrollbarOrientation, ScrollbarState},
     Frame,
 };
 
@@ -44,18 +44,38 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         vec![Line::from("No journal entries in this category.")]
     };
 
+    let left_block = Block::default()
+        .title("Journal")
+        .borders(Borders::ALL)
+        .style(if app.focused_pane == FocusedPane::Main { theme::panel_style_focused() } else { theme::panel_style() });
+
+    let right_block = Block::default()
+        .title("Entry")
+        .borders(Borders::ALL)
+        .style(if app.focused_pane == FocusedPane::Side { theme::panel_style_focused() } else { theme::panel_style() });
+
+    let detail_lines = right.len() as u16;
+    let right_p = Paragraph::new(right)
+        .wrap(Wrap { trim: true })
+        .scroll((app.journal_ui.detail_scroll, 0))
+        .block(right_block);
+
     frame.render_widget(
         Paragraph::new(left)
             .wrap(Wrap { trim: true })
-            .block(Block::default().title("Journal").borders(Borders::ALL)),
+            .block(left_block),
         chunks[0],
     );
-    frame.render_widget(
-        Paragraph::new(right)
-            .wrap(Wrap { trim: true })
-            .block(Block::default().title("Entry").borders(Borders::ALL)),
-        chunks[1],
-    );
+    frame.render_widget(right_p, chunks[1]);
+
+    if app.focused_pane == FocusedPane::Side && detail_lines > chunks[1].height.saturating_sub(2) {
+        let mut state = ScrollbarState::default().content_length(detail_lines as usize).position(app.journal_ui.detail_scroll as usize);
+        frame.render_stateful_widget(
+            Scrollbar::default().orientation(ScrollbarOrientation::VerticalRight).begin_symbol(None).end_symbol(None),
+            chunks[1],
+            &mut state,
+        );
+    }
 }
 
 fn category_label(c: JournalCategory) -> &'static str {

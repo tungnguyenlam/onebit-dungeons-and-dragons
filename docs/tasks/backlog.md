@@ -40,6 +40,17 @@
 | M27 | Audio & Ambient Layer | 🔲 planned | [milestones/m27.md](milestones/m27.md) |
 | M28 | Difficulty & Accessibility Settings | 🔲 planned | [milestones/m28.md](milestones/m28.md) |
 | M29 | v0.2.0 Release Gate | 🔲 planned | [milestones/m29.md](milestones/m29.md) |
+| M30 | World Map Structure Update | 🔲 planned | [milestones/m30.md](milestones/m30.md) |
+| M31 | The Whispering Woods | 🔲 planned | [milestones/m31.md](milestones/m31.md) |
+| M32 | Bestiary Expansion Part 1 | 🔲 planned | [milestones/m32.md](milestones/m32.md) |
+| M33 | Item Pool Expansion Part 1 | 🔲 planned | [milestones/m33.md](milestones/m33.md) |
+| M34 | Multi-Region Quest Chains | 🔲 planned | [milestones/m34.md](milestones/m34.md) |
+| M35 | Character Progression Level 5-10 | 🔲 planned | [milestones/m35.md](milestones/m35.md) |
+| M36 | The Sunken City | 🔲 planned | [milestones/m36.md](milestones/m36.md) |
+| M37 | Bestiary & Item Pool Expansion Part 2 | 🔲 planned | [milestones/m37.md](milestones/m37.md) |
+| M38 | Epic Threat Escalation | 🔲 planned | [milestones/m38.md](milestones/m38.md) |
+| M39 | v0.3.0 Release Candidate & Polish | 🔲 planned | [milestones/m39.md](milestones/m39.md) |
+| M40 | Retained-Mode VFX Engine | 🔲 planned | [milestones/m40.md](milestones/m40.md) |
 
 Status: ✅ done · 🚧 in progress · 🔲 next / planned
 

@@ -83,11 +83,11 @@ Next for incoming agent:
 - src/ui/tui/screens/world_map.rs
 
 **Done when:**
-- [ ] `SoundEffect` enum exists and is used by `App` to queue sounds.
-- [ ] At least 3 different game events trigger distinct beep patterns.
-- [ ] The current region's `ambient` tag (e.g., "Ash Drift") is visible on the World Map screen.
-- [ ] Atmospheric flavor text appears in the log periodically for regions with ambient tags.
-- [ ] `cargo test` passes.
+- [x] `SoundEffect` enum exists and is used by `App` to queue sounds.
+- [x] At least 3 different game events trigger distinct beep patterns.
+- [x] The current region's `ambient` tag (e.g., "Ash Drift") is visible on the World Map screen.
+- [x] Atmospheric flavor text appears in the log periodically for regions with ambient tags.
+- [x] `cargo test` passes.
 
 **Blocked by:** none
 

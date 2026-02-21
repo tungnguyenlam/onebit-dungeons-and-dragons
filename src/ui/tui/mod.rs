@@ -47,9 +47,19 @@ impl TuiRenderer {
 
 impl GameRenderer for TuiRenderer {
     fn render(&mut self, app: &App) -> Result<()> {
-        if app.sound_enabled && app.pending_beep.replace(false) {
-            print!("\x07");
+        if app.sound_enabled {
+            let sounds: Vec<_> = app.sound_queue.borrow_mut().drain(..).collect();
+            for sound in sounds {
+                match sound {
+                    crate::renderer::SoundEffect::Beep => print!("\x07"),
+                    crate::renderer::SoundEffect::LowBeep => print!("\x07"),
+                    crate::renderer::SoundEffect::HighBeep => print!("\x07"),
+                    crate::renderer::SoundEffect::DoubleBeep => print!("\x07\x07"),
+                }
+            }
             let _ = io::stdout().flush();
+        } else {
+            app.sound_queue.borrow_mut().clear();
         }
         self.terminal.draw(|frame| match &app.state {
             AppState::MainMenu => screens::main_menu::render(frame, app),

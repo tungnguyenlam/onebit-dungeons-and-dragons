@@ -35,9 +35,9 @@ use crate::game::{
 ///
 /// The active renderer calls `App::handle_event` to drive state transitions
 /// and reads `App::state` (and sub-system state) during rendering.
-use crate::renderer::{ControlFlow, GameEvent};
+use crate::renderer::{ControlFlow, GameEvent, SoundEffect};
 use anyhow::Result;
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 
 // ---------------------------------------------------------------------------
@@ -139,6 +139,7 @@ pub struct DialogContext {
 pub struct JournalUiState {
     pub category: JournalCategory,
     pub selected: usize,
+    pub detail_scroll: u16,
 }
 
 impl Default for JournalUiState {
@@ -146,6 +147,7 @@ impl Default for JournalUiState {
         Self {
             category: JournalCategory::Quest,
             selected: 0,
+            detail_scroll: 0,
         }
     }
 }
@@ -210,7 +212,7 @@ pub struct App {
     pub player_pos: (u32, u32),
     pub pending_encounter_monster: Option<String>,
     pub sound_enabled: bool,
-    pub pending_beep: Cell<bool>,
+    pub sound_queue: RefCell<Vec<SoundEffect>>,
     pub menu_ui: MainMenuUiState,
     pub char_creation_ui: CharacterCreationUiState,
     pub journal_ui: JournalUiState,
@@ -342,7 +344,7 @@ impl App {
             player_pos,
             pending_encounter_monster: None,
             sound_enabled: false,
-            pending_beep: Cell::new(false),
+            sound_queue: RefCell::new(Vec::new()),
             menu_ui: MainMenuUiState::default(),
             char_creation_ui: CharacterCreationUiState::default(),
             journal_ui: JournalUiState::default(),
@@ -373,7 +375,7 @@ impl App {
             GameEvent::ToggleSound => {
                 self.sound_enabled = !self.sound_enabled;
                 if self.sound_enabled {
-                    self.pending_beep.set(true);
+                    self.queue_sound(SoundEffect::Beep);
                 }
                 return Ok(ControlFlow::Continue);
             }
@@ -449,6 +451,8 @@ impl App {
             GameEvent::OpenJournal => {
                 self.journal.mark_read();
                 self.journal_ui.selected = 0;
+                self.journal_ui.detail_scroll = 0;
+                self.focused_pane = FocusedPane::Main;
                 self.transition(AppState::Journal);
             }
             GameEvent::MoveUp => self.try_move_player(0, -1),
@@ -585,20 +589,49 @@ impl App {
 
     fn handle_journal(&mut self, event: GameEvent) -> Result<()> {
         match event {
-            GameEvent::Back | GameEvent::Cancel => self.transition(AppState::WorldMap),
+            GameEvent::Back | GameEvent::Cancel => {
+                if self.focused_pane == FocusedPane::Side {
+                    self.focused_pane = FocusedPane::Main;
+                } else {
+                    self.transition(AppState::WorldMap);
+                }
+            }
+            GameEvent::Confirm => {
+                if self.focused_pane == FocusedPane::Main {
+                    self.focused_pane = FocusedPane::Side;
+                }
+            }
             GameEvent::MoveUp => {
-                self.journal_ui.selected = self.journal_ui.selected.saturating_sub(1);
+                if self.focused_pane == FocusedPane::Main {
+                    self.journal_ui.selected = self.journal_ui.selected.saturating_sub(1);
+                    self.journal_ui.detail_scroll = 0;
+                } else {
+                    self.journal_ui.detail_scroll = self.journal_ui.detail_scroll.saturating_sub(1);
+                }
             }
             GameEvent::MoveDown => {
-                self.journal_ui.selected = self.journal_ui.selected.saturating_add(1);
+                if self.focused_pane == FocusedPane::Main {
+                    self.journal_ui.selected = self.journal_ui.selected.saturating_add(1);
+                    self.journal_ui.detail_scroll = 0;
+                } else {
+                    self.journal_ui.detail_scroll = self.journal_ui.detail_scroll.saturating_add(1);
+                }
             }
             GameEvent::MoveLeft => {
-                self.journal_ui.category = prev_category(self.journal_ui.category);
-                self.journal_ui.selected = 0;
+                if self.focused_pane == FocusedPane::Side {
+                    self.focused_pane = FocusedPane::Main;
+                } else {
+                    self.journal_ui.category = prev_category(self.journal_ui.category);
+                    self.journal_ui.selected = 0;
+                    self.journal_ui.detail_scroll = 0;
+                }
             }
             GameEvent::MoveRight => {
-                self.journal_ui.category = next_category(self.journal_ui.category);
-                self.journal_ui.selected = 0;
+                if self.focused_pane == FocusedPane::Main {
+                    self.journal_ui.category = next_category(self.journal_ui.category);
+                    self.journal_ui.selected = 0;
+                    self.journal_ui.detail_scroll = 0;
+                }
             }
             _ => {}
         }
@@ -706,7 +739,7 @@ impl App {
                         return;
                     }
                     self.pending_encounter_monster = Some(trigger.target_id.clone());
-                    self.pending_beep.set(self.sound_enabled);
+                    self.queue_sound(SoundEffect::LowBeep);
                     let ctx = self.make_combat_context();
                     self.transition(AppState::Combat(ctx));
                 }
@@ -847,6 +880,7 @@ impl App {
             return;
         }
 
+        self.queue_sound(SoundEffect::DoubleBeep);
         while self.player.level < target_level {
             let next_level = self.player.level + 1;
             let hit_die = class_hit_die(&self.player.class_id);
@@ -906,7 +940,7 @@ impl App {
             "Game Saved",
             "Saved to saves/slot1.toml",
         );
-        self.pending_beep.set(self.sound_enabled);
+        self.queue_sound(SoundEffect::Beep);
         Ok(())
     }
 
@@ -944,8 +978,14 @@ impl App {
                 .unwrap_or_else(|| self.region.entry_room.clone())
         };
         self.player_pos = save.player_pos;
-        self.pending_beep.set(self.sound_enabled);
+        self.queue_sound(SoundEffect::Beep);
         Ok(())
+    }
+
+    pub fn queue_sound(&self, effect: SoundEffect) {
+        if self.sound_enabled {
+            self.sound_queue.borrow_mut().push(effect);
+        }
     }
 
     fn push_log(ctx: &mut CombatContext, line: impl Into<String>) {
@@ -1062,11 +1102,13 @@ impl App {
     }
 
     fn run_enemy_turns(&mut self) {
-        let AppState::Combat(ctx) = &mut self.state else {
-            return;
-        };
+        let player_damaged = {
+            let AppState::Combat(ctx) = &mut self.state else {
+                return;
+            };
+            let start_hp = ctx.state.combatants.get("player").map_or(0, |c| c.current_hp);
 
-        loop {
+            loop {
             if ctx.state.is_over() {
                 break;
             }
@@ -1160,6 +1202,14 @@ impl App {
                 }
             }
             let _ = Self::advance_turn(ctx);
+        }
+
+            let end_hp = ctx.state.combatants.get("player").map_or(0, |c| c.current_hp);
+            end_hp < start_hp
+        };
+
+        if player_damaged {
+            self.queue_sound(SoundEffect::LowBeep);
         }
     }
 
@@ -1453,12 +1503,30 @@ impl App {
 
         let quest_ids: Vec<String> = self.quests.states.keys().cloned().collect();
         for q in quest_ids {
+            let was_completed = matches!(self.quests.states.get(&q), Some(crate::game::story::quest::QuestStatus::Completed { .. }));
             let _ = self
                 .quests
                 .tick_quest(&q, &mut self.world_state, &mut self.journal, self.turn);
+            let is_completed = matches!(self.quests.states.get(&q), Some(crate::game::story::quest::QuestStatus::Completed { .. }));
+            if !was_completed && is_completed {
+                self.queue_sound(SoundEffect::HighBeep);
+                self.queue_sound(SoundEffect::LowBeep);
+            }
         }
         self.world_events
             .tick(&mut self.world_state, &mut self.journal, self.turn);
+
+        // Ambient trigger
+        if self.turn % 20 == 0 && !self.region.ambient.is_empty() {
+            self.journal.append(
+                format!("ambient-{}-{}", self.region.ambient, self.turn),
+                self.turn,
+                JournalCategory::World,
+                None,
+                "Atmosphere",
+                format!("{} drifts through the air...", self.region.ambient),
+            );
+        }
 
         // M25: Inter-faction relationship event
         if self.world_state.faction_rep("goblin_tribe") < -5

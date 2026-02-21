@@ -102,6 +102,10 @@ pub fn panel_style() -> Style {
     Style::default().fg(theme().panel_border)
 }
 
+pub fn panel_style_focused() -> Style {
+    Style::default().fg(theme().text_emphasis).add_modifier(Modifier::BOLD)
+}
+
 pub fn emph_style() -> Style {
     Style::default()
         .fg(theme().text_emphasis)
