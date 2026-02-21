@@ -5,6 +5,6 @@ pub mod game_over;
 pub mod inventory;
 pub mod journal;
 pub mod main_menu;
-pub mod spellbook;
 pub mod settings;
+pub mod spellbook;
 pub mod world_map;

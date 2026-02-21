@@ -489,22 +489,30 @@ impl App {
                     self.settings_ui.selected += 1;
                 }
             }
-            GameEvent::MoveLeft => {
-                match self.settings_ui.selected {
-                    0 => self.settings.enemy_hp_multiplier = (self.settings.enemy_hp_multiplier - 0.1).max(0.5),
-                    1 => self.settings.player_damage_multiplier = (self.settings.player_damage_multiplier - 0.1).max(0.5),
-                    2 => self.settings.reduced_motion = !self.settings.reduced_motion,
-                    _ => {}
+            GameEvent::MoveLeft => match self.settings_ui.selected {
+                0 => {
+                    self.settings.enemy_hp_multiplier =
+                        (self.settings.enemy_hp_multiplier - 0.1).max(0.5)
                 }
-            }
-            GameEvent::MoveRight | GameEvent::Confirm => {
-                match self.settings_ui.selected {
-                    0 => self.settings.enemy_hp_multiplier = (self.settings.enemy_hp_multiplier + 0.1).min(2.0),
-                    1 => self.settings.player_damage_multiplier = (self.settings.player_damage_multiplier + 0.1).min(2.0),
-                    2 => self.settings.reduced_motion = !self.settings.reduced_motion,
-                    _ => {}
+                1 => {
+                    self.settings.player_damage_multiplier =
+                        (self.settings.player_damage_multiplier - 0.1).max(0.5)
                 }
-            }
+                2 => self.settings.reduced_motion = !self.settings.reduced_motion,
+                _ => {}
+            },
+            GameEvent::MoveRight | GameEvent::Confirm => match self.settings_ui.selected {
+                0 => {
+                    self.settings.enemy_hp_multiplier =
+                        (self.settings.enemy_hp_multiplier + 0.1).min(2.0)
+                }
+                1 => {
+                    self.settings.player_damage_multiplier =
+                        (self.settings.player_damage_multiplier + 0.1).min(2.0)
+                }
+                2 => self.settings.reduced_motion = !self.settings.reduced_motion,
+                _ => {}
+            },
             _ => {}
         }
         Ok(())
@@ -560,7 +568,12 @@ impl App {
                         Self::push_log(ctx, "No valid target.");
                         return Ok(());
                     };
-                    let _ = Self::resolve_attack(ctx, &attacker_id, &target_id, self.settings.player_damage_multiplier);
+                    let _ = Self::resolve_attack(
+                        ctx,
+                        &attacker_id,
+                        &target_id,
+                        self.settings.player_damage_multiplier,
+                    );
                 }
                 self.finish_combat_if_over();
             }
@@ -1066,7 +1079,12 @@ impl App {
         }
     }
 
-    fn resolve_attack(ctx: &mut CombatContext, attacker_id: &str, target_id: &str, pdm: f32) -> bool {
+    fn resolve_attack(
+        ctx: &mut CombatContext,
+        attacker_id: &str,
+        target_id: &str,
+        pdm: f32,
+    ) -> bool {
         let Some(attacker_view) = ctx.state.combatants.get(attacker_id) else {
             Self::push_log(ctx, "Attacker not found.");
             return false;
@@ -1181,105 +1199,114 @@ impl App {
             let AppState::Combat(ctx) = &mut self.state else {
                 return;
             };
-            let start_hp = ctx.state.combatants.get("player").map_or(0, |c| c.current_hp);
+            let start_hp = ctx
+                .state
+                .combatants
+                .get("player")
+                .map_or(0, |c| c.current_hp);
 
             loop {
-            if ctx.state.is_over() {
-                break;
-            }
+                if ctx.state.is_over() {
+                    break;
+                }
 
-            let Some(attacker_id) = ctx.state.current_combatant_id().map(str::to_string) else {
-                break;
-            };
+                let Some(attacker_id) = ctx.state.current_combatant_id().map(str::to_string) else {
+                    break;
+                };
 
-            let Some(attacker) = ctx.state.combatants.get(&attacker_id) else {
-                break;
-            };
-            if attacker.is_player {
-                break;
-            }
+                let Some(attacker) = ctx.state.combatants.get(&attacker_id) else {
+                    break;
+                };
+                if attacker.is_player {
+                    break;
+                }
 
-            if !attacker.can_take_actions() {
-                let reasons = attacker
-                    .conditions
-                    .iter()
-                    .filter(|c| c.is_incapacitating())
-                    .map(|c| c.name())
-                    .collect::<Vec<_>>()
-                    .join(", ");
-                let name = attacker.name.clone();
-                Self::push_log(
-                    ctx,
-                    format!("{name} cannot act ({reasons}) and skips turn."),
-                );
+                if !attacker.can_take_actions() {
+                    let reasons = attacker
+                        .conditions
+                        .iter()
+                        .filter(|c| c.is_incapacitating())
+                        .map(|c| c.name())
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    let name = attacker.name.clone();
+                    Self::push_log(
+                        ctx,
+                        format!("{name} cannot act ({reasons}) and skips turn."),
+                    );
+                    let _ = Self::advance_turn(ctx);
+                    continue;
+                }
+
+                let Some(target_id) = ctx.state.next_enemy_id(&attacker_id).map(str::to_string)
+                else {
+                    Self::push_log(ctx, "Enemy has no valid target.");
+                    break;
+                };
+
+                let actor = ctx.state.combatants.get(&attacker_id).cloned();
+                let Some(actor) = actor else {
+                    break;
+                };
+
+                let target_id = match actor.enemy_role {
+                    EnemyAiRole::Melee => target_id,
+                    EnemyAiRole::Ranged | EnemyAiRole::Spellcaster => {
+                        Self::select_enemy_target(ctx, &attacker_id, true).unwrap_or(target_id)
+                    }
+                };
+
+                match actor.enemy_role {
+                    EnemyAiRole::Melee => {
+                        let _ = Self::resolve_attack(ctx, &attacker_id, &target_id, 1.0);
+                    }
+                    EnemyAiRole::Ranged => {
+                        if let (Some(bonus), Some(dice)) =
+                            (actor.ranged_attack_bonus, actor.ranged_damage_dice)
+                        {
+                            let _ = Self::resolve_attack_with_stats(
+                                ctx,
+                                &attacker_id,
+                                &target_id,
+                                bonus,
+                                dice,
+                                None,
+                                "ranged",
+                            );
+                        } else {
+                            let _ = Self::resolve_attack(ctx, &attacker_id, &target_id, 1.0);
+                        }
+                    }
+                    EnemyAiRole::Spellcaster => {
+                        if Self::try_spellcaster_support_action(ctx, &attacker_id) {
+                            let _ = Self::advance_turn(ctx);
+                            continue;
+                        }
+                        if let (Some(bonus), Some(dice)) =
+                            (actor.spell_attack_bonus, actor.spell_damage_dice)
+                        {
+                            let _ = Self::resolve_attack_with_stats(
+                                ctx,
+                                &attacker_id,
+                                &target_id,
+                                bonus,
+                                dice,
+                                actor.spell_on_hit_condition.clone(),
+                                "spell",
+                            );
+                        } else {
+                            let _ = Self::resolve_attack(ctx, &attacker_id, &target_id, 1.0);
+                        }
+                    }
+                }
                 let _ = Self::advance_turn(ctx);
-                continue;
             }
 
-            let Some(target_id) = ctx.state.next_enemy_id(&attacker_id).map(str::to_string) else {
-                Self::push_log(ctx, "Enemy has no valid target.");
-                break;
-            };
-
-            let actor = ctx.state.combatants.get(&attacker_id).cloned();
-            let Some(actor) = actor else {
-                break;
-            };
-
-            let target_id = match actor.enemy_role {
-                EnemyAiRole::Melee => target_id,
-                EnemyAiRole::Ranged | EnemyAiRole::Spellcaster => {
-                    Self::select_enemy_target(ctx, &attacker_id, true).unwrap_or(target_id)
-                }
-            };
-
-            match actor.enemy_role {
-                EnemyAiRole::Melee => {
-                    let _ = Self::resolve_attack(ctx, &attacker_id, &target_id, 1.0);
-                }
-                EnemyAiRole::Ranged => {
-                    if let (Some(bonus), Some(dice)) =
-                        (actor.ranged_attack_bonus, actor.ranged_damage_dice)
-                    {
-                        let _ = Self::resolve_attack_with_stats(
-                            ctx,
-                            &attacker_id,
-                            &target_id,
-                            bonus,
-                            dice,
-                            None,
-                            "ranged",
-                        );
-                    } else {
-                        let _ = Self::resolve_attack(ctx, &attacker_id, &target_id, 1.0);
-                    }
-                }
-                EnemyAiRole::Spellcaster => {
-                    if Self::try_spellcaster_support_action(ctx, &attacker_id) {
-                        let _ = Self::advance_turn(ctx);
-                        continue;
-                    }
-                    if let (Some(bonus), Some(dice)) =
-                        (actor.spell_attack_bonus, actor.spell_damage_dice)
-                    {
-                        let _ = Self::resolve_attack_with_stats(
-                            ctx,
-                            &attacker_id,
-                            &target_id,
-                            bonus,
-                            dice,
-                            actor.spell_on_hit_condition.clone(),
-                            "spell",
-                        );
-                    } else {
-                        let _ = Self::resolve_attack(ctx, &attacker_id, &target_id, 1.0);
-                    }
-                }
-            }
-            let _ = Self::advance_turn(ctx);
-        }
-
-            let end_hp = ctx.state.combatants.get("player").map_or(0, |c| c.current_hp);
+            let end_hp = ctx
+                .state
+                .combatants
+                .get("player")
+                .map_or(0, |c| c.current_hp);
             end_hp < start_hp
         };
 
@@ -1578,11 +1605,17 @@ impl App {
 
         let quest_ids: Vec<String> = self.quests.states.keys().cloned().collect();
         for q in quest_ids {
-            let was_completed = matches!(self.quests.states.get(&q), Some(crate::game::story::quest::QuestStatus::Completed { .. }));
+            let was_completed = matches!(
+                self.quests.states.get(&q),
+                Some(crate::game::story::quest::QuestStatus::Completed { .. })
+            );
             let _ = self
                 .quests
                 .tick_quest(&q, &mut self.world_state, &mut self.journal, self.turn);
-            let is_completed = matches!(self.quests.states.get(&q), Some(crate::game::story::quest::QuestStatus::Completed { .. }));
+            let is_completed = matches!(
+                self.quests.states.get(&q),
+                Some(crate::game::story::quest::QuestStatus::Completed { .. })
+            );
             if !was_completed && is_completed {
                 self.queue_sound(SoundEffect::HighBeep);
                 self.queue_sound(SoundEffect::LowBeep);
@@ -1592,7 +1625,7 @@ impl App {
             .tick(&mut self.world_state, &mut self.journal, self.turn);
 
         // Ambient trigger
-        if self.turn % 20 == 0 && !self.region.ambient.is_empty() {
+        if self.turn.is_multiple_of(20) && !self.region.ambient.is_empty() {
             self.journal.append(
                 format!("ambient-{}-{}", self.region.ambient, self.turn),
                 self.turn,
@@ -1929,7 +1962,11 @@ impl App {
             };
             let n = seq.entry(mid).and_modify(|v| *v += 1).or_insert(1);
             let cid = format!("{}_{}", mid, *n);
-            out.push(combatant_from_monster(&cid, def, self.settings.enemy_hp_multiplier));
+            out.push(combatant_from_monster(
+                &cid,
+                def,
+                self.settings.enemy_hp_multiplier,
+            ));
         }
         out
     }
@@ -2326,7 +2363,11 @@ fn demo_world_events() -> EventEngine {
     }
 }
 
-fn combatant_from_monster(combat_id: &str, monster: &MonsterDef, hp_multiplier: f32) -> CombatantState {
+fn combatant_from_monster(
+    combat_id: &str,
+    monster: &MonsterDef,
+    hp_multiplier: f32,
+) -> CombatantState {
     let mut melee_bonus = 2;
     let mut melee_damage = DiceExpr::new(1, 4, 0);
     let mut ranged_attack_bonus = None;

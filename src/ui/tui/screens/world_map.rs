@@ -22,9 +22,12 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         Line::from(if app.region.ambient.is_empty() {
             format!("Region: {} ({})", app.region.name, app.region.slug)
         } else {
-            format!("Region: {} ({}) [{}]", app.region.name, app.region.slug, app.region.ambient)
+            format!(
+                "Region: {} ({}) [{}]",
+                app.region.name, app.region.slug, app.region.ambient
+            )
         })
-            .style(theme::accent_style()),
+        .style(theme::accent_style()),
         Line::from(format!("Room: {}", app.current_room_id)),
         Line::from(format!(
             "Player: {} {} at ({}, {})",

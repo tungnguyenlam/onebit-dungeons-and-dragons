@@ -62,35 +62,42 @@ Tasks completed:
   - ✅ FocusedPane enum and state added to App for independent widget focus.
   - ✅ Architecture doc updated with OpenCode-style TUI interaction patterns.
 
+  M27 — Audio & Ambient Layer
+  - ✅ SoundEffect enum and sound_queue system implemented.
+  - ✅ Ambient tags visible on World Map.
+  
+  M28 — Difficulty & Accessibility Settings
+  - ✅ Added SettingsUiState and SettingsConfig with HP/Damage multipliers.
+  - ✅ Created settings.rs TUI screen, mapped to `,`.
+  - ✅ Combat equations scale enemy HP and player output based on multipliers.
+
+  M29 — v0.2.0 Release Gate
+  - ✅ rc_check.sh passes entirely.
+  - ✅ Cargo.toml version bumped to 0.2.0.
+  - ✅ Release prepared.
+
 Tests at close: 149 passed, 0 failed
 
 Next for incoming agent:
-  - Start M27 (Audio & Ambient Layer)
-  - Implement SoundQueue/SoundEffect systems.
-  - Implement the independent scrollbar/focus logic on the Journal screen.
+  - Start M30 (World Map Structure Update)
 ```
 
 ---
 
 ## Active Task
 
-### Task: M28 — Difficulty & Accessibility Settings
+### Task: M30 — World Map Structure Update
 
 **Files to touch:**
-- src/app.rs
-- src/ui/tui/screens/settings.rs
-- src/ui/tui/mod.rs
-- src/game/combat/mod.rs (or where multipliers can apply)
+- src/ui/tui/screens/world_map.rs
 
 **Done when:**
-- [ ] Settings enum handles standard toggles/multipliers.
-- [ ] Setting screen is accessible from the Main Menu or pause.
-- [ ] Combat equations respect the selected difficulty.
+- [ ] World map layout allows moving between regions via global travel locations.
 
 **Blocked by:** none
 
 **Relevant docs:**
-- docs/tasks/milestones/m28.md
+- docs/tasks/milestones/m30.md
 
 ---
 

@@ -18,14 +18,31 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         Line::from(""),
     ];
 
-    let options = vec![
-        format!("Enemy HP Multiplier: x{:.1}", app.settings.enemy_hp_multiplier),
-        format!("Player Damage Multiplier: x{:.1}", app.settings.player_damage_multiplier),
-        format!("Reduced Motion: {}", if app.settings.reduced_motion { "On" } else { "Off" }),
+    let options = [
+        format!(
+            "Enemy HP Multiplier: x{:.1}",
+            app.settings.enemy_hp_multiplier
+        ),
+        format!(
+            "Player Damage Multiplier: x{:.1}",
+            app.settings.player_damage_multiplier
+        ),
+        format!(
+            "Reduced Motion: {}",
+            if app.settings.reduced_motion {
+                "On"
+            } else {
+                "Off"
+            }
+        ),
     ];
 
     for (i, opt) in options.iter().enumerate() {
-        let prefix = if i == app.settings_ui.selected { "> " } else { "  " };
+        let prefix = if i == app.settings_ui.selected {
+            "> "
+        } else {
+            "  "
+        };
         let style = if i == app.settings_ui.selected {
             theme::accent_style()
         } else {
@@ -39,9 +56,12 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     lines.push(Line::from("Press Esc to return.").style(theme::muted_style()));
 
     frame.render_widget(
-        Paragraph::new(lines)
-            .wrap(Wrap { trim: true })
-            .block(Block::default().title("Settings").borders(Borders::ALL).style(theme::panel_style_focused())),
+        Paragraph::new(lines).wrap(Wrap { trim: true }).block(
+            Block::default()
+                .title("Settings")
+                .borders(Borders::ALL)
+                .style(theme::panel_style_focused()),
+        ),
         chunks[0],
     );
 }
