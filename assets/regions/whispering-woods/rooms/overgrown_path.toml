@@ -1,0 +1,24 @@
+id = "overgrown_path"
+name = "Overgrown Path"
+description = "Vines obscure the dirt trail leading toward a rocky outcropping."
+grid = """
+##############
+#~...~.......#
+#........~...#
+#...~........#
+#........~...#
+#..~.........#
+##############
+"""
+
+[[triggers]]
+position = [1, 1]
+type = "travel"
+target_id = "sunken_glade"
+once = false
+
+[[triggers]]
+position = [12, 1]
+type = "travel"
+target_id = "cave_entrance"
+once = false

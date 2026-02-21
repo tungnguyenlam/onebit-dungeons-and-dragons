@@ -29,3 +29,9 @@ from_room = "cinder_ridge"
 to_region = "emberpeak-summit"
 to_room = "south_slope"
 label = "Ascend to Emberpeak Summit"
+
+[[connections]]
+from_room = "ash_hollow"
+to_region = "whispering-woods"
+to_room = "woods_edge"
+label = "Enter the Whispering Woods"

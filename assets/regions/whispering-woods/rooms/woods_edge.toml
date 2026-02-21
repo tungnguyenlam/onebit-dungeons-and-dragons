@@ -1,0 +1,30 @@
+id = "woods_edge"
+name = "Woods Edge"
+description = "A wall of dense timber stands defiantly against the encroaching ash. The trees murmur softly."
+grid = """
+##############
+#~...~...!...#
+#........@...#
+#...~........#
+#........v...#
+#..~.........#
+##############
+"""
+
+[[triggers]]
+position = [9, 4]
+type = "travel"
+target_id = "valley-of-ash"
+once = false
+
+[[triggers]]
+position = [1, 2]
+type = "travel"
+target_id = "sunken_glade"
+once = false
+
+[[triggers]]
+position = [9, 1]
+type = "lore"
+target_id = "sylvan_carving"
+once = true

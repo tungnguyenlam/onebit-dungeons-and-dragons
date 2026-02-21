@@ -1,0 +1,36 @@
+id = "sunken_glade"
+name = "Sunken Glade"
+description = "Sunlight struggles through the canopy, illuminating a damp, fungal hollow."
+grid = """
+##############
+#~...~.......#
+#..~.....~...#
+#......~.....#
+#...~........#
+#..~..~......#
+##############
+"""
+
+[[triggers]]
+position = [12, 1]
+type = "travel"
+target_id = "woods_edge"
+once = false
+
+[[triggers]]
+position = [1, 5]
+type = "travel"
+target_id = "elder_canopy"
+once = false
+
+[[triggers]]
+position = [12, 5]
+type = "travel"
+target_id = "overgrown_path"
+once = false
+
+[[triggers]]
+position = [6, 2]
+type = "encounter"
+target_id = "goblin"
+once = false

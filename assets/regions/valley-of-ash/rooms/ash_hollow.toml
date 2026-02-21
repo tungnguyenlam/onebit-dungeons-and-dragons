@@ -39,3 +39,9 @@ position = [12, 4]
 type = "travel"
 target_id = "soot_shrine"
 once = false
+
+[[triggers]]
+position = [1, 5]
+type = "travel"
+target_id = "whispering-woods"
+once = false

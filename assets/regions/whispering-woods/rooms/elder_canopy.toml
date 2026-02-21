@@ -1,0 +1,25 @@
+id = "elder_canopy"
+name = "Elder Canopy"
+description = "Roots as thick as houses form natural bridges over a plunging ravine."
+terminal = true
+grid = """
+##############
+#~...~.......#
+#........~...#
+#...~........#
+#........~...#
+#..~.........#
+##############
+"""
+
+[[triggers]]
+position = [1, 1]
+type = "travel"
+target_id = "sunken_glade"
+once = false
+
+[[triggers]]
+position = [10, 4]
+type = "encounter"
+target_id = "goblin_archer"
+once = false

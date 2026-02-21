@@ -1,0 +1,31 @@
+slug = "whispering-woods"
+name = "The Whispering Woods"
+description = "A dense, ancient forest where the trees seem to murmur secrets."
+entry_room = "woods_edge"
+ambient = "forest_murmur"
+
+[[rooms]]
+id = "woods_edge"
+file = "rooms/woods_edge.toml"
+
+[[rooms]]
+id = "sunken_glade"
+file = "rooms/sunken_glade.toml"
+
+[[rooms]]
+id = "elder_canopy"
+file = "rooms/elder_canopy.toml"
+
+[[rooms]]
+id = "overgrown_path"
+file = "rooms/overgrown_path.toml"
+
+[[rooms]]
+id = "cave_entrance"
+file = "rooms/cave_entrance.toml"
+
+[[connections]]
+from_room = "woods_edge"
+to_region = "valley-of-ash"
+to_room = "ash_hollow"
+label = "Return to Valley of Ash"
