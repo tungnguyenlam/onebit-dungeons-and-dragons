@@ -1,0 +1,32 @@
+id = "water_elemental"
+name = "Water Elemental"
+cr = 5.0
+size = "large"
+monster_type = "elemental"
+alignment = "neutral"
+hp = "12d10+48"
+ac = 14
+speed = 30
+str_score = 18
+dex_score = 14
+con_score = 18
+int_score = 5
+wis_score = 10
+cha_score = 8
+xp = 1800
+
+resistances = ["acid", "bludgeoning", "piercing", "slashing"]
+immunities = ["poison"]
+condition_immunities = ["exhaustion", "grappled", "paralyzed", "petrified", "poisoned", "prone", "restrained", "unconscious"]
+
+[[actions]]
+name = "Slam"
+description = "Melee weapon attack."
+attack_bonus = 7
+damage = "2d8+4"
+damage_type = "bludgeoning"
+on_hit_condition = "prone"
+
+[[traits]]
+name = "Water Form"
+description = "Can enter a hostile creature's space and stop there."

@@ -373,6 +373,30 @@ impl App {
         set
     }
 
+    pub fn equipment_immunities(&self) -> HashSet<String> {
+        let mut set = HashSet::new();
+        for id in self.equipped_item_ids() {
+            if let Some(item) = self.item_defs.get(id) {
+                for i in &item.bonuses.immunities {
+                    set.insert(i.clone());
+                }
+            }
+        }
+        set
+    }
+
+    pub fn equipment_condition_immunities(&self) -> HashSet<String> {
+        let mut set = HashSet::new();
+        for id in self.equipped_item_ids() {
+            if let Some(item) = self.item_defs.get(id) {
+                for i in &item.bonuses.condition_immunities {
+                    set.insert(i.clone());
+                }
+            }
+        }
+        set
+    }
+
     pub fn grant_player_xp(&mut self, gained_xp: u32) {
         self.player.xp += gained_xp;
         let new_level = level_for_xp(self.player.xp);

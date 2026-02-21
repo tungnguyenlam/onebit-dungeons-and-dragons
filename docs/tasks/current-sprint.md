@@ -11,41 +11,36 @@
 
 ```
 Date:          2026-02-21
-Completed:     Milestone 35 — Character Progression Level 5-10.
+Completed:     Milestone 37 — Bestiary & Item Pool Expansion Part 2.
 
 Tasks completed:
-  M35 — Character Progression Level 5-10
-  - ✅ Reaching level 5+ awards Extra Attack or 3rd level slots depending on class.
-  - ✅ Extra attack functions natively in the combat loop.
-  - ✅ At least 4 new high-tier spells are supported by `resolve_spell_effect()`.
+  M37 — Bestiary & Item Pool Expansion Part 2
+  - ✅ Enemies with immunities correctly shrug off applied conditions in combat.
+  - ✅ Aboleths and Water Elementals function cleanly in combat.
+  - ✅ Artifacts provide correct complex bonuses.
 
 Tests at close: 136 passed, 0 failed
 
 Next for incoming agent:
-  - Start M36 (The Sunken City)
+  - Start next milestone.
 ```
 
 ---
 
 ## Active Task
 
-### Task: M36 — The Sunken City
+### Task: Finish Milestones
 
 **Files to touch:**
-- `assets/regions/sunken-city/`
-- `src/game/world/map.rs`
-- `src/data/types.rs`
+- Check next milestones
 
 **Done when:**
-- [ ] Region `sunken-city` is visually distinct and fully traversable.
-- [ ] Lore entries paint a coherent history of the city's fall.
-- [ ] DeepWater restricts standard movement adequately.
+- All 40 milestones done
 
 **Blocked by:** none
 
 **Relevant docs:**
-- docs/tasks/milestones/m31.md
-- docs/tasks/milestones/m36.md
+- docs/tasks/milestones/
 
 ---
 

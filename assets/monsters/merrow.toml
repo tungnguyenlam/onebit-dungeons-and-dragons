@@ -1,0 +1,28 @@
+id = "merrow"
+name = "Merrow"
+cr = 2.0
+size = "large"
+monster_type = "monstrosity"
+alignment = "chaotic_evil"
+hp = "6d10+12"
+ac = 13
+speed = 40
+str_score = 18
+dex_score = 10
+con_score = 15
+int_score = 8
+wis_score = 10
+cha_score = 9
+xp = 450
+
+[[actions]]
+name = "Harpoon"
+description = "Melee or Ranged Weapon Attack."
+attack_bonus = 6
+damage = "2d6+4"
+damage_type = "piercing"
+on_hit_condition = "grappled"
+
+[[traits]]
+name = "Amphibious"
+description = "The merrow can breathe air and water."

@@ -317,6 +317,7 @@ fn equipment_resistance_halves_elemental_damage() {
             conditions: &p.conditions,
             resistances: &p.resistances,
             vulnerabilities: &p.vulnerabilities,
+            immunities: &p.immunities,
         };
 
         let out = roll_attack(&atk_profile, &def_profile, &ctx.world_state);

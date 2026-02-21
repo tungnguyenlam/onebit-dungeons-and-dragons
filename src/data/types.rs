@@ -212,6 +212,10 @@ pub struct MonsterDef {
     pub resistances: Vec<String>,
     #[serde(default)]
     pub vulnerabilities: Vec<String>,
+    #[serde(default)]
+    pub immunities: Vec<String>,
+    #[serde(default)]
+    pub condition_immunities: Vec<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -322,6 +326,10 @@ pub struct ItemBonuses {
     pub max_hp_bonus: i32,
     #[serde(default)]
     pub resistances: Vec<String>,
+    #[serde(default)]
+    pub immunities: Vec<String>,
+    #[serde(default)]
+    pub condition_immunities: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]

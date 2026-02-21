@@ -42,6 +42,8 @@ pub struct CombatantState {
     pub spell_damage_type: Option<String>,
     pub resistances: HashSet<String>,
     pub vulnerabilities: HashSet<String>,
+    pub immunities: HashSet<String>,
+    pub condition_immunities: HashSet<String>,
     pub conditions: HashSet<Condition>,
     pub condition_durations: HashMap<Condition, u8>,
     pub action_slots: ActionSlots,
@@ -85,6 +87,8 @@ impl CombatantState {
             spell_damage_type: None,
             resistances: HashSet::new(),
             vulnerabilities: HashSet::new(),
+            immunities: HashSet::new(),
+            condition_immunities: HashSet::new(),
             conditions: HashSet::new(),
             condition_durations: HashMap::new(),
             action_slots: ActionSlots::new(speed),
@@ -120,6 +124,9 @@ impl CombatantState {
     }
 
     pub fn apply_condition(&mut self, condition: Condition, duration_rounds: Option<u8>) {
+        if self.condition_immunities.contains(&condition.name().to_lowercase()) {
+            return;
+        }
         self.conditions.insert(condition.clone());
         if let Some(rounds) = duration_rounds {
             if rounds > 0 {

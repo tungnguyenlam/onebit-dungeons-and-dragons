@@ -1,0 +1,32 @@
+id = "ghostly_knight"
+name = "Ghostly Knight"
+cr = 6.0
+size = "medium"
+monster_type = "undead"
+alignment = "lawful_evil"
+hp = "10d8+30"
+ac = 18
+speed = 30
+str_score = 16
+dex_score = 12
+con_score = 16
+int_score = 10
+wis_score = 14
+cha_score = 15
+xp = 2300
+
+resistances = ["acid", "fire", "lightning", "thunder"]
+immunities = ["cold", "necrotic", "poison"]
+condition_immunities = ["charmed", "exhaustion", "frightened", "grappled", "paralyzed", "petrified", "poisoned", "prone", "restrained"]
+
+[[actions]]
+name = "Ethereal Longsword"
+description = "Melee weapon attack."
+attack_bonus = 6
+damage = "2d8+3"
+damage_type = "necrotic"
+on_hit_condition = "frightened"
+
+[[traits]]
+name = "Incorporeal Movement"
+description = "Can move through other creatures and objects."

@@ -1,0 +1,16 @@
+id = "trident_of_fish_command"
+name = "Trident of Fish Command"
+type = "weapon"
+weight = 4.0
+value_gp = 800
+description = "A magic trident adorned with shells and coral. It allows the wielder to command marine life."
+
+[weapon]
+damage = "1d6+1"
+damage_type = "piercing"
+properties = ["versatile", "thrown"]
+versatile_damage = "1d8+1"
+
+[bonuses]
+attack_bonus = 1
+damage_bonus = 1

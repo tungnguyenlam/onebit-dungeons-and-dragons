@@ -232,6 +232,8 @@ pub fn sample_monster_defs() -> HashMap<String, MonsterDef> {
             traits: vec![],
             resistances: vec![],
             vulnerabilities: vec![],
+            immunities: vec![],
+            condition_immunities: vec![],
         },
     );
     map.insert(
@@ -274,6 +276,8 @@ pub fn sample_monster_defs() -> HashMap<String, MonsterDef> {
             traits: vec![],
             resistances: vec![],
             vulnerabilities: vec![],
+            immunities: vec![],
+            condition_immunities: vec![],
         },
     );
     map.insert(
@@ -316,6 +320,8 @@ pub fn sample_monster_defs() -> HashMap<String, MonsterDef> {
             traits: vec![],
             resistances: vec![],
             vulnerabilities: vec![],
+            immunities: vec![],
+            condition_immunities: vec![],
         },
     );
     map
@@ -486,5 +492,7 @@ pub fn combatant_from_monster(
     c.spell_damage_type = spell_damage_type;
     c.resistances = monster.resistances.iter().cloned().collect();
     c.vulnerabilities = monster.vulnerabilities.iter().cloned().collect();
+    c.immunities = monster.immunities.iter().cloned().collect();
+    c.condition_immunities = monster.condition_immunities.iter().cloned().collect();
     c
 }

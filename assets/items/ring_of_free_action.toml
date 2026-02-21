@@ -1,0 +1,9 @@
+id = "ring_of_free_action"
+name = "Ring of Free Action"
+type = "misc"
+weight = 0.0
+value_gp = 5000
+description = "A ring that prevents magic from reducing your speed or causing you to be paralyzed or restrained."
+
+[bonuses]
+condition_immunities = ["paralyzed", "restrained"]

@@ -86,7 +86,7 @@ impl App {
             return false;
         }
 
-        let (target_name, target_ac, target_conditions, target_resistances, target_vulnerabilities) = {
+        let (target_name, target_ac, target_conditions, target_resistances, target_vulnerabilities, target_immunities) = {
             let t = ctx.state.combatants.get(target_id).unwrap();
             (
                 t.name.clone(),
@@ -94,6 +94,7 @@ impl App {
                 t.conditions.clone(),
                 t.resistances.clone(),
                 t.vulnerabilities.clone(),
+                t.immunities.clone(),
             )
         };
 
@@ -112,6 +113,7 @@ impl App {
             conditions: &target_conditions,
             resistances: &target_resistances,
             vulnerabilities: &target_vulnerabilities,
+            immunities: &target_immunities,
         };
 
         let result = roll_attack(&atk_profile, &def_profile, &ctx.world_state);
@@ -359,7 +361,7 @@ impl App {
             (a.name.clone(), a.conditions.clone())
         };
 
-        let (target_name, target_ac, target_conditions, target_resistances, target_vulnerabilities) = {
+        let (target_name, target_ac, target_conditions, target_resistances, target_vulnerabilities, target_immunities) = {
             let t = ctx.state.combatants.get(target_id).unwrap();
             (
                 t.name.clone(),
@@ -367,6 +369,7 @@ impl App {
                 t.conditions.clone(),
                 t.resistances.clone(),
                 t.vulnerabilities.clone(),
+                t.immunities.clone(),
             )
         };
 
@@ -384,6 +387,7 @@ impl App {
             conditions: &target_conditions,
             resistances: &target_resistances,
             vulnerabilities: &target_vulnerabilities,
+            immunities: &target_immunities,
         };
 
         let result = roll_attack(&atk_profile, &def_profile, &ctx.world_state);
@@ -558,6 +562,8 @@ impl App {
     pub fn make_combat_context(&mut self) -> CombatContext {
         let (bonus, dmg_dice, _, _, _, _) = self.equipment_bonus_totals();
         let resistances = self.equipment_resistances();
+        let immunities = self.equipment_immunities();
+        let condition_immunities = self.equipment_condition_immunities();
 
         let armor_id = self.player.equipment.armor.as_deref();
         let armor_def = armor_id.and_then(|id| self.item_defs.get(id));
@@ -603,6 +609,8 @@ impl App {
         );
         p_combatant.current_hp = self.player.current_hp;
         p_combatant.resistances = resistances;
+        p_combatant.immunities = immunities;
+        p_combatant.condition_immunities = condition_immunities;
         if crate::game::character::progression::has_extra_attack(
             &self.player.class_id,
             self.player.level,
