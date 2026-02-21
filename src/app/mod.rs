@@ -57,6 +57,7 @@ pub struct App {
     pub settings: SettingsConfig,
     pub turn: u64,
     pub focused_pane: FocusedPane,
+    pub feedback_message: Option<(String, std::time::Instant)>,
 }
 
 impl App {
@@ -185,7 +186,21 @@ impl App {
             settings: SettingsConfig::default(),
             turn: 0,
             focused_pane: FocusedPane::default(),
+            feedback_message: None,
         }
+    }
+
+    pub fn set_feedback(&mut self, message: &str) {
+        self.feedback_message = Some((message.to_string(), std::time::Instant::now()));
+    }
+
+    pub fn get_feedback(&self) -> Option<String> {
+        if let Some((msg, time)) = &self.feedback_message {
+            if time.elapsed().as_secs() < 3 {
+                return Some(msg.clone());
+            }
+        }
+        None
     }
 
     pub fn transition(&mut self, next: AppState) {
@@ -265,9 +280,9 @@ impl App {
         let Some(room) = self.current_room() else {
             return;
         };
-        let (col, row) = (self.player_pos.0 as i32, self.player_pos.1 as i32);
+        let (col, row) = (self.player_pos.0, self.player_pos.1);
 
-        if let Some(trigger) = room.trigger_at(col as u32, row as u32).cloned() {
+        if let Some(trigger) = room.trigger_at(col, row).cloned() {
             match trigger.kind {
                 crate::data::types::TriggerKind::Dialog => {
                     self.start_dialog_with_npc(&trigger.target_id);
@@ -414,7 +429,97 @@ impl App {
                     }
                 }
             }
+        } else {
+            // No trigger at this tile - provide feedback
+            if let Some(npc) = self.get_npc_at_player_position() {
+                self.set_feedback(&format!("Press Enter to talk to {}", npc.name));
+            } else if self.is_near_door() {
+                self.set_feedback("Press Enter to open/close door");
+            } else if self.is_near_chest() {
+                self.set_feedback("Press Enter to open chest");
+            } else if self.is_blocked() {
+                self.set_feedback("Blocked! Cannot move here.");
+            } else {
+                self.set_feedback("Nothing here to interact with.");
+            }
         }
+    }
+
+    fn get_npc_at_player_position(&self) -> Option<&NpcDef> {
+        let (col, row) = self.player_pos;
+        if let Some(room) = self.current_room() {
+            if let Some(tile) = room.grid.get(col, row) {
+                if matches!(tile, crate::game::world::map::Tile::NpcSpawn) {
+                    for npc in self.region_npcs.values() {
+                        if !npc.id.is_empty() {
+                            return Some(npc);
+                        }
+                    }
+                }
+            }
+        }
+        None
+    }
+
+    fn is_near_door(&self) -> bool {
+        let (cx, cy) = self.player_pos;
+        let room = self.current_room();
+        if let Some(room) = room {
+            for dy in -1..=1 {
+                for dx in -1..=1 {
+                    if dx == 0 && dy == 0 {
+                        continue;
+                    }
+                    let nx = cx as i32 + dx;
+                    let ny = cy as i32 + dy;
+                    if nx >= 0 && ny >= 0 {
+                        if let Some(tile) = room.grid.get(nx as u32, ny as u32) {
+                            if matches!(
+                                tile,
+                                crate::game::world::map::Tile::DoorOpen
+                                    | crate::game::world::map::Tile::DoorClosed
+                            ) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        false
+    }
+
+    fn is_near_chest(&self) -> bool {
+        let (cx, cy) = self.player_pos;
+        let room = self.current_room();
+        if let Some(room) = room {
+            for dy in -1..=1 {
+                for dx in -1..=1 {
+                    if dx == 0 && dy == 0 {
+                        continue;
+                    }
+                    let nx = cx as i32 + dx;
+                    let ny = cy as i32 + dy;
+                    if nx >= 0 && ny >= 0 {
+                        if let Some(tile) = room.grid.get(nx as u32, ny as u32) {
+                            if matches!(tile, crate::game::world::map::Tile::Chest) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        false
+    }
+
+    fn is_blocked(&self) -> bool {
+        let room = self.current_room();
+        if let Some(room) = room {
+            let (col, row) = self.player_pos;
+            return !room.grid.is_passable(col as i32, row as i32);
+        }
+        false
     }
 
     pub fn start_dialog_with_npc(&mut self, npc_id: &str) {

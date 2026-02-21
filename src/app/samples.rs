@@ -27,6 +27,8 @@ pub fn sample_region_bundle() -> (Region, HashMap<String, NpcDef>, HashMap<Strin
             description: "Fallback region when assets are unavailable.".into(),
             entry_room: "start".into(),
             ambient: "".into(),
+            region_type: "dungeon".into(),
+            weather: "none".into(),
             rooms: vec![crate::data::types::RoomRef {
                 id: "start".into(),
                 file: "rooms/start.toml".into(),

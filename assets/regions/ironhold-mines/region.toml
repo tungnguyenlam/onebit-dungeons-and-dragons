@@ -3,6 +3,8 @@ name = "Ironhold Mines"
 description = "Collapsed dwarven tunnels where old furnaces still glow."
 entry_room = "mine_entrance"
 ambient = "mine_drift"
+region_type = "underground"
+weather = "none"
 
 [[rooms]]
 id = "mine_entrance"

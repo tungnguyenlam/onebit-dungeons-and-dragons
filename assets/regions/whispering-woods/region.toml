@@ -3,6 +3,8 @@ name = "The Whispering Woods"
 description = "A dense, ancient forest where the trees seem to murmur secrets."
 entry_room = "woods_edge"
 ambient = "forest_murmur"
+region_type = "forest"
+weather = "fog"
 
 [[rooms]]
 id = "woods_edge"

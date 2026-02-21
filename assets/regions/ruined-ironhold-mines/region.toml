@@ -3,6 +3,8 @@ name = "Ruined Ironhold Mines"
 description = "Collapsed dwarven tunnels where old furnaces once glowed; now completely overrun by the antagonist's forces."
 entry_room = "mine_entrance"
 ambient = "dark_rumble"
+region_type = "underground"
+weather = "none"
 
 [[rooms]]
 id = "mine_entrance"

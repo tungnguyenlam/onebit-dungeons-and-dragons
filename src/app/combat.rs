@@ -86,7 +86,14 @@ impl App {
             return false;
         }
 
-        let (target_name, target_ac, target_conditions, target_resistances, target_vulnerabilities, target_immunities) = {
+        let (
+            target_name,
+            target_ac,
+            target_conditions,
+            target_resistances,
+            target_vulnerabilities,
+            target_immunities,
+        ) = {
             let t = ctx.state.combatants.get(target_id).unwrap();
             (
                 t.name.clone(),
@@ -361,7 +368,14 @@ impl App {
             (a.name.clone(), a.conditions.clone())
         };
 
-        let (target_name, target_ac, target_conditions, target_resistances, target_vulnerabilities, target_immunities) = {
+        let (
+            target_name,
+            target_ac,
+            target_conditions,
+            target_resistances,
+            target_vulnerabilities,
+            target_immunities,
+        ) = {
             let t = ctx.state.combatants.get(target_id).unwrap();
             (
                 t.name.clone(),

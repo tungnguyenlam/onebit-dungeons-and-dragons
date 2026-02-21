@@ -22,13 +22,21 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     let t = theme();
 
     // Header with region info
+    let region_weather = if app.region.weather.is_empty() || app.region.weather == "none" {
+        String::new()
+    } else {
+        format!(" [{}]", app.region.weather)
+    };
     let header = Paragraph::new(vec![
         Line::from(if app.region.ambient.is_empty() {
-            format!("Region: {} ({})", app.region.name, app.region.slug)
+            format!(
+                "Region: {} ({}){}",
+                app.region.name, app.region.slug, region_weather
+            )
         } else {
             format!(
-                "Region: {} ({}) [{}]",
-                app.region.name, app.region.slug, app.region.ambient
+                "Region: {} ({}) [{}]{}",
+                app.region.name, app.region.slug, app.region.ambient, region_weather
             )
         })
         .style(Style::default().fg(t.text_primary)),
@@ -112,19 +120,30 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     );
 
     // Controls footer
-    frame.render_widget(
-        Paragraph::new(vec![
+    let feedback = app.get_feedback();
+    let footer_lines = if let Some(msg) = feedback {
+        vec![
+            Line::from(msg).style(Style::default().fg(t.warning)),
             Line::from("Move: arrows/hjkl  Interact: Enter"),
             Line::from("a combat  i inventory  s spellbook  n journal"),
             Line::from("p save  o load  b toggle sound  q quit"),
-        ])
-        .style(Style::default().fg(t.text_muted))
-        .block(
-            Block::default()
-                .title("Controls")
-                .borders(Borders::ALL)
-                .style(Style::default().fg(t.panel_border)),
-        ),
+        ]
+    } else {
+        vec![
+            Line::from("Move: arrows/hjkl  Interact: Enter"),
+            Line::from("a combat  i inventory  s spellbook  n journal"),
+            Line::from("p save  o load  b toggle sound  q quit"),
+        ]
+    };
+    frame.render_widget(
+        Paragraph::new(footer_lines)
+            .style(Style::default().fg(t.text_muted))
+            .block(
+                Block::default()
+                    .title("Controls")
+                    .borders(Borders::ALL)
+                    .style(Style::default().fg(t.panel_border)),
+            ),
         chunks[3],
     );
 }

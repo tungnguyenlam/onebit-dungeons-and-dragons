@@ -3,6 +3,8 @@ name = "Valley of Ash"
 description = "A wind-beaten valley where cinders never fully settle."
 entry_room = "ash_gate"
 ambient = "ash_wind"
+region_type = "volcanic"
+weather = "ash"
 
 [[rooms]]
 id = "ash_gate"

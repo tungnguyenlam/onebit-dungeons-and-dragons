@@ -27,6 +27,10 @@ pub struct RegionManifest {
     #[serde(default)]
     pub ambient: String,
     #[serde(default)]
+    pub region_type: String,
+    #[serde(default)]
+    pub weather: String,
+    #[serde(default)]
     pub rooms: Vec<RoomRef>,
     #[serde(default)]
     pub connections: Vec<RegionConnection>,

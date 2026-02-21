@@ -3,6 +3,8 @@ name = "Emberpeak Summit"
 description = "A windswept volcanic ridge above the ash valley."
 entry_room = "south_slope"
 ambient = "mountain_wind"
+region_type = "mountain"
+weather = "none"
 
 [[rooms]]
 id = "south_slope"

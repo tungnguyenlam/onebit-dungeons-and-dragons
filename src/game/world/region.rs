@@ -26,6 +26,10 @@ pub struct Region {
     pub entry_room: String,
     /// Optional ambient flavour tag (passed to the audio sub-system).
     pub ambient: String,
+    /// Region type for visual themes (volcanic, forest, underwater, underground, mountain)
+    pub region_type: String,
+    /// Weather effect (ash, fog, rain, none)
+    pub weather: String,
     /// Exit connections to neighbouring regions.
     pub connections: Vec<RegionConnection>,
     /// All rooms in this region, keyed by room id.
@@ -50,6 +54,8 @@ impl Region {
             description: lr.manifest.description.clone(),
             entry_room: lr.manifest.entry_room.clone(),
             ambient: lr.manifest.ambient.clone(),
+            region_type: lr.manifest.region_type.clone(),
+            weather: lr.manifest.weather.clone(),
             connections: lr.manifest.connections.clone(),
             rooms,
         }
@@ -92,6 +98,8 @@ mod tests {
             description: "For testing.".into(),
             entry_room: "start".into(),
             ambient: String::new(),
+            region_type: "dungeon".into(),
+            weather: "none".into(),
             rooms: vec![RoomRef {
                 id: "start".into(),
                 file: "rooms/start.toml".into(),

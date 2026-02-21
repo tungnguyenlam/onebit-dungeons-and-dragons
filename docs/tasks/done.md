@@ -5,6 +5,36 @@
 
 ---
 
+## 2026-02-21 — Bug Fixes: Feedback System and Region Characteristics
+
+### Fixed compilation errors in src/app/mod.rs:
+- `get_npc_at_player_position()` was using NpcDef.position which doesn't exist
+  (NPCs are placed via tile grid, not coordinates)
+- Fixed type mismatches (i32 vs u32) in is_near_door, is_near_chest, is_blocked
+- interact_current_tile now properly checks for triggers at player position
+
+### Added feedback message system:
+- Added feedback_message field to App struct with 3-second timeout
+- Added set_feedback() and get_feedback() methods
+- Updated interact_current_tile() to provide feedback for failed interactions
+- Updated world_map.rs to display feedback in footer area
+
+### Extended region system with unique characteristics:
+- Added region_type field to RegionManifest and Region (volcanic, forest, underwater, underground, mountain)
+- Added weather field to RegionManifest and Region (ash, fog, rain, none)
+- Updated all 6 region manifest files with these new fields
+- Updated world_map.rs to display weather in header
+
+Files modified:
+- src/app/mod.rs
+- src/ui/tui/screens/world_map.rs
+- src/data/types.rs
+- src/game/world/region.rs
+- src/app/samples.rs
+- assets/regions/*/region.toml (6 files)
+
+---
+
 ## 2026-02-21 — Milestones 33-34 (complete): Item Pool Expansion, Multi-Region Quest Chains
 ### M34 — Multi-Region Quest Chains
 - [x] `assets/quests/main/obsidian-scourge.toml` — Refactored for multi-boss flow (Ignis/Malphas)

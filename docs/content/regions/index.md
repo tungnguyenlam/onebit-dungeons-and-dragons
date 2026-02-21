@@ -7,13 +7,16 @@
 
 ## Region List
 
-| # | Slug | Name | Status | Connections |
-|---|---|---|---|---|
-| 1 | `valley-of-ash` | Valley of Ash | ✅ complete | local rooms (`ash_gate` ↔ `ember_square`) |
-| 2 | `emberpeak-summit` | Emberpeak Summit | ✅ complete | ← `valley-of-ash`, → `ironhold-mines` |
-| 3 | `ironhold-mines` | The Ironhold Mines | ✅ complete | ← `emberpeak-summit`, → `underdark-shelf` |
-| 4 | `underdark-shelf` | The Underdark Shelf | 🔲 planned | ← `ironhold-mines` |
-| 5 | `tidewatch-coast` | Tidewatch Coast | 🔲 planned | standalone starter alt |
+| # | Slug | Name | Status | Type | Weather | Connections |
+|---|---|---|---|---|---|---|
+| 1 | `valley-of-ash` | Valley of Ash | ✅ complete | volcanic | ash | local rooms |
+| 2 | `whispering-woods` | The Whispering Woods | ✅ complete | forest | fog | ← valley-of-ash |
+| 3 | `emberpeak-summit` | Emberpeak Summit | ✅ complete | mountain | none | ← valley-of-ash, → ironhold-mines |
+| 4 | `ironhold-mines` | The Ironhold Mines | ✅ complete | underground | none | ← emberpeak-summit |
+| 5 | `ruined-ironhold-mines` | Ruined Ironhold Mines | ✅ complete | underground | none | ← emberpeak-summit (epic) |
+| 6 | `sunken-city` | The Sunken City | ✅ complete | underwater | rain | ← whispering-woods |
+| 7 | `underdark-shelf` | The Underdark Shelf | 🔲 planned | underground | none | ← ironhold-mines |
+| 8 | `tidewatch-coast` | Tidewatch Coast | 🔲 planned | coastal | none | standalone starter alt |
 
 Status keys: 🔲 planned · 🚧 in progress · ✅ complete
 
@@ -46,7 +49,20 @@ docs/content/regions/<slug>.md   ← author notes, not required for code
 **Key rooms (M21):** Ash Gate · Ember Square · Cinder Ridge · Ash Hollow · Soot Shrine  
 **Branching:** Ember Square → Ash Gate (main) or → Cinder Ridge (side branch)  
 **Main quest tie-in:** Act 1 starts here (The Bandit King)  
-**Region-specific faction:** Ash Bandits (initially hostile)
+**Region-specific faction:** Ash Bandits (initially hostile)  
+**Region type:** volcanic  
+**Weather:** ash
+
+## The Whispering Woods (`whispering-woods`)
+
+**Tone:** Dense, ancient forest where trees murmur secrets.  
+**Entry point:** Woods Edge from Ash Hollow.  
+**Key rooms:** Woods Edge · Sunken Glade · Elder Canopy · Overgrown Path · Cave Entrance  
+**Branching:** Woods Edge → Cave Entrance (main) or → Elder Canopy (side)  
+**Main quest tie-in:** Act 1 — ancient artifacts  
+**Region-specific faction:** Forest Spirits (neutral)  
+**Region type:** forest  
+**Weather:** fog
 
 ## Emberpeak Summit (`emberpeak-summit`)
 
@@ -55,7 +71,9 @@ docs/content/regions/<slug>.md   ← author notes, not required for code
 **Key rooms (M21):** Obsidian Bridge · South Slope · Summit Crater · Lava Shelf · Peak Crater  
 **Branching:** South Slope → Obsidian Bridge (main) or → Lava Shelf (side branch)  
 **Main quest tie-in:** Act 2 — source of the volcanic curse  
-**Region-specific faction:** Emberpeak Dwarves (neutral → friendly via quests)
+**Region-specific faction:** Emberpeak Dwarves (neutral → friendly via quests)  
+**Region type:** mountain  
+**Weather:** none
 
 ## The Ironhold Mines (`ironhold-mines`)
 
@@ -64,7 +82,30 @@ docs/content/regions/<slug>.md   ← author notes, not required for code
 **Key rooms (M21):** Mine Entrance · Deep Shaft · Ore Chamber · Flooded Pit  
 **Branching:** Mine Entrance → Deep Shaft (main) or → Ore Chamber (side branch)  
 **Main quest tie-in:** Act 2 — bandit king's treasure is hidden here  
-**Region-specific faction:** Deep Gnomes (neutral)
+**Region-specific faction:** Deep Gnomes (neutral)  
+**Region type:** underground  
+**Weather:** none
+
+## Ruined Ironhold Mines (`ruined-ironhold-mines`)
+
+**Tone:** Dark, overrun by antagonist forces.  
+**Entry point:** Mine Entrance (epic variant).  
+**Key rooms:** Mine Entrance · Deep Shaft · Ore Chamber · Flooded Pit  
+**Main quest tie-in:** Act 3 — antagonist's lair  
+**Region-specific faction:** Enemy forces (hostile)  
+**Region type:** underground  
+**Weather:** none
+
+## The Sunken City (`sunken-city`)
+
+**Tone:** Drowned metropolis, coral-encrusted spires.  
+**Entry point:** Flooded Plaza from Whispering Woods.  
+**Key rooms:** Flooded Plaza · Submerged Aqueduct · Drowned Temple  
+**Branching:** Flooded Plaza → Drowned Temple (main)  
+**Main quest tie-in:** Act 2 — aquatic artifact  
+**Region-specific faction:** Aquatic spirits (neutral)  
+**Region type:** underwater  
+**Weather:** rain
 
 ## The Underdark Shelf (`underdark-shelf`)
 

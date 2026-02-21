@@ -3,6 +3,8 @@ name = "The Sunken City"
 description = "A magnificent drowned metropolis, its coral-encrusted spires reaching dimly towards a distant, watery surface."
 entry_room = "flooded_plaza"
 ambient = "water_depth"
+region_type = "underwater"
+weather = "rain"
 
 [[rooms]]
 id = "flooded_plaza"
