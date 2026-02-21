@@ -433,8 +433,24 @@ impl App {
         }
     }
 
-    pub fn cast_known_spell(&mut self, _idx: usize) {
-        // cast spell logic
+    pub fn cast_known_spell(&mut self, idx: usize) {
+        let Some(spell_id) = self.known_spells.get(idx).cloned() else {
+            return;
+        };
+        let Some(spell_def) = self.spell_defs.get(&spell_id) else {
+            return;
+        };
+
+        let slot_idx = (spell_def.level.saturating_sub(1)) as usize;
+        if slot_idx >= 9 || self.player.spell_slots[slot_idx] == 0 {
+            return;
+        }
+
+        if let Some(heal_dice) = &spell_def.heal {
+            let amount = heal_dice.roll();
+            self.player.heal(amount as u32);
+            self.player.spell_slots[slot_idx] -= 1;
+        }
     }
 }
 

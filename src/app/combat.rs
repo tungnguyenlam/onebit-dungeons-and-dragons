@@ -66,14 +66,22 @@ impl App {
             return false;
         }
 
-        if attacker_conditions.contains(&Condition::Incapacitated)
-            || attacker_conditions.contains(&Condition::Stunned)
-            || attacker_conditions.contains(&Condition::Unconscious)
-            || attacker_conditions.contains(&Condition::Paralyzed)
-        {
+        let stop_cond = if attacker_conditions.contains(&Condition::Stunned) {
+            Some("Stunned")
+        } else if attacker_conditions.contains(&Condition::Paralyzed) {
+            Some("Paralyzed")
+        } else if attacker_conditions.contains(&Condition::Unconscious) {
+            Some("Unconscious")
+        } else if attacker_conditions.contains(&Condition::Incapacitated) {
+            Some("Incapacitated")
+        } else {
+            None
+        };
+
+        if let Some(cond_name) = stop_cond {
             Self::push_log(
                 ctx,
-                format!("{} is incapacitated and cannot act.", attacker_name),
+                format!("{} is {} and cannot act.", attacker_name, cond_name),
             );
             return false;
         }
@@ -546,6 +554,12 @@ impl App {
             self.player.scores.dex_mod(),
         );
 
+        let prof = self.player.proficiency_bonus();
+        let str_mod = self.player.scores.str_mod() as i32;
+        
+        let mut p_dmg_dice = dmg_dice;
+        p_dmg_dice.modifier += str_mod;
+
         let mut p_combatant = CombatantState::new(
             "player",
             self.player.name.clone(),
@@ -554,8 +568,8 @@ impl App {
             ac,
             30,
             self.player.scores.dex_mod() as i32,
-            5 + bonus,
-            dmg_dice,
+            prof + str_mod + bonus,
+            p_dmg_dice,
         );
         p_combatant.current_hp = self.player.current_hp;
         p_combatant.resistances = resistances;

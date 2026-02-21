@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-02-21 — Milestones 33-34 (complete): Item Pool Expansion, Multi-Region Quest Chains
+### M34 — Multi-Region Quest Chains
+- [x] `assets/quests/main/obsidian-scourge.toml` — Refactored for multi-boss flow (Ignis/Malphas)
+- [x] `assets/regions/` — Distributed legendary artifacts (Eye, Heart, Scepter)
+- [x] `src/data/validate.rs` — Verified cross-region asset dependencies
+
+### M33 — Item Pool Expansion Part 1
+- [x] `assets/items/` — 20+ new "One-Bit" items added
+- [x] `src/app/tests.rs` — Added elemental resistance verification test
+- [x] `src/app/combat.rs` — Fixed character mod application to damage dice and improved log messages
+
 ## 2026-02-21 — Milestones 27-32 (complete): Audio, Settings, v0.2.0 Release, World Map, Whispering Woods, Bestiary
 
 ### M32 — Bestiary Expansion Part 1
