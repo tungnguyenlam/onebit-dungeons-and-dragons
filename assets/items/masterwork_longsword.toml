@@ -1,0 +1,16 @@
+id = "masterwork_longsword"
+name = "Masterwork Longsword"
+type = "weapon"
+weight = 3.0
+value_gp = 315
+description = "A finely crafted blade with improved balance."
+
+[weapon]
+damage = "1d8"
+damage_type = "slashing"
+properties = ["versatile"]
+versatile_damage = "1d10"
+
+[bonuses]
+attack_bonus = 1
+damage_bonus = 1

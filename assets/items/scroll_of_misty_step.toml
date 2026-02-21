@@ -1,0 +1,6 @@
+id = "scroll_of_misty_step"
+name = "Scroll of Misty Step"
+type = "consumable"
+weight = 0.1
+value_gp = 250
+description = "A magical scroll containing the Misty Step spell."

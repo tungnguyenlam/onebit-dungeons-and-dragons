@@ -208,6 +208,10 @@ pub struct MonsterDef {
     pub actions: Vec<MonsterAction>,
     #[serde(default)]
     pub traits: Vec<MonsterTrait>,
+    #[serde(default)]
+    pub resistances: Vec<String>,
+    #[serde(default)]
+    pub vulnerabilities: Vec<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -316,6 +320,8 @@ pub struct ItemBonuses {
     pub spell_damage_bonus: i32,
     #[serde(default)]
     pub max_hp_bonus: i32,
+    #[serde(default)]
+    pub resistances: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]

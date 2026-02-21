@@ -1,0 +1,15 @@
+id = "silvered_dagger"
+name = "Silvered Dagger"
+type = "weapon"
+weight = 1.0
+value_gp = 102
+description = "A dagger coated in silver, effective against lycanthropes."
+
+[weapon]
+damage = "1d4"
+damage_type = "piercing"
+properties = ["finesse", "light", "thrown"]
+
+[bonuses]
+attack_bonus = 0
+damage_bonus = 0

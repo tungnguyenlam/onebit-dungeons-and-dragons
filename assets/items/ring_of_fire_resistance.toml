@@ -1,0 +1,9 @@
+id = "ring_of_fire_resistance"
+name = "Ring of Fire Resistance"
+type = "misc"
+weight = 0.1
+value_gp = 2000
+description = "A ruby ring that protects against extreme heat."
+
+[bonuses]
+resistances = ["fire"]

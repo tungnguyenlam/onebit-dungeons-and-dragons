@@ -1,0 +1,38 @@
+id = "obsidian_scourge"
+name = "The Obsidian Scourge"
+type = "main"
+
+[[stages]]
+id = "intro"
+label = "Investigate the Whispers"
+condition = ""
+journal_entry = "Rumors of an ancient evil known as the Obsidian Scourge are spreading."
+next = [{ condition = "flag:met_obsidian_survivor", stage = "collect_eye" }]
+
+[[stages]]
+id = "collect_eye"
+label = "Retrieve the Obsidian Eye"
+condition = "flag:met_obsidian_survivor"
+journal_entry = "A survivor spoke of an 'Obsidian Eye' hidden within the Valley of Ash."
+next = [{ condition = "flag:has_obsidian_eye", stage = "collect_heart" }]
+
+[[stages]]
+id = "collect_heart"
+label = "Retrieve the Obsidian Heart"
+condition = "flag:has_obsidian_eye"
+journal_entry = "The Eye pulses with dark energy, pointing towards the Ironhold Mines. Find the Obsidian Heart there."
+next = [{ condition = "flag:has_obsidian_heart", stage = "collect_claw" }]
+
+[[stages]]
+id = "collect_claw"
+label = "Retrieve the Obsidian Claw"
+condition = "flag:has_obsidian_heart"
+journal_entry = "Only the Obsidian Claw remains, said to be at the peak of Emberpeak Summit."
+next = [{ condition = "flag:has_obsidian_claw", stage = "final_confrontation" }]
+
+[[stages]]
+id = "final_confrontation"
+label = "Face the Scourge"
+condition = "flag:has_obsidian_claw"
+journal_entry = "With all three artifacts, you must travel to the Whispering Woods to confront the Obsidian Scourge."
+next = [{ condition = "flag:defeated_obsidian_scourge", stage = "DONE" }]

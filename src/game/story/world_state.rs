@@ -285,4 +285,19 @@ mod tests {
         assert_eq!(val, 5);
         assert_eq!(ws.faction_rep("town_guard"), 5);
     }
+
+    #[test]
+    fn complex_condition_evaluation() {
+        let mut ws = WorldState::new();
+        ws.set_flag("has_eye");
+        ws.set_flag("has_heart");
+        ws.set_counter("rep", 10);
+        
+        // A && B && C
+        assert!(ws.evaluate("flag:has_eye && flag:has_heart && counter:rep >= 10"));
+        // A && B || D (&& binds tighter)
+        assert!(ws.evaluate("flag:has_eye && flag:has_heart || flag:never"));
+        // A || B (where B is true)
+        assert!(ws.evaluate("flag:never || counter:rep == 10"));
+    }
 }

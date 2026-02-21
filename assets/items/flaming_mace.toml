@@ -1,0 +1,15 @@
+id = "flaming_mace"
+name = "Flaming Mace"
+type = "weapon"
+weight = 4.0
+value_gp = 1500
+description = "A mace that glows with eternal heat."
+
+[weapon]
+damage = "1d6"
+damage_type = "fire"
+properties = []
+
+[bonuses]
+attack_bonus = 1
+damage_bonus = 2

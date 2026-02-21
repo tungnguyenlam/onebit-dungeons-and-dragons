@@ -1,0 +1,10 @@
+id = "cloak_of_protection"
+name = "Cloak of Protection"
+type = "misc"
+weight = 1.0
+value_gp = 3500
+description = "A heavy cloak that magically wards off blows."
+
+[bonuses]
+armor_class_bonus = 1
+max_hp_bonus = 5

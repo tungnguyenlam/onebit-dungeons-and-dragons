@@ -1,0 +1,9 @@
+id = "amulet_of_health"
+name = "Amulet of Health"
+type = "misc"
+weight = 0.5
+value_gp = 5000
+description = "A pendant that bolsters the wearer's vitality."
+
+[bonuses]
+max_hp_bonus = 20

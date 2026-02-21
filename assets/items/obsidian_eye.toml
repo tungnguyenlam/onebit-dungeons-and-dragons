@@ -1,0 +1,7 @@
+id = "obsidian_eye"
+name = "Obsidian Eye"
+type = "misc"
+weight = 1.0
+value_gp = 0
+description = "A dark, crystalline orb that seems to watch you."
+tags = ["quest_item"]

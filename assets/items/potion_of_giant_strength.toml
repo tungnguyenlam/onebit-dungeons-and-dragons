@@ -1,0 +1,6 @@
+id = "potion_of_giant_strength"
+name = "Potion of Giant Strength"
+type = "consumable"
+weight = 1.0
+value_gp = 1000
+description = "A thick, foul-smelling brew that grants immense strength."

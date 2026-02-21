@@ -1,0 +1,9 @@
+id = "poison_shield_ring"
+name = "Poison Shield Ring"
+type = "misc"
+weight = 0.1
+value_gp = 2000
+description = "A jade ring that neutralizes toxins."
+
+[bonuses]
+resistances = ["poison"]

@@ -32,3 +32,9 @@ position = [5, 3]
 type = "travel"
 target_id = "mine_entrance"
 once = false
+
+[[triggers]]
+position = [5, 4]
+type = "quest_stage"
+target_id = "has_obsidian_heart"
+once = true

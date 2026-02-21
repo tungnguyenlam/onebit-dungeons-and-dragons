@@ -1,0 +1,15 @@
+id = "padded_resistance_armor"
+name = "Padded Armor of Resistance"
+type = "armor"
+weight = 8.0
+value_gp = 1500
+description = "Padded armor that protects against toxic fumes."
+
+[armor]
+base_ac = 11
+type = "light"
+stealth_disadvantage = true
+
+[bonuses]
+armor_class_bonus = 1
+resistances = ["poison"]

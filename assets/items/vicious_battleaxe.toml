@@ -1,0 +1,16 @@
+id = "vicious_battleaxe"
+name = "Vicious Battleaxe"
+type = "weapon"
+weight = 4.0
+value_gp = 500
+description = "An axe that bites deeper than usual."
+
+[weapon]
+damage = "1d8"
+damage_type = "slashing"
+properties = ["versatile"]
+versatile_damage = "1d10"
+
+[bonuses]
+attack_bonus = 0
+damage_bonus = 7

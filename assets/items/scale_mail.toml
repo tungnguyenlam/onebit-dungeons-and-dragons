@@ -1,0 +1,14 @@
+id = "scale_mail"
+name = "Scale Mail"
+type = "armor"
+weight = 45.0
+value_gp = 50
+description = "Medium armor made of overlapping metal scales."
+
+[armor]
+base_ac = 14
+type = "medium"
+stealth_disadvantage = true
+
+[bonuses]
+armor_class_bonus = 0

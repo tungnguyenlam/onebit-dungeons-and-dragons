@@ -1,0 +1,6 @@
+id = "greater_healing_potion"
+name = "Greater Healing Potion"
+type = "consumable"
+weight = 0.5
+value_gp = 200
+description = "A potent ruby-colored liquid that restores significant health."

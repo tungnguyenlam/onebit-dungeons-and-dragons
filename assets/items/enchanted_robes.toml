@@ -1,0 +1,16 @@
+id = "enchanted_robes"
+name = "Enchanted Robes"
+type = "armor"
+weight = 4.0
+value_gp = 1000
+description = "Silken robes infused with protective magic."
+
+[armor]
+base_ac = 11
+type = "light"
+stealth_disadvantage = false
+
+[bonuses]
+armor_class_bonus = 2
+spell_attack_bonus = 1
+spell_damage_bonus = 1

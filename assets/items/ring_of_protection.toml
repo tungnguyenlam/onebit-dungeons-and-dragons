@@ -1,0 +1,10 @@
+id = "ring_of_protection"
+name = "Ring of Protection"
+type = "misc"
+weight = 0.1
+value_gp = 3500
+description = "A gold ring that grants a magical shield."
+
+[bonuses]
+armor_class_bonus = 1
+attack_bonus = 0

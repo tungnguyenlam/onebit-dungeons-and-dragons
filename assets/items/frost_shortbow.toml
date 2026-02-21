@@ -1,0 +1,15 @@
+id = "frost_shortbow"
+name = "Frost Shortbow"
+type = "weapon"
+weight = 2.0
+value_gp = 1200
+description = "A bow carved from blue wood, chilling to the touch."
+
+[weapon]
+damage = "1d6"
+damage_type = "cold"
+properties = ["ranged", "two-handed"]
+
+[bonuses]
+attack_bonus = 1
+damage_bonus = 1

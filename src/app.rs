@@ -38,7 +38,7 @@ use crate::game::{
 use crate::renderer::{ControlFlow, GameEvent, SoundEffect};
 use anyhow::Result;
 use std::cell::{Cell, RefCell};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 // ---------------------------------------------------------------------------
 // AppState
@@ -958,6 +958,18 @@ impl App {
             })
     }
 
+    fn equipment_resistances(&self) -> HashSet<String> {
+        self.equipped_item_ids()
+            .flat_map(|id| {
+                self.item_defs
+                    .get(id)
+                    .map(|it| it.bonuses.resistances.iter().cloned())
+                    .into_iter()
+                    .flatten()
+            })
+            .collect()
+    }
+
     fn grant_player_xp(&mut self, gained_xp: u32) {
         if gained_xp == 0 {
             return;
@@ -1140,6 +1152,7 @@ impl App {
                 id: &attacker_view.id,
                 attack_bonus: attacker_view.attack_bonus,
                 damage_dice: &attacker_view.damage_dice,
+                damage_type: &attacker_view.damage_type,
                 conditions: &attacker_view.conditions,
                 on_hit_condition: attacker_view.on_hit_condition.clone(),
             };
@@ -1147,6 +1160,8 @@ impl App {
                 id: &target_view.id,
                 armor_class: target_view.armor_class,
                 conditions: &target_view.conditions,
+                resistances: &target_view.resistances,
+                vulnerabilities: &target_view.vulnerabilities,
             };
             roll_attack(&attack, &defense, &ctx.world_state)
         };
@@ -1284,6 +1299,7 @@ impl App {
                                 &target_id,
                                 bonus,
                                 dice,
+                                actor.ranged_damage_type.as_deref().unwrap_or("piercing"),
                                 actor.ranged_on_hit_condition.clone(),
                                 "ranged",
                             );
@@ -1305,6 +1321,7 @@ impl App {
                                 &target_id,
                                 bonus,
                                 dice,
+                                actor.spell_damage_type.as_deref().unwrap_or("poison"),
                                 actor.spell_on_hit_condition.clone(),
                                 "spell",
                             );
@@ -1376,6 +1393,7 @@ impl App {
         target_id: &str,
         attack_bonus: i32,
         damage_dice: DiceExpr,
+        damage_type: &str,
         on_hit_condition: Option<crate::game::character::conditions::Condition>,
         attack_label: &str,
     ) -> bool {
@@ -1395,6 +1413,7 @@ impl App {
                 id: &attacker.id,
                 attack_bonus,
                 damage_dice: &damage_dice,
+                damage_type,
                 conditions: &attacker.conditions,
                 on_hit_condition,
             };
@@ -1402,6 +1421,8 @@ impl App {
                 id: &target.id,
                 armor_class: target.armor_class,
                 conditions: &target.conditions,
+                resistances: &target.resistances,
+                vulnerabilities: &target.vulnerabilities,
             };
             roll_attack(&attack, &defense, &ctx.world_state)
         };
@@ -1911,7 +1932,13 @@ impl App {
         damage.modifier += ability_mod + damage_bonus;
         let attack_bonus = ability_mod + self.player.proficiency_bonus() + attack_bonus_bonus;
 
-        let mut combatants = vec![CombatantState::new(
+        let damage_type = main_weapon
+            .as_ref()
+            .map(|w| w.damage_type.clone())
+            .unwrap_or_else(|| "bludgeoning".to_string());
+        let resistances = self.equipment_resistances();
+
+        let mut p_combatant = CombatantState::new(
             "player",
             self.player.name.clone(),
             true,
@@ -1921,7 +1948,10 @@ impl App {
             self.player.scores.dex_mod() as i32,
             attack_bonus,
             damage,
-        )];
+        );
+        p_combatant.damage_type = damage_type;
+        p_combatant.resistances = resistances;
+        let mut combatants = vec![p_combatant];
         if self.world_state.faction_rep("town_guard") >= 3
             || self.world_state.flag("request_guard_support")
         {
@@ -1937,6 +1967,7 @@ impl App {
                 DiceExpr::new(1, 8, 2),
             );
             ally.enemy_role = EnemyAiRole::Melee;
+            ally.damage_type = "slashing".into();
             combatants.push(ally);
             self.world_state.clear_flag("request_guard_support");
         }
@@ -2242,6 +2273,8 @@ fn sample_monster_defs() -> HashMap<String, MonsterDef> {
                 on_hit_condition: None,
             }],
             traits: vec![],
+            resistances: vec![],
+            vulnerabilities: vec![],
         },
     );
     map.insert(
@@ -2282,6 +2315,8 @@ fn sample_monster_defs() -> HashMap<String, MonsterDef> {
                 },
             ],
             traits: vec![],
+            resistances: vec![],
+            vulnerabilities: vec![],
         },
     );
     map.insert(
@@ -2322,6 +2357,8 @@ fn sample_monster_defs() -> HashMap<String, MonsterDef> {
                 },
             ],
             traits: vec![],
+            resistances: vec![],
+            vulnerabilities: vec![],
         },
     );
     map
@@ -2393,7 +2430,10 @@ fn combatant_from_monster(
     let mut ranged_damage_dice = None;
     let mut spell_attack_bonus = None;
     let mut spell_damage_dice = None;
+    let mut ranged_damage_type = None;
+    let mut spell_damage_type = None;
     let mut role = EnemyAiRole::Melee;
+    let mut c_damage_type = "bludgeoning".to_string();
 
     let mut melee_on_hit_condition = None;
     let mut ranged_on_hit_condition = None;
@@ -2410,6 +2450,7 @@ fn combatant_from_monster(
             || name.contains("sling")
             || name.contains("shot")
             || name.contains("dart")
+            || name.contains("web")
             || desc.contains("ranged");
 
         let bonus = action.attack_bonus.unwrap_or(2);
@@ -2417,6 +2458,10 @@ fn combatant_from_monster(
             .damage
             .clone()
             .unwrap_or_else(|| DiceExpr::new(1, 4, 0));
+        let type_str = action
+            .damage_type
+            .clone()
+            .unwrap_or_else(|| "bludgeoning".to_string());
 
         let cond = action.on_hit_condition.as_deref().and_then(|s| match s {
             "blinded" => Some(crate::game::character::conditions::Condition::Blinded),
@@ -2438,6 +2483,7 @@ fn combatant_from_monster(
         if is_spell {
             spell_attack_bonus = Some(bonus);
             spell_damage_dice = Some(damage);
+            spell_damage_type = Some(type_str);
             spell_on_hit_condition = cond;
             role = EnemyAiRole::Spellcaster;
             continue;
@@ -2445,6 +2491,7 @@ fn combatant_from_monster(
         if is_ranged {
             ranged_attack_bonus = Some(bonus);
             ranged_damage_dice = Some(damage);
+            ranged_damage_type = Some(type_str);
             ranged_on_hit_condition = cond;
             if role != EnemyAiRole::Spellcaster {
                 role = EnemyAiRole::Ranged;
@@ -2454,6 +2501,7 @@ fn combatant_from_monster(
         melee_bonus = bonus;
         melee_damage = damage;
         melee_on_hit_condition = cond;
+        c_damage_type = type_str;
     }
 
     let max_hp = (monster.hp.average() as f32 * hp_multiplier).max(1.0) as i32;
@@ -2476,6 +2524,11 @@ fn combatant_from_monster(
     c.spell_on_hit_condition = spell_on_hit_condition;
     c.ranged_on_hit_condition = ranged_on_hit_condition;
     c.on_hit_condition = melee_on_hit_condition;
+    c.damage_type = c_damage_type;
+    c.ranged_damage_type = ranged_damage_type;
+    c.spell_damage_type = spell_damage_type;
+    c.resistances = monster.resistances.iter().cloned().collect();
+    c.vulnerabilities = monster.vulnerabilities.iter().cloned().collect();
     c
 }
 

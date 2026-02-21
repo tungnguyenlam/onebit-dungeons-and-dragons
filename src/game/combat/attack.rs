@@ -29,6 +29,7 @@ pub struct AttackOutcome {
     pub roll_mode: RollMode,
     pub hit_type: HitType,
     pub damage: u32,
+    pub damage_type: String,
     pub inflicted_condition: Option<Condition>,
 }
 
@@ -37,6 +38,7 @@ pub struct AttackProfile<'a> {
     pub id: &'a str,
     pub attack_bonus: i32,
     pub damage_dice: &'a DiceExpr,
+    pub damage_type: &'a str,
     pub conditions: &'a HashSet<Condition>,
     pub on_hit_condition: Option<Condition>,
 }
@@ -46,6 +48,8 @@ pub struct DefenseProfile<'a> {
     pub id: &'a str,
     pub armor_class: i32,
     pub conditions: &'a HashSet<Condition>,
+    pub resistances: &'a HashSet<String>,
+    pub vulnerabilities: &'a HashSet<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -110,7 +114,7 @@ fn roll_attack_with_rng<R: Rng + ?Sized>(
 
     let total = d20 + attacker.attack_bonus;
 
-    let (hit_type, damage, inflicted_condition) = if d20 == 1 {
+    let (hit_type, mut damage, inflicted_condition) = if d20 == 1 {
         (HitType::Miss, 0, None)
     } else if d20 == 20 {
         (
@@ -128,6 +132,15 @@ fn roll_attack_with_rng<R: Rng + ?Sized>(
         (HitType::Miss, 0, None)
     };
 
+    if damage > 0 {
+        if target.resistances.contains(attacker.damage_type) {
+            damage /= 2;
+        }
+        if target.vulnerabilities.contains(attacker.damage_type) {
+            damage *= 2;
+        }
+    }
+
     AttackOutcome {
         attacker_id: attacker.id.to_string(),
         target_id: target.id.to_string(),
@@ -136,6 +149,7 @@ fn roll_attack_with_rng<R: Rng + ?Sized>(
         roll_mode,
         hit_type,
         damage,
+        damage_type: attacker.damage_type.to_string(),
         inflicted_condition,
     }
 }
@@ -175,18 +189,19 @@ mod tests {
         (DiceExpr::new(1, 8, 2), HashSet::new())
     }
 
-    fn target() -> HashSet<Condition> {
-        HashSet::new()
+    fn target() -> (HashSet<Condition>, HashSet<String>, HashSet<String>) {
+        (HashSet::new(), HashSet::new(), HashSet::new())
     }
 
     #[test]
     fn seeded_attack_is_deterministic() {
         let (dice, atk_conds) = attacker();
-        let def_conds = target();
+        let (def_conds, def_res, def_vuln) = target();
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 5,
             damage_dice: &dice,
+            damage_type: "slashing",
             conditions: &atk_conds,
             on_hit_condition: None,
         };
@@ -194,6 +209,8 @@ mod tests {
             id: "t",
             armor_class: 14,
             conditions: &def_conds,
+            resistances: &def_res,
+            vulnerabilities: &def_vuln,
         };
 
         let a = roll_attack_with_seed(&atk, &def, 99);
@@ -222,13 +239,13 @@ mod tests {
     fn advantage_and_disadvantage_cancel() {
         let (dice, mut atk_conds) = attacker();
         atk_conds.insert(Condition::Poisoned); // attack disadvantage
-        let mut def_conds = target();
-        def_conds.insert(Condition::Stunned); // grants advantage to attackers
+        let (def_conds, def_res, def_vuln) = target();
 
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 5,
             damage_dice: &dice,
+            damage_type: "bludgeoning",
             conditions: &atk_conds,
             on_hit_condition: None,
         };
@@ -236,6 +253,8 @@ mod tests {
             id: "t",
             armor_class: 10,
             conditions: &def_conds,
+            resistances: &def_res,
+            vulnerabilities: &def_vuln,
         };
 
         let out = roll_attack_with_seed(&atk, &def, 1234);
@@ -257,11 +276,12 @@ mod tests {
         let dice = DiceExpr::new(1, 6, 0);
         let mut atk_conds = HashSet::new();
         atk_conds.insert(Condition::Poisoned);
-        let def_conds = HashSet::new();
+        let (def_conds, def_res, def_vuln) = target();
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 4,
             damage_dice: &dice,
+            damage_type: "piercing",
             conditions: &atk_conds,
             on_hit_condition: None,
         };
@@ -269,6 +289,8 @@ mod tests {
             id: "t",
             armor_class: 12,
             conditions: &def_conds,
+            resistances: &def_res,
+            vulnerabilities: &def_vuln,
         };
         let out = roll_attack_with_seed(&atk, &def, 42);
         assert_eq!(out.roll_mode, RollMode::Disadvantage);
@@ -278,11 +300,12 @@ mod tests {
     fn on_hit_condition_is_reported_on_hit() {
         let dice = DiceExpr::new(1, 6, 0);
         let atk_conds = HashSet::new();
-        let def_conds = HashSet::new();
+        let (def_conds, def_res, def_vuln) = target();
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 100,
             damage_dice: &dice,
+            damage_type: "poison",
             conditions: &atk_conds,
             on_hit_condition: Some(Condition::Poisoned),
         };
@@ -290,10 +313,68 @@ mod tests {
             id: "t",
             armor_class: -10,
             conditions: &def_conds,
+            resistances: &def_res,
+            vulnerabilities: &def_vuln,
         };
         // Seed chosen to avoid natural 1.
         let out = roll_attack_with_seed(&atk, &def, 2);
         assert!(matches!(out.hit_type, HitType::Hit | HitType::Critical));
         assert_eq!(out.inflicted_condition, Some(Condition::Poisoned));
+    }
+
+    #[test]
+    fn resistance_halves_damage() {
+        let dice = DiceExpr::new(1, 10, 0); // 1-10
+        let atk_conds = HashSet::new();
+        let (def_conds, mut def_res, def_vuln) = target();
+        def_res.insert("fire".to_string());
+        
+        let atk = AttackProfile {
+            id: "a",
+            attack_bonus: 100, // always hit
+            damage_dice: &dice,
+            damage_type: "fire",
+            conditions: &atk_conds,
+            on_hit_condition: None,
+        };
+        let def = DefenseProfile {
+            id: "t",
+            armor_class: 10,
+            conditions: &def_conds,
+            resistances: &def_res,
+            vulnerabilities: &def_vuln,
+        };
+        
+        // Seed 2 gives 3 on d10. 3 / 2 = 1.
+        let out = roll_attack_with_seed(&atk, &def, 2);
+        assert_eq!(out.damage, 1);
+    }
+
+    #[test]
+    fn vulnerability_doubles_damage() {
+        let dice = DiceExpr::new(1, 10, 0); // 1-10
+        let atk_conds = HashSet::new();
+        let (def_conds, def_res, mut def_vuln) = target();
+        def_vuln.insert("cold".to_string());
+        
+        let atk = AttackProfile {
+            id: "a",
+            attack_bonus: 100, // always hit
+            damage_dice: &dice,
+            damage_type: "cold",
+            conditions: &atk_conds,
+            on_hit_condition: None,
+        };
+        let def = DefenseProfile {
+            id: "t",
+            armor_class: 10,
+            conditions: &def_conds,
+            resistances: &def_res,
+            vulnerabilities: &def_vuln,
+        };
+        
+        // Seed 2 gives 3 on d10 (after hit roll). 3 * 2 = 6.
+        let out = roll_attack_with_seed(&atk, &def, 2);
+        assert_eq!(out.damage, 6);
     }
 }

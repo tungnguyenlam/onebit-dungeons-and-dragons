@@ -1,0 +1,14 @@
+id = "half_plate"
+name = "Half Plate"
+type = "armor"
+weight = 40.0
+value_gp = 750
+description = "Shaped metal plates covering most of the body."
+
+[armor]
+base_ac = 15
+type = "medium"
+stealth_disadvantage = true
+
+[bonuses]
+armor_class_bonus = 0

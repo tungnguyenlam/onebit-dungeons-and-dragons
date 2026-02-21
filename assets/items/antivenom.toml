@@ -1,0 +1,6 @@
+id = "antivenom"
+name = "Antivenom"
+type = "consumable"
+weight = 0.1
+value_gp = 50
+description = "A bitter tonic that neutralizes most poisons."
