@@ -1,0 +1,15 @@
+id = "void_stalker_boots"
+name = "Void-Stalker Boots"
+type = "armor"
+weight = 1.0
+value_gp = 800
+description = "Boots that leave no footprints, as if the wearer doesn't exist in the local memory."
+
+[armor]
+base_ac = 0
+armor_type = "Light"
+stealth_disadvantage = false
+
+[bonuses]
+stealth_bonus = 5
+initiative_bonus = 2

@@ -1,0 +1,19 @@
+id = "bit_shift_rapier"
+name = "Bit-Shift Rapier"
+type = "weapon"
+weight = 2.0
+value_gp = 800
+description = "A sword that shifts its physical properties rapidly, dealing extra Force damage."
+
+[weapon]
+damage = "1d8"
+damage_type = "piercing"
+properties = ["finesse"]
+
+[bonuses]
+attack_bonus = 1
+damage_bonus = 1
+
+[on_hit]
+damage = "1d6"
+damage_type = "force"

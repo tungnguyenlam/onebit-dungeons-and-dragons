@@ -1,0 +1,10 @@
+id = "data_stream_amulet"
+name = "Data-Stream Amulet"
+type = "misc"
+weight = 0.1
+value_gp = 1000
+description = "An amulet that connects the user to the local data-stream, accelerating healing."
+
+[bonuses]
+max_hp_bonus = 10
+regeneration = 1

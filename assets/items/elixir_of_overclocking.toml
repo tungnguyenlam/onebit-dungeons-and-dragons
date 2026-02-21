@@ -1,0 +1,15 @@
+id = "elixir_of_overclocking"
+name = "Elixir of Overclocking"
+type = "consumable"
+weight = 0.2
+value_gp = 150
+description = "A vibrant red potion that pushes your physical systems to the limit."
+
+[consumable]
+effect = "buff"
+duration_turns = 10
+
+[bonuses]
+attack_bonus = 2
+damage_bonus = 2
+speed_bonus = 10

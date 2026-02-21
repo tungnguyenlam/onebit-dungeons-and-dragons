@@ -1,0 +1,16 @@
+id = "gloves_of_the_master_coder"
+name = "Gloves of the Master Coder"
+type = "armor"
+weight = 0.5
+value_gp = 1500
+description = "Gloves that grant uncanny precision and dexterity."
+
+[armor]
+base_ac = 0
+armor_type = "Light"
+stealth_disadvantage = false
+
+[bonuses]
+dexterity_bonus = 2
+slight_of_hand_bonus = 5
+attack_bonus = 1

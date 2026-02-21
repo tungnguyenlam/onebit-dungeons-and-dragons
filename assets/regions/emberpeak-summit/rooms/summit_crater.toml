@@ -21,8 +21,13 @@ once = false
 [[triggers]]
 position = [8, 1]
 type = "encounter"
-target_id = "ember_wraith"
-once = false
+target_id = "ignis_cinder_drake"
+once = true
+
+[[items]]
+id = "obsidian_heart"
+position = [7, 1]
+condition = "flag:defeated_ignis"
 
 [[triggers]]
 position = [8, 3]

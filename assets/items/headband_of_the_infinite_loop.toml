@@ -1,0 +1,16 @@
+id = "headband_of_the_infinite_loop"
+name = "Headband of the Infinite Loop"
+type = "armor"
+weight = 0.2
+value_gp = 1500
+description = "A headband that accelerates thought processes, granting immense intelligence."
+
+[armor]
+base_ac = 0
+armor_type = "Light"
+stealth_disadvantage = false
+
+[bonuses]
+intelligence_bonus = 2
+spell_attack_bonus = 2
+spell_save_dc_bonus = 1

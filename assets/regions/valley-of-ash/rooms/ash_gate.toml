@@ -15,10 +15,24 @@ grid = """
 id = "captain_kael"
 position = [3, 2]
 
+[[items]]
+id = "obsidian_eye"
+position = [1, 5]
+
+[[npcs]]
+id = "elder_vaelen"
+position = [8, 2]
+
 [[triggers]]
 position = [6, 2]
 type = "dialog"
 target_id = "captain_kael"
+once = false
+
+[[triggers]]
+position = [8, 2]
+type = "dialog"
+target_id = "elder_vaelen"
 once = false
 
 [[triggers]]

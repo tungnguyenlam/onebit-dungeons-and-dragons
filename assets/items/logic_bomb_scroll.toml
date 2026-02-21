@@ -1,0 +1,13 @@
+id = "logic_bomb_scroll"
+name = "Scroll of Logic-Bomb"
+type = "consumable"
+weight = 0.1
+value_gp = 300
+description = "A scroll that, when read, causes a massive overflow of energy in a 20ft radius."
+tags = ["scroll", "fire"]
+
+[consumable]
+effect = "damage_aoe"
+damage = "8d6"
+damage_type = "fire"
+radius = 20

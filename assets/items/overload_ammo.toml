@@ -1,0 +1,13 @@
+id = "overload_ammo"
+name = "Overload Ammo"
+type = "consumable"
+weight = 0.5
+value_gp = 100
+description = "Arrows or bolts that have been over-charged with energy, exploding on impact."
+
+[consumable]
+effect = "weapon_buff"
+duration_turns = 1
+damage = "2d6"
+damage_type = "force"
+radius = 5

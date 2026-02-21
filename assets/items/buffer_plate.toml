@@ -1,0 +1,16 @@
+id = "buffer_plate"
+name = "Buffer Plate"
+type = "armor"
+weight = 65.0
+value_gp = 3000
+description = "Extremely heavy plate armor that provides massive protection but slows the wearer significantly."
+
+[armor]
+base_ac = 20
+armor_type = "Heavy"
+stealth_disadvantage = true
+
+[bonuses]
+max_hp_bonus = 20
+speed_bonus = -10
+damage_reduction = 3

@@ -1,0 +1,31 @@
+id = "ignis_cinder_drake"
+name = "Ignis the Cinder-Drake"
+cr = 10.0
+size = "huge"
+monster_type = "dragon"
+alignment = "chaotic_evil"
+hp = "15d12+60"
+ac = 18
+speed = 40
+str_score = 23
+dex_score = 10
+con_score = 21
+int_score = 14
+wis_score = 11
+cha_score = 19
+xp = 5900
+
+[[actions]]
+name = "Bite"
+description = "Melee Weapon Attack"
+attack_bonus = 10
+damage = "2d10+6"
+damage_type = "piercing"
+
+[[actions]]
+name = "Cinder Breath"
+description = "Large cone of fire and ash."
+attack_bonus = 10
+damage = "8d6"
+damage_type = "fire"
+on_hit_condition = "poisoned"

@@ -203,6 +203,7 @@ find ~/.cargo/registry/src -name "*.rs" -path "*/ratatui*" | \
 
 ## Conventions
 
+- **File Breakdown & Connectivity**: Strive to break logic down into small, highly-focused files. However, a file must never be an "isolated node"—it must have at least one clear inbound reference (e.g., a module declaration or usage) and one clear outbound reference (e.g., an import or logic call) to ensure the code remains a cohesive graph.
 - **One concern per module**: `src/ui/` renders only; `src/game/` holds all logic. They never cross-import.
 - **Assets are TOML**: All hand-crafted content lives in `assets/`. No content is hardcoded in Rust.
 - **Region isolation**: Each world region has its own folder under `assets/regions/<region-slug>/`. An agent working on one region reads only that region's files.

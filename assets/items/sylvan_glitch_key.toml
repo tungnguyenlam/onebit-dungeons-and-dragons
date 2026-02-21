@@ -1,0 +1,7 @@
+id = "sylvan_glitch_key"
+name = "Sylvan Glitch-Key"
+type = "misc"
+weight = 0.5
+value_gp = 0
+description = "A key made of solidified green light, humming with the frequency of the Whispering Woods."
+tags = ["quest_item", "legendary"]

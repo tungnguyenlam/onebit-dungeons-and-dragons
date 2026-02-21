@@ -1,0 +1,10 @@
+id = "system_purge_scroll"
+name = "Scroll of System-Purge"
+type = "consumable"
+weight = 0.1
+value_gp = 200
+description = "A scroll that clears all harmful effects and debuffs from the user."
+
+[consumable]
+effect = "cleanse"
+target = "self"

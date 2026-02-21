@@ -1,0 +1,15 @@
+id = "bit_stream_rapier"
+name = "Bit-Stream Rapier"
+type = "weapon"
+weight = 2.0
+value_gp = 1500
+description = "A sword that flickers like a failing monitor, cutting through space-time."
+
+[weapon]
+damage = "1d8"
+damage_type = "lightning"
+properties = ["finesse"]
+
+[bonuses]
+attack_bonus = 2
+damage_bonus = 2

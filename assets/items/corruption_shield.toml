@@ -1,0 +1,17 @@
+id = "corruption_shield"
+name = "Corruption Shield"
+type = "armor"
+weight = 6.0
+value_gp = 400
+description = "A shield that drips with toxic data, poisoning those who strike it."
+
+[armor]
+base_ac = 2
+armor_type = "Shield"
+stealth_disadvantage = false
+
+[on_hit]
+condition = "poisoned"
+chance = 0.3
+damage = "1d4"
+damage_type = "poison"

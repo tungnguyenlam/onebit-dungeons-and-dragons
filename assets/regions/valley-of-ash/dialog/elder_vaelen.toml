@@ -1,0 +1,30 @@
+npc_id = "elder_vaelen"
+
+[[nodes]]
+id = "root"
+text = "The code... it's fraying at the edges. Have you felt the flickers, traveler?"
+
+[[nodes.choices]]
+text = "The flickers? What do you mean?"
+next = "corruption"
+
+[[nodes.choices]]
+text = "I'm just passing through."
+next = "END"
+
+[[nodes]]
+id = "corruption"
+text = "The Obsidian Scourge has returned, but it is different this time. A 'System Glitch' is eating the world. You must find the Obsidian Eye—it is the only thing that can see through the void."
+
+[[nodes.choices]]
+text = "Where can I find this Eye?"
+next = "eye_info"
+
+[[nodes]]
+id = "eye_info"
+text = "It was lost near the Ash Gate during the first crash. If you find it, use it to track the corruption to its source."
+effect = [{ set_flag = "met_elder_vaelen" }]
+
+[[nodes.choices]]
+text = "I will find it."
+next = "END"

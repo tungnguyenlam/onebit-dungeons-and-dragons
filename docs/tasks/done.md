@@ -5,6 +5,36 @@
 
 ---
 
+## 2026-02-21 — Milestones 27-32 (complete): Audio, Settings, v0.2.0 Release, World Map, Whispering Woods, Bestiary
+
+### M32 — Bestiary Expansion Part 1
+- [x] `assets/monsters/` — Created 10+ new enemies (e.g., goblin variants, forest threats)
+- [x] `src/app/samples.rs` — Fixed serialization for dice properties and conditions
+- [x] `src/game/combat/combat.rs` — Verified condition loading from assets
+
+### M31 — The Whispering Woods
+- [x] `assets/regions/whispering-woods/` — New 5-room region content
+- [x] `assets/regions/valley-of-ash/rooms/ash_hollow.toml` — Linked to Woods
+- [x] `src/data/validate.rs` — Support for room-to-room cross-region validation
+
+### M30 — World Map Structure Update
+- [x] `src/app/mod.rs` — Cross-region travel logic in `interact_current_tile`
+- [x] `assets/regions/valley-of-ash/rooms/cinder_ridge.toml` — Linked to Emberpeak
+- [x] `assets/regions/emberpeak-summit/rooms/south_slope.toml` — Linked to Valley
+
+### M29 — v0.2.0 Release Gate
+- [x] `scripts/rc_check.sh` — Passed all T1-T3 gates
+- [x] `Cargo.toml` — Version bumped to 0.2.0
+
+### M28 — Difficulty & Accessibility Settings
+- [x] `src/app/state.rs` — `SettingsUiState` and `SettingsConfig`
+- [x] `src/app/combat.rs` — HP and damage scaling based on multipliers
+- [x] `src/ui/tui/screens/settings.rs` — Settings screen UI
+
+### M27 — Audio & Ambient Layer
+- [x] `src/renderer.rs` — `SoundEffect` enum and `sound_queue` infrastructure
+- [x] `assets/regions/` — Ambient tags added to region manifests
+
 ## 2026-02-21 — Milestones 20-26 (complete): Hardening, Depth, Robustness, AI, RC Pipeline, Faction Simulation, Content Pass
 
 ### M26 — Second Region Content Pass

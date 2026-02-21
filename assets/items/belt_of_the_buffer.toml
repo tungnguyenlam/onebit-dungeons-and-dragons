@@ -1,0 +1,16 @@
+id = "belt_of_the_buffer"
+name = "Belt of the Buffer"
+type = "armor"
+weight = 1.0
+value_gp = 1500
+description = "A belt that reinforces the user's physical presence, granting great strength."
+
+[armor]
+base_ac = 0
+armor_type = "Light"
+stealth_disadvantage = false
+
+[bonuses]
+strength_bonus = 2
+damage_bonus = 2
+carrying_capacity_bonus = 50

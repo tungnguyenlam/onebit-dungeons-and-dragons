@@ -1,0 +1,19 @@
+id = "binary_staff"
+name = "Binary Staff"
+type = "weapon"
+weight = 4.0
+value_gp = 800
+description = "A staff that alternates between Force and Lightning damage on every strike."
+
+[weapon]
+damage = "1d6"
+damage_type = "force"
+properties = ["versatile"]
+
+[bonuses]
+spell_attack_bonus = 1
+spell_damage_bonus = 1
+
+[on_hit]
+damage = "1d4"
+damage_type = "lightning"

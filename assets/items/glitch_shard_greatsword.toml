@@ -1,0 +1,19 @@
+id = "glitch_shard_greatsword"
+name = "Glitch-Shard Greatsword"
+type = "weapon"
+weight = 6.0
+value_gp = 2000
+description = "A massive blade that looks like a jagged piece of the world's geometry."
+
+[weapon]
+damage = "2d6"
+damage_type = "slashing"
+properties = ["heavy", "two_handed"]
+
+[bonuses]
+attack_bonus = 2
+damage_bonus = 2
+
+[on_hit]
+damage = "1d8"
+damage_type = "force"

@@ -1,0 +1,4 @@
+id = "elder_vaelen"
+name = "Elder Vaelen"
+description = "An ancient man who seems more like part of the world's code than a person."
+dialog_ref = "elder_vaelen"

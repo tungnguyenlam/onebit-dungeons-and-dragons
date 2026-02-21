@@ -15,6 +15,10 @@ grid = """
 id = "sage_lyra"
 position = [3, 2]
 
+[[items]]
+id = "masterwork_longsword"
+position = [1, 1]
+
 [[triggers]]
 position = [3, 1]
 type = "lore"

@@ -1,0 +1,32 @@
+id = "malphas_void_lich"
+name = "Malphas the Void-Lich"
+cr = 12.0
+size = "medium"
+monster_type = "undead"
+alignment = "neutral_evil"
+hp = "18d8+54"
+ac = 17
+speed = 30
+str_score = 11
+dex_score = 16
+con_score = 16
+int_score = 20
+wis_score = 14
+cha_score = 16
+xp = 8400
+
+[[actions]]
+name = "Void Touch"
+description = "Melee Spell Attack"
+attack_bonus = 9
+damage = "3d6+5"
+damage_type = "necrotic"
+on_hit_condition = "frightened"
+
+[[actions]]
+name = "Delete Sequence"
+description = "Attempts to erase parts of the player's logic."
+attack_bonus = 9
+damage = "4d8"
+damage_type = "force"
+on_hit_condition = "stunned"

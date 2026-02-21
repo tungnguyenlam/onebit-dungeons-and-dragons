@@ -1,0 +1,15 @@
+id = "shadow_step_ring"
+name = "Shadow-Step Ring"
+type = "misc"
+weight = 0.1
+value_gp = 500
+description = "A ring that allows the wearer to momentarily phase through the data-stream."
+
+[bonuses]
+stealth_bonus = 2
+initiative_bonus = 1
+
+[consumable]
+effect = "teleport"
+uses = 3
+range = 30

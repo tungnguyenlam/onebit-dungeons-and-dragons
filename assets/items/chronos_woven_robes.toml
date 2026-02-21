@@ -1,0 +1,15 @@
+id = "chronos_woven_robes"
+name = "Chronos-Woven Robes"
+type = "armor"
+weight = 2.0
+value_gp = 1200
+description = "Robes woven from the strands of time itself, allowing the wearer to react before events happen."
+
+[armor]
+base_ac = 12
+armor_type = "Light"
+stealth_disadvantage = false
+
+[bonuses]
+initiative_bonus = 5
+armor_class_bonus = 1

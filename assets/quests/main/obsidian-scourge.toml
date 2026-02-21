@@ -4,35 +4,35 @@ type = "main"
 
 [[stages]]
 id = "intro"
-label = "Investigate the Whispers"
+label = "Investigate the Corruption"
 condition = ""
-journal_entry = "Rumors of an ancient evil known as the Obsidian Scourge are spreading."
-next = [{ condition = "flag:met_obsidian_survivor", stage = "collect_eye" }]
+journal_entry = "The world is flickering. Speak with Elder Vaelen in the Valley of Ash about the 'System Glitch' and find the Obsidian Eye."
+next = [{ condition = "flag:has_obsidian_eye", stage = "ignis_hunt" }]
 
 [[stages]]
-id = "collect_eye"
-label = "Retrieve the Obsidian Eye"
-condition = "flag:met_obsidian_survivor"
-journal_entry = "A survivor spoke of an 'Obsidian Eye' hidden within the Valley of Ash."
-next = [{ condition = "flag:has_obsidian_eye", stage = "collect_heart" }]
-
-[[stages]]
-id = "collect_heart"
-label = "Retrieve the Obsidian Heart"
+id = "ignis_hunt"
+label = "The Heart of the Forge"
 condition = "flag:has_obsidian_eye"
-journal_entry = "The Eye pulses with dark energy, pointing towards the Ironhold Mines. Find the Obsidian Heart there."
-next = [{ condition = "flag:has_obsidian_heart", stage = "collect_claw" }]
+journal_entry = "The Obsidian Eye has revealed the source of the heat-bloom: Ignis the Cinder-Drake has claimed the Emberpeak Summit. Defeat him to retrieve the Obsidian Heart."
+next = [{ condition = "flag:defeated_ignis && flag:has_obsidian_heart", stage = "woods_exploration" }]
 
 [[stages]]
-id = "collect_claw"
-label = "Retrieve the Obsidian Claw"
+id = "woods_exploration"
+label = "Silence in the Woods"
 condition = "flag:has_obsidian_heart"
-journal_entry = "Only the Obsidian Claw remains, said to be at the peak of Emberpeak Summit."
-next = [{ condition = "flag:has_obsidian_claw", stage = "final_confrontation" }]
+journal_entry = "With the Heart secured, you must now find the Sylvan Glitch-Key hidden within the Whispering Woods to bypass the Null-Shield."
+next = [{ condition = "flag:has_sylvan_glitch_key", stage = "malphas_hunt" }]
 
 [[stages]]
-id = "final_confrontation"
-label = "Face the Scourge"
-condition = "flag:has_obsidian_claw"
-journal_entry = "With all three artifacts, you must travel to the Whispering Woods to confront the Obsidian Scourge."
-next = [{ condition = "flag:defeated_obsidian_scourge", stage = "DONE" }]
+id = "malphas_hunt"
+label = "The Void-Sanctum"
+condition = "flag:has_sylvan_glitch_key"
+journal_entry = "The Glitch-Key has opened the way. Locate Malphas the Void-Lich in his sanctum and claim the Null-Scepter before the deletion is complete."
+next = [{ condition = "flag:defeated_malphas && flag:has_null_scepter", stage = "final_seal" }]
+
+[[stages]]
+id = "final_seal"
+label = "System Restore"
+condition = "flag:has_null_scepter"
+journal_entry = "You possess the three keystones: Eye, Heart, and Scepter. Return to the Peak Crater to initiate the System Restore and end the Scourge."
+next = [{ condition = "flag:scourge_ended", stage = "DONE" }]

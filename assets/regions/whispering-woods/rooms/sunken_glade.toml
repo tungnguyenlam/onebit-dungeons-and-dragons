@@ -32,5 +32,10 @@ once = false
 [[triggers]]
 position = [6, 2]
 type = "encounter"
-target_id = "goblin"
-once = false
+target_id = "malphas_void_lich"
+once = true
+
+[[items]]
+id = "null_scepter"
+position = [5, 2]
+condition = "flag:defeated_malphas"

@@ -1,0 +1,16 @@
+id = "null_scepter"
+name = "Null-Scepter"
+type = "weapon"
+weight = 5.0
+value_gp = 5000
+description = "A staff of pure darkness that seems to delete the light around it."
+tags = ["quest_item", "legendary"]
+
+[weapon]
+damage = "1d10"
+damage_type = "necrotic"
+properties = ["versatile"]
+
+[bonuses]
+spell_attack_bonus = 3
+spell_damage_bonus = 3

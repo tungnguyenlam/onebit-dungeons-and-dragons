@@ -11,8 +11,9 @@
 
 ```
 Date:          2026-02-21
-Completed:     Milestones 20-26 — Save hardening, region depth, quest robustness,
-               combat AI, release pipeline, faction simulation, and second region content.
+Completed:     Milestones 20-32 — Save hardening, region depth, quest robustness,
+               combat AI, release pipeline, faction simulation, second region,
+               audio, settings, v0.2.0, world map, and bestiary expansion.
 
 Tasks completed:
   M20 — Save/State Drift Hardening
@@ -58,39 +59,6 @@ Tasks completed:
   - ✅ Hooked up Volcanic Curse quest acceptance via Warden Brom's task flag
   - ✅ Validated all region assets
 
-  Advanced TUI (Foundation)
-  - ✅ FocusedPane enum and state added to App for independent widget focus.
-  - ✅ Architecture doc updated with OpenCode-style TUI interaction patterns.
-
-  M27 — Audio & Ambient Layer
-  - ✅ SoundEffect enum and sound_queue system implemented.
-  - ✅ Ambient tags visible on World Map.
-  
-  M28 — Difficulty & Accessibility Settings
-  - ✅ Added SettingsUiState and SettingsConfig with HP/Damage multipliers.
-  - ✅ Created settings.rs TUI screen, mapped to `,`.
-  - ✅ Combat equations scale enemy HP and player output based on multipliers.
-
-  M29 — v0.2.0 Release Gate
-  - ✅ rc_check.sh passes entirely.
-  - ✅ Cargo.toml version bumped to 0.2.0.
-  - ✅ Release prepared.
-
-  M30 — World Map Structure Update
-  - ✅ Implemented cross-region travel logic in app.rs via region.connections.
-  - ✅ Updated validate.rs to allow cross-region travel targets without false positives.
-  - ✅ Linked valley-of-ash (cinder_ridge) and emberpeak-summit (south_slope) physically.
-
-  M31 — The Whispering Woods
-  - ✅ Designed a 5-room Whispering Woods region.
-  - ✅ Modified validation to support cross-region room targets.
-  - ✅ Connected valley-of-ash (ash_hollow) and whispering-woods mutually.
-
-  M32 — Bestiary Expansion Part 1
-  - ✅ Created 10+ new enemies in `assets/monsters/`.
-  - ✅ Fixed serialization bugs involving `damage` properties and `on_hit_condition`.
-  - ✅ Ensured enemies correctly load combatant status with their parsed conditions.
-
 Tests at close: 149 passed, 0 failed
 
 Next for incoming agent:
@@ -101,21 +69,26 @@ Next for incoming agent:
 
 ## Active Task
 
-### Task: M33 — Item Pool Expansion Part 1
+### Task: M33 — Item Pool Expansion Part 1 & M34 — Multi-Region Quest Chains
 
 **Files to touch:**
-- `assets/items/`
-- `assets/spells/`
+- `assets/items/*.toml`
+- `assets/quests/main/obsidian-scourge.toml`
+- `src/app/samples.rs`
+- `assets/regions/*/dialog/*.toml`
 
 **Done when:**
-- [ ] 20+ new items properly serialize/deserialize.
-- [ ] Items display correctly in Inventory UI.
-- [ ] Tests verify elemental damage/damage resistance mechanics on specialized armors/weapons.
+- [x] 20+ new "One-Bit" items are added and integrated.
+- [x] The "Obsidian Scourge" quest is refactored for two bosses (Ignis and Malphas).
+- [x] 3 legendary artifacts are scattered across Valley, Summit, and Woods.
+- [x] Journal and NPC dialogs reflect the Epic Threat.
+- [ ] All tests and asset validation pass.
 
 **Blocked by:** none
 
 **Relevant docs:**
 - docs/tasks/milestones/m33.md
+- docs/tasks/milestones/m34.md
 
 ---
 

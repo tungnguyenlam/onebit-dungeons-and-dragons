@@ -1,0 +1,10 @@
+id = "executioner_module"
+name = "Executioner Module"
+type = "misc"
+weight = 0.5
+value_gp = 2500
+description = "A compact device that calculates the most lethal strike points in real-time."
+
+[bonuses]
+critical_hit_threshold = 18
+damage_bonus = 3

@@ -1,0 +1,15 @@
+id = "cloak_of_the_firewall"
+name = "Cloak of the Firewall"
+type = "armor"
+weight = 3.0
+value_gp = 2000
+description = "A shimmering cloak that provides comprehensive protection against all external threats."
+
+[armor]
+base_ac = 0
+armor_type = "Light"
+stealth_disadvantage = false
+
+[bonuses]
+saving_throw_bonus = 2
+resists = ["fire", "frost", "lightning", "poison", "force"]
