@@ -107,8 +107,10 @@ impl WorldState {
         self.set_counter(Self::faction_key(faction), value);
     }
 
-    pub fn delta_faction_rep(&mut self, faction: &str, delta: i32) {
+    /// Modify faction reputation by `delta`. Returns the new value.
+    pub fn modify_faction_rep(&mut self, faction: &str, delta: i32) -> i32 {
         self.delta_counter(Self::faction_key(faction), delta);
+        self.faction_rep(faction)
     }
 
     // -----------------------------------------------------------------------
@@ -279,7 +281,8 @@ mod tests {
         let mut ws = WorldState::new();
         assert_eq!(ws.faction_rep("town_guard"), 0);
         ws.set_faction_rep("town_guard", 2);
-        ws.delta_faction_rep("town_guard", 3);
+        let val = ws.modify_faction_rep("town_guard", 3);
+        assert_eq!(val, 5);
         assert_eq!(ws.faction_rep("town_guard"), 5);
     }
 }

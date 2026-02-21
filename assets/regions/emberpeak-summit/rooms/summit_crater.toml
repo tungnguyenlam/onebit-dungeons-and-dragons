@@ -1,0 +1,31 @@
+id = "summit_crater"
+name = "Summit Crater"
+description = "The highest point of the mountain, where the air is thick with ash and the ground pulses with heat."
+terminal = true
+grid = """
+##############
+#.......!....#
+#..@.........#
+#.......-....#
+#............#
+#.....v......#
+##############
+"""
+
+[[triggers]]
+position = [5, 5]
+type = "travel"
+target_id = "peak_crater"
+once = false
+
+[[triggers]]
+position = [8, 1]
+type = "encounter"
+target_id = "ember_wraith"
+once = false
+
+[[triggers]]
+position = [8, 3]
+type = "lore"
+target_id = "ember_rune"
+once = true

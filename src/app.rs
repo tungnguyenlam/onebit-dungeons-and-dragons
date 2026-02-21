@@ -188,6 +188,13 @@ impl Default for CharacterCreationUiState {
 // App
 // ---------------------------------------------------------------------------
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum FocusedPane {
+    #[default]
+    Main,
+    Side,
+}
+
 /// Central application object. Passed by shared reference to every renderer
 /// `render()` call; mutated only inside `handle_event()`.
 pub struct App {
@@ -214,6 +221,7 @@ pub struct App {
     pub char_creation_ui: CharacterCreationUiState,
     pub journal_ui: JournalUiState,
     pub turn: u64,
+    pub focused_pane: FocusedPane,
 }
 
 impl App {
@@ -345,6 +353,7 @@ impl App {
             char_creation_ui: CharacterCreationUiState::default(),
             journal_ui: JournalUiState::default(),
             turn: 0,
+            focused_pane: FocusedPane::default(),
         }
     }
 
@@ -724,6 +733,7 @@ impl App {
                         self.current_room_id = trigger.target_id.clone();
                         if let Some(new_room) = self.current_room() {
                             self.player_pos = spawn_pos_for_room(new_room);
+                            self.check_room_hostilities();
                         }
                     }
                 }
@@ -1353,12 +1363,70 @@ impl App {
         if players_alive {
             self.grant_player_xp(gained_xp);
             self.world_state.set_flag("won_first_combat");
-            self.world_state.delta_faction_rep("town_guard", 1);
-            self.world_state.delta_faction_rep("goblin_tribe", -2);
+            self.modify_faction_rep("town_guard", 1);
+            self.modify_faction_rep("goblin_tribe", -2);
             self.transition(AppState::WorldMap);
         } else {
-            self.world_state.delta_faction_rep("town_guard", -1);
+            self.modify_faction_rep("town_guard", -1);
             self.transition(AppState::GameOver);
+        }
+    }
+
+    pub fn modify_faction_rep(&mut self, faction: &str, delta: i32) {
+        let old_rep = self.world_state.faction_rep(faction);
+        let new_rep = self.world_state.modify_faction_rep(faction, delta);
+        if delta.abs() >= 5 {
+            let label = if delta > 0 { "improved" } else { "declined" };
+            self.journal.append(
+                format!("faction-rep-{}-{}-{}", faction, self.turn, delta),
+                self.turn,
+                JournalCategory::World,
+                None,
+                format!("Reputation {}", label),
+                format!(
+                    "Your standing with {} has {} ({} -> {}).",
+                    faction, label, old_rep, new_rep
+                ),
+            );
+        }
+    }
+
+    pub fn check_room_hostilities(&mut self) {
+        let Some(room) = self.current_room() else {
+            return;
+        };
+        let hostile_threshold = -10;
+        let mut hostile_npc = None;
+        for npc_ref in &room.npcs {
+            if let Some(npc_def) = self.region_npcs.get(&npc_ref.id) {
+                if !npc_def.faction.is_empty() {
+                    let rep = self.world_state.faction_rep(&npc_def.faction);
+                    if rep <= hostile_threshold {
+                        hostile_npc = Some(npc_def.id.clone());
+                        break;
+                    }
+                }
+            }
+        }
+
+        if let Some(npc_id) = hostile_npc {
+            self.pending_encounter_monster = self
+                .region_npcs
+                .get(&npc_id)
+                .map(|n| n.monster_ref.clone())
+                .filter(|m| !m.is_empty());
+            if self.pending_encounter_monster.is_some() {
+                let ctx = self.make_combat_context();
+                self.transition(AppState::Combat(ctx));
+                self.journal.append(
+                    format!("hostile-intercept-{}-{}", npc_id, self.turn),
+                    self.turn,
+                    JournalCategory::World,
+                    None,
+                    "Hostile Intercept",
+                    format!("An NPC from a hostile faction has intercepted you!"),
+                );
+            }
         }
     }
 
@@ -1374,6 +1442,17 @@ impl App {
             );
         }
 
+        if self.world_state.flag("accept_emberpeak_rune_task")
+            && !self.quests.states.contains_key("volcanic_curse")
+        {
+            self.quests.accept_quest(
+                "volcanic_curse",
+                &mut self.world_state,
+                &mut self.journal,
+                self.turn,
+            );
+        }
+
         let quest_ids: Vec<String> = self.quests.states.keys().cloned().collect();
         for q in quest_ids {
             let _ = self
@@ -1382,6 +1461,22 @@ impl App {
         }
         self.world_events
             .tick(&mut self.world_state, &mut self.journal, self.turn);
+
+        // M25: Inter-faction relationship event
+        if self.world_state.faction_rep("goblin_tribe") < -5
+            && self.world_state.faction_rep("town_guard") > 5
+            && !self.world_state.flag("town_guard_vouched")
+        {
+            self.world_state.set_flag("town_guard_vouched");
+            self.journal.append(
+                format!("faction-event-vouched-{}", self.turn),
+                self.turn,
+                JournalCategory::World,
+                None,
+                "Town Guard Vouched",
+                "Your hostility towards the goblins has earned you special favor with the Town Guard. New dialog options may be available.",
+            );
+        }
     }
 
     fn toggle_equip(&mut self, slot: EquipmentSlot, item_id: &str) {
@@ -2653,6 +2748,59 @@ mod tests {
         assert!(app.journal.entries.iter().any(|e| e.id == "m8-active"));
 
         let _ = std::fs::remove_file("saves/slot1.toml");
+        let _ = std::fs::remove_file("saves/slot1.toml");
         let _ = std::fs::remove_dir("saves");
+    }
+
+    #[test]
+    fn hostile_threshold_combat_trigger() {
+        let mut app = App::new();
+        app.transition(AppState::WorldMap);
+        app.current_room_id = "ember_square".into();
+        // Travel trigger to ash_gate is at (5,3)
+        app.player_pos = (5, 3);
+        // Make town_guard hostile
+        app.world_state.set_faction_rep("town_guard", -11);
+        app.handle_event(GameEvent::Confirm).unwrap();
+        // Confirm moves player to ash_gate and checks hostilities.
+        // ash_gate has 'captain_kael' who is in 'town_guard' faction.
+        assert_eq!(app.current_room_id, "ash_gate");
+        assert!(matches!(app.state, AppState::Combat(_)));
+        assert!(app
+            .journal
+            .entries
+            .iter()
+            .any(|e| e.id.contains("hostile-intercept")));
+    }
+
+    #[test]
+    fn significant_rep_change_journal_entry() {
+        let mut app = App::new();
+        app.modify_faction_rep("guild", 5);
+        assert!(app
+            .journal
+            .entries
+            .iter()
+            .any(|e| e.title == "Reputation improved"));
+        app.modify_faction_rep("guild", -10);
+        assert!(app
+            .journal
+            .entries
+            .iter()
+            .any(|e| e.title == "Reputation declined"));
+    }
+
+    #[test]
+    fn inter_faction_vouch_event() {
+        let mut app = App::new();
+        app.world_state.set_faction_rep("goblin_tribe", -6);
+        app.world_state.set_faction_rep("town_guard", 6);
+        app.handle_event(GameEvent::Tick).unwrap();
+        assert!(app.world_state.flag("town_guard_vouched"));
+        assert!(app
+            .journal
+            .entries
+            .iter()
+            .any(|e| e.title == "Town Guard Vouched"));
     }
 }

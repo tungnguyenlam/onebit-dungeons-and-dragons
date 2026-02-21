@@ -11,8 +11,8 @@
 
 ```
 Date:          2026-02-21
-Completed:     Milestones 20-24 — Save hardening, region depth, quest robustness,
-               combat AI, and release pipeline
+Completed:     Milestones 20-25 — Save hardening, region depth, quest robustness,
+               combat AI, release pipeline, and faction simulation expansion
 
 Tasks completed:
   M20 — Save/State Drift Hardening
@@ -45,18 +45,50 @@ Tasks completed:
   - ✅ scripts/rc_check.sh (new): tiered T1/T2/T3 RC gate script
   - ✅ .github/workflows/rust.yml restructured: fast / slow / release jobs
 
-Tests at close: 146 passed, 0 failed
+  M25 — Faction Simulation Expansion
+  - ✅ WorldState::modify_faction_rep(id, delta) helper
+  - ✅ App::check_room_hostilities() auto-initiates combat for hostile factions (rep <= -10)
+  - ✅ Significant rep changes (>= ±5) emit journal entries
+  - ✅ Inter-faction vouching event (goblin_tribe < -5 && town_guard > 5) unlocks dialog
+  - ✅ 3 new faction simulation tests in src/app.rs
+
+  M26 — Second Region Content Pass
+  - ✅ Created Summit Crater room and integrated into Emberpeak Summit
+  - ✅ Added Ember Wraith encounter and ember_rune lore hooks
+  - ✅ Hooked up Volcanic Curse quest acceptance via Warden Brom's task flag
+  - ✅ Validated all region assets
+
+Tests at close: 149 passed, 0 failed
 
 Next for incoming agent:
-  - Pull M25+ from backlog.md
-  - Run cargo check && cargo test to confirm clean state
+  - Pull M27 from backlog.md
+  - Review Audio & Ambient Layer requirements
 ```
 
 ---
 
 ## Active Task
 
-*(No active task — M20-M24 complete. Pull next item from backlog.md.)*
+### Task: M26 — Second Region Content Pass
+
+**Files to touch:**
+- assets/regions/emberpeak-summit/region.toml
+- assets/regions/emberpeak-summit/rooms/summit_crater.toml
+- assets/regions/emberpeak-summit/npcs/*.toml
+- assets/quests/side/volcanic_curse.toml
+
+**Done when:**
+- [x] `summit_crater.toml` exists and is linked in `region.toml`.
+- [x] `warden_brom` and `archivist_nyra` belong to `emberpeak_dwarves` faction.
+- [x] At least one `encounter` trigger exists in the region (Targeting `ember_wraith`).
+- [x] Quest `volcanic_curse` is accepted via `warden_brom` and has at least two stages.
+- [x] `cargo run -- --validate-assets` passes.
+
+**Blocked by:** none
+
+**Relevant docs:**
+- docs/content/regions/index.md
+- docs/tasks/milestones/m26.md
 
 ---
 

@@ -1,5 +1,5 @@
 id = "captain_kael"
 name = "Captain Kael"
-monster_ref = ""
+monster_ref = "orc_warrior"
 faction = "town_guard"
 dialog_ref = "captain_kael"

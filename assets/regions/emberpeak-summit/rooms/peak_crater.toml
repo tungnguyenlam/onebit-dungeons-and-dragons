@@ -1,13 +1,12 @@
 id = "peak_crater"
 name = "Peak Crater"
 description = "A collapsed caldera still belching thin sulfur wisps."
-terminal = true
 grid = """
 ##############
 #.....!......#
 #..@.........#
 #........v...#
-#............#
+#...........-#
 #............#
 ##############
 """
@@ -26,4 +25,10 @@ once = true
 position = [9, 3]
 type = "travel"
 target_id = "lava_shelf"
+once = false
+
+[[triggers]]
+position = [12, 4]
+type = "travel"
+target_id = "summit_crater"
 once = false

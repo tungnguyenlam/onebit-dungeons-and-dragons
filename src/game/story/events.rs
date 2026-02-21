@@ -14,6 +14,7 @@ pub enum WorldEvent {
     },
     SetFlag { key: String },
     DeltaCounter { key: String, delta: i32 },
+    ModifyFactionRep { faction: String, delta: i32 },
 }
 
 #[derive(Debug, Clone)]
@@ -44,6 +45,24 @@ impl EventEngine {
                 }
                 WorldEvent::SetFlag { key } => world.set_flag(key.clone()),
                 WorldEvent::DeltaCounter { key, delta } => world.delta_counter(key.clone(), *delta),
+                WorldEvent::ModifyFactionRep { faction, delta } => {
+                    let old = world.faction_rep(faction);
+                    let new = world.modify_faction_rep(faction, *delta);
+                    if delta.abs() >= 5 {
+                        let label = if *delta > 0 { "improved" } else { "declined" };
+                        journal.append(
+                            format!("faction-rep-event-{}-{}-{}", faction, turn, delta),
+                            turn,
+                            Category::World,
+                            None,
+                            format!("Reputation {}", label),
+                            format!(
+                                "Your standing with {} has {} ({} -> {}).",
+                                faction, label, old, new
+                            ),
+                        );
+                    }
+                }
             }
             if t.once {
                 t.fired = true;

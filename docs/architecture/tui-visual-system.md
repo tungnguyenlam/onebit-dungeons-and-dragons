@@ -136,6 +136,32 @@ Verification helpers:
 
 ---
 
+---
+
+## Advanced Interaction Techniques
+
+To achieve high-polish, "app-like" responsiveness in the TUI (as seen in tools like OpenCode), the system utilizes independent widget focus tracking and retained-mode rendering.
+
+### Independent Scrollbars & Focus-Aware Routing
+Complex screens (e.g., the **Journal**) benefit from dual scrollbars where each panel scrolls independently based on cursor location or widget focus.
+
+- **Focus Marking**: The app tracks which widget is active (e.g., `FocusedPane::Map`, `FocusedPane::Journal`).
+- **Event Routing**: Mouse scroll or keyboard events are routed exclusively to the focused widget's state.
+- **Unicode Scrollbars**: Scrollbars are rendered using Unicode blocks (█, ▓, ░) positioned on the widget edge. The "thumb" position is calculated as a ratio of visible lines to total content.
+- **Mouse Capture**: By enabling `crossterm::event::EnableMouseCapture`, the app performs "hit-testing" to determine if a click or scroll event occurred within a specific panel's bounding box.
+
+### Retained-Mode Rendering
+Ratatui employs a diffing engine that only updates terminal cells that changed between frames. This eliminates flicker and keeps transitions instant, simulating a GPU-accelerated GUI.
+
+### Implementation Blueprint
+To implement these patterns in the project:
+1.  Add a focus state enum to `App` (e.g., `FocusedPane`).
+2.  Route scroll `GameEvents` to the focused pane's offset.
+3.  Utilize Ratatui's built-in `Scrollbar` widget for thumb math.
+4.  Enable mouse capture in `TuiRenderer` initialization.
+
+---
+
 ## Related Docs
 
 - [ui-layer.md](ui-layer.md)

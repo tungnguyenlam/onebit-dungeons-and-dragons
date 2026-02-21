@@ -20,6 +20,10 @@ file = "rooms/lava_shelf.toml"
 id = "peak_crater"
 file = "rooms/peak_crater.toml"
 
+[[rooms]]
+id = "summit_crater"
+file = "rooms/summit_crater.toml"
+
 [[connections]]
 from_room = "south_slope"
 to_region = "valley-of-ash"

@@ -21,6 +21,11 @@ text = "Not right now."
 condition = ""
 next = "END"
 
+[[nodes.choices]]
+text = "[Vouched] Access the guard armory."
+condition = "flag:town_guard_vouched"
+next = "armory"
+
 [[nodes]]
 id = "accept"
 text = "Then clear Ember Square and report back."
@@ -36,5 +41,14 @@ text = "You have earned our trust. A guard squad will reinforce your next patrol
 
 [[nodes.choices]]
 text = "I appreciate it."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "armory"
+text = "The High Captain has sent word of your deeds. You may take what you need from the stores."
+
+[[nodes.choices]]
+text = "Thank you."
 condition = ""
 next = "END"

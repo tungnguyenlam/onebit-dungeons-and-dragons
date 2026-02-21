@@ -35,8 +35,8 @@
 | M22 | Quest Runtime Robustness | ✅ done | — |
 | M23 | Combat Depth Pass | ✅ done | — |
 | M24 | Release Candidate Pipeline | ✅ done | — |
-| M25 | Faction Simulation Expansion | 🔲 next | [milestones/m25.md](milestones/m25.md) |
-| M26 | Second Region Content Pass | 🔲 planned | [milestones/m26.md](milestones/m26.md) |
+| M25 | Faction Simulation Expansion | ✅ done | [milestones/m25.md](milestones/m25.md) |
+| M26 | Second Region Content Pass | ✅ done | [milestones/m26.md](milestones/m26.md) |
 | M27 | Audio & Ambient Layer | 🔲 planned | [milestones/m27.md](milestones/m27.md) |
 | M28 | Difficulty & Accessibility Settings | 🔲 planned | [milestones/m28.md](milestones/m28.md) |
 | M29 | v0.2.0 Release Gate | 🔲 planned | [milestones/m29.md](milestones/m29.md) |

@@ -5,7 +5,21 @@
 
 ---
 
-## 2026-02-21 — Milestones 20-24 (complete): Hardening, Depth, Robustness, AI, RC Pipeline
+## 2026-02-21 — Milestones 20-26 (complete): Hardening, Depth, Robustness, AI, RC Pipeline, Faction Simulation, Content Pass
+
+### M26 — Second Region Content Pass
+- [x] `assets/regions/emberpeak-summit/rooms/summit_crater.toml` (new) — added missing region room
+- [x] `assets/regions/emberpeak-summit/region.toml` — integrated Summit Crater
+- [x] `src/app.rs` — hooked `accept_emberpeak_rune_task` flag to `volcanic_curse` quest
+- [x] `assets/regions/emberpeak-summit/rooms/` — added `ember_wraith` encounter to Summit Crater
+- [x] `assets/regions/emberpeak-summit/npcs/` — verified `emberpeak_dwarves` faction affiliation
+
+### M25 — Faction Simulation Expansion
+- [x] `src/game/story/world_state.rs` — `modify_faction_rep(id, delta)`
+- [x] `src/app.rs` — `check_room_hostilities()` (rep <= -10 auto-combat), ±5 journaling
+- [x] `src/game/story/events.rs` — `ModifyFactionRep` world event support
+- [x] `assets/regions/valley-of-ash/` — `town_guard_vouched` dialog unlock path for `captain_kael`
+- [x] `src/app.rs` — inter-faction logic (goblins vs guards relationship)
 
 ### M20 — Save/State Drift Hardening
 - [x] `src/game/save/mod.rs` — `SaveDriftReport`, invariant checks, `validate_save_file()`
@@ -30,7 +44,7 @@
 - [x] `scripts/rc_check.sh` (new) — T1 fast / T2 slow / T3 soak gate
 - [x] `.github/workflows/rust.yml` — `fast` → `slow` → `release` tiered jobs
 
-**Test result:** 146 passed, 0 failed
+**Test result:** 149 passed, 0 failed
 
 ---
 
