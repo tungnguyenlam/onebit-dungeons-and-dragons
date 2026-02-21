@@ -31,6 +31,7 @@ pub enum GameEvent {
     OpenSpellbook,
     OpenJournal,
     OpenMap,
+    OpenSettings,
     Attack,
     Wait,
     SaveGame,

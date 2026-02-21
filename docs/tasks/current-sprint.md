@@ -74,26 +74,23 @@ Next for incoming agent:
 
 ## Active Task
 
-### Task: M27 — Audio & Ambient Layer
+### Task: M28 — Difficulty & Accessibility Settings
 
 **Files to touch:**
 - src/app.rs
-- src/renderer.rs
+- src/ui/tui/screens/settings.rs
 - src/ui/tui/mod.rs
-- src/ui/tui/screens/world_map.rs
+- src/game/combat/mod.rs (or where multipliers can apply)
 
 **Done when:**
-- [x] `SoundEffect` enum exists and is used by `App` to queue sounds.
-- [x] At least 3 different game events trigger distinct beep patterns.
-- [x] The current region's `ambient` tag (e.g., "Ash Drift") is visible on the World Map screen.
-- [x] Atmospheric flavor text appears in the log periodically for regions with ambient tags.
-- [x] `cargo test` passes.
+- [ ] Settings enum handles standard toggles/multipliers.
+- [ ] Setting screen is accessible from the Main Menu or pause.
+- [ ] Combat equations respect the selected difficulty.
 
 **Blocked by:** none
 
 **Relevant docs:**
-- docs/tasks/milestones/m27.md
-- docs/architecture/tui-visual-system.md
+- docs/tasks/milestones/m28.md
 
 ---
 

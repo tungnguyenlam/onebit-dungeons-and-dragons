@@ -6,4 +6,5 @@ pub mod inventory;
 pub mod journal;
 pub mod main_menu;
 pub mod spellbook;
+pub mod settings;
 pub mod world_map;

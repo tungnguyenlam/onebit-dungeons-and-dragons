@@ -70,6 +70,7 @@ impl GameRenderer for TuiRenderer {
             AppState::Journal => screens::journal::render(frame, app),
             AppState::Inventory => screens::inventory::render(frame, app),
             AppState::Spellbook => screens::spellbook::render(frame, app),
+            AppState::Settings => screens::settings::render(frame, app),
             AppState::GameOver => screens::game_over::render(frame, app),
         })?;
         Ok(())
@@ -121,6 +122,7 @@ fn map_key(key: KeyEvent) -> GameEvent {
         KeyCode::Char('p') => GameEvent::SaveGame,
         KeyCode::Char('o') => GameEvent::LoadGame,
         KeyCode::Char('b') => GameEvent::ToggleSound,
+        KeyCode::Char(',') => GameEvent::OpenSettings,
 
         // Dialog choices
         KeyCode::Char(c @ '1'..='9') => GameEvent::Choice(c as u8 - b'0'),

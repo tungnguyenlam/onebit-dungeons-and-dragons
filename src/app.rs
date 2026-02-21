@@ -57,6 +57,7 @@ pub enum AppState {
     Journal,
     Inventory,
     Spellbook,
+    Settings,
     GameOver,
 }
 
@@ -157,6 +158,28 @@ pub struct MainMenuUiState {
     pub selected: usize,
 }
 
+#[derive(Debug, Clone, Copy)]
+pub struct SettingsConfig {
+    pub enemy_hp_multiplier: f32,
+    pub player_damage_multiplier: f32,
+    pub reduced_motion: bool,
+}
+
+impl Default for SettingsConfig {
+    fn default() -> Self {
+        Self {
+            enemy_hp_multiplier: 1.0,
+            player_damage_multiplier: 1.0,
+            reduced_motion: crate::ui::tui::theme::reduced_motion(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct SettingsUiState {
+    pub selected: usize,
+}
+
 #[derive(Debug, Clone)]
 pub struct CharacterCreationUiState {
     pub selected: usize,
@@ -216,6 +239,8 @@ pub struct App {
     pub menu_ui: MainMenuUiState,
     pub char_creation_ui: CharacterCreationUiState,
     pub journal_ui: JournalUiState,
+    pub settings_ui: SettingsUiState,
+    pub settings: SettingsConfig,
     pub turn: u64,
     pub focused_pane: FocusedPane,
 }
@@ -348,6 +373,8 @@ impl App {
             menu_ui: MainMenuUiState::default(),
             char_creation_ui: CharacterCreationUiState::default(),
             journal_ui: JournalUiState::default(),
+            settings_ui: SettingsUiState::default(),
+            settings: SettingsConfig::default(),
             turn: 0,
             focused_pane: FocusedPane::default(),
         }
@@ -379,6 +406,10 @@ impl App {
                 }
                 return Ok(ControlFlow::Continue);
             }
+            GameEvent::OpenSettings => {
+                self.transition(AppState::Settings);
+                return Ok(ControlFlow::Continue);
+            }
 
             GameEvent::Tick => {
                 self.turn += 1;
@@ -398,7 +429,6 @@ impl App {
         Ok(())
     }
 
-    /// Forward an event to the appropriate sub-system based on `AppState`.
     fn dispatch(&mut self, event: GameEvent) -> Result<()> {
         match &self.state {
             AppState::MainMenu => self.handle_main_menu(event),
@@ -409,6 +439,7 @@ impl App {
             AppState::Journal => self.handle_journal(event),
             AppState::Spellbook => self.handle_spellbook(event),
             AppState::CharacterCreation => self.handle_char_creation(event),
+            AppState::Settings => self.handle_settings(event),
             AppState::GameOver => self.handle_game_over(event),
         }
     }
@@ -435,6 +466,45 @@ impl App {
                 3 => self.transition(AppState::GameOver),
                 _ => {}
             },
+            _ => {}
+        }
+        Ok(())
+    }
+
+    fn handle_settings(&mut self, event: GameEvent) -> Result<()> {
+        match event {
+            GameEvent::Back | GameEvent::Cancel | GameEvent::OpenSettings => {
+                if self.player.current_hp > 0 {
+                    self.transition(AppState::WorldMap);
+                } else {
+                    self.transition(AppState::MainMenu);
+                }
+            }
+            GameEvent::MoveUp => {
+                self.settings_ui.selected = self.settings_ui.selected.saturating_sub(1);
+            }
+            GameEvent::MoveDown => {
+                let max_opts = 2; // 0, 1, 2
+                if self.settings_ui.selected < max_opts {
+                    self.settings_ui.selected += 1;
+                }
+            }
+            GameEvent::MoveLeft => {
+                match self.settings_ui.selected {
+                    0 => self.settings.enemy_hp_multiplier = (self.settings.enemy_hp_multiplier - 0.1).max(0.5),
+                    1 => self.settings.player_damage_multiplier = (self.settings.player_damage_multiplier - 0.1).max(0.5),
+                    2 => self.settings.reduced_motion = !self.settings.reduced_motion,
+                    _ => {}
+                }
+            }
+            GameEvent::MoveRight | GameEvent::Confirm => {
+                match self.settings_ui.selected {
+                    0 => self.settings.enemy_hp_multiplier = (self.settings.enemy_hp_multiplier + 0.1).min(2.0),
+                    1 => self.settings.player_damage_multiplier = (self.settings.player_damage_multiplier + 0.1).min(2.0),
+                    2 => self.settings.reduced_motion = !self.settings.reduced_motion,
+                    _ => {}
+                }
+            }
             _ => {}
         }
         Ok(())
@@ -490,7 +560,7 @@ impl App {
                         Self::push_log(ctx, "No valid target.");
                         return Ok(());
                     };
-                    let _ = Self::resolve_attack(ctx, &attacker_id, &target_id);
+                    let _ = Self::resolve_attack(ctx, &attacker_id, &target_id, self.settings.player_damage_multiplier);
                 }
                 self.finish_combat_if_over();
             }
@@ -996,7 +1066,7 @@ impl App {
         }
     }
 
-    fn resolve_attack(ctx: &mut CombatContext, attacker_id: &str, target_id: &str) -> bool {
+    fn resolve_attack(ctx: &mut CombatContext, attacker_id: &str, target_id: &str, pdm: f32) -> bool {
         let Some(attacker_view) = ctx.state.combatants.get(attacker_id) else {
             Self::push_log(ctx, "Attacker not found.");
             return false;
@@ -1053,10 +1123,15 @@ impl App {
             let _ = attacker_mut.action_slots.use_action();
         }
 
+        let mut final_dmg = outcome.damage;
+        if final_dmg > 0 && attacker_id == "player" {
+            final_dmg = (final_dmg as f32 * pdm) as u32;
+        }
+
         let mut hp_after = None;
         if let Some(target_mut) = ctx.state.combatants.get_mut(target_id) {
-            if outcome.damage > 0 {
-                hp_after = Some(apply_damage(target_mut, outcome.damage));
+            if final_dmg > 0 {
+                hp_after = Some(apply_damage(target_mut, final_dmg));
             }
             if let Some(cond) = &outcome.inflicted_condition {
                 target_mut.apply_condition(cond.clone(), Some(2));
@@ -1075,7 +1150,7 @@ impl App {
             ),
             HitType::Hit => format!(
                 "{attacker_name} hits {target_name}{roll_mode_suffix} for {} damage (d20={} total={}).",
-                outcome.damage, outcome.d20, outcome.total,
+                final_dmg, outcome.d20, outcome.total,
             ),
             HitType::Critical => format!(
                 "{attacker_name} CRITS {target_name}{roll_mode_suffix} for {} damage (nat 20).",
@@ -1160,7 +1235,7 @@ impl App {
 
             match actor.enemy_role {
                 EnemyAiRole::Melee => {
-                    let _ = Self::resolve_attack(ctx, &attacker_id, &target_id);
+                    let _ = Self::resolve_attack(ctx, &attacker_id, &target_id, 1.0);
                 }
                 EnemyAiRole::Ranged => {
                     if let (Some(bonus), Some(dice)) =
@@ -1176,7 +1251,7 @@ impl App {
                             "ranged",
                         );
                     } else {
-                        let _ = Self::resolve_attack(ctx, &attacker_id, &target_id);
+                        let _ = Self::resolve_attack(ctx, &attacker_id, &target_id, 1.0);
                     }
                 }
                 EnemyAiRole::Spellcaster => {
@@ -1197,7 +1272,7 @@ impl App {
                             "spell",
                         );
                     } else {
-                        let _ = Self::resolve_attack(ctx, &attacker_id, &target_id);
+                        let _ = Self::resolve_attack(ctx, &attacker_id, &target_id, 1.0);
                     }
                 }
             }
@@ -1854,7 +1929,7 @@ impl App {
             };
             let n = seq.entry(mid).and_modify(|v| *v += 1).or_insert(1);
             let cid = format!("{}_{}", mid, *n);
-            out.push(combatant_from_monster(&cid, def));
+            out.push(combatant_from_monster(&cid, def, self.settings.enemy_hp_multiplier));
         }
         out
     }
@@ -2251,7 +2326,7 @@ fn demo_world_events() -> EventEngine {
     }
 }
 
-fn combatant_from_monster(combat_id: &str, monster: &MonsterDef) -> CombatantState {
+fn combatant_from_monster(combat_id: &str, monster: &MonsterDef, hp_multiplier: f32) -> CombatantState {
     let mut melee_bonus = 2;
     let mut melee_damage = DiceExpr::new(1, 4, 0);
     let mut ranged_attack_bonus = None;
@@ -2296,7 +2371,7 @@ fn combatant_from_monster(combat_id: &str, monster: &MonsterDef) -> CombatantSta
         melee_damage = damage;
     }
 
-    let max_hp = monster.hp.average().max(1);
+    let max_hp = (monster.hp.average() as f32 * hp_multiplier).max(1.0) as i32;
     let mut c = CombatantState::new(
         combat_id,
         monster.name.clone(),
