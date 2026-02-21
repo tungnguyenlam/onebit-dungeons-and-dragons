@@ -25,7 +25,7 @@ id = "soot_shrine"
 file = "rooms/soot_shrine.toml"
 
 [[connections]]
-from_room = "ember_square"
-to_region = "valley-of-ash"
-to_room = "ash_gate"
-label = "Return to Ash Gate"
+from_room = "cinder_ridge"
+to_region = "emberpeak-summit"
+to_room = "south_slope"
+label = "Ascend to Emberpeak Summit"

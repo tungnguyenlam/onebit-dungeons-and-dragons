@@ -32,3 +32,9 @@ position = [12, 4]
 type = "travel"
 target_id = "ash_hollow"
 once = false
+
+[[triggers]]
+position = [12, 1]
+type = "travel"
+target_id = "emberpeak-summit"
+once = false

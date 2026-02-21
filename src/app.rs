@@ -846,6 +846,20 @@ impl App {
                             self.player_pos = spawn_pos_for_room(new_room);
                             self.check_room_hostilities();
                         }
+                    } else if let Some(conn) = self.region.connections.iter()
+                        .find(|c| c.from_room == self.current_room_id && (c.to_region == trigger.target_id || c.to_room == trigger.target_id))
+                        .cloned() 
+                    {
+                        if let Ok(loaded) = crate::data::loader::load_region("assets", &conn.to_region) {
+                            self.region = crate::game::world::region::Region::from_loaded(&loaded);
+                            self.region_npcs = loaded.npcs;
+                            self.region_dialogs = loaded.dialogs;
+                            self.current_room_id = conn.to_room.clone();
+                            if let Some(new_room) = self.current_room() {
+                                self.player_pos = spawn_pos_for_room(new_room);
+                                self.check_room_hostilities();
+                            }
+                        }
                     }
                 }
             }

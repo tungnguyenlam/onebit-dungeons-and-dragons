@@ -76,28 +76,38 @@ Tasks completed:
   - ✅ Cargo.toml version bumped to 0.2.0.
   - ✅ Release prepared.
 
+  M30 — World Map Structure Update
+  - ✅ Implemented cross-region travel logic in app.rs via region.connections.
+  - ✅ Updated validate.rs to allow cross-region travel targets without false positives.
+  - ✅ Linked valley-of-ash (cinder_ridge) and emberpeak-summit (south_slope) physically.
+
 Tests at close: 149 passed, 0 failed
 
 Next for incoming agent:
-  - Start M30 (World Map Structure Update)
+  - Start M31 (The Whispering Woods)
 ```
 
 ---
 
 ## Active Task
 
-### Task: M30 — World Map Structure Update
+### Task: M31 — The Whispering Woods
 
 **Files to touch:**
-- src/ui/tui/screens/world_map.rs
+- assets/regions/whispering-woods/ (new folder)
+- assets/regions/whispering-woods/region.toml
+- assets/regions/whispering-woods/rooms/ (new rooms)
+- assets/regions/valley-of-ash/region.toml (to connect)
 
 **Done when:**
-- [ ] World map layout allows moving between regions via global travel locations.
+- [ ] At least 4 connected rooms exist in the new region.
+- [ ] At least 1 transition point connects Whispering Woods to the existing world map.
+- [ ] `cargo test` passes.
 
 **Blocked by:** none
 
 **Relevant docs:**
-- docs/tasks/milestones/m30.md
+- docs/tasks/milestones/m31.md
 
 ---
 
