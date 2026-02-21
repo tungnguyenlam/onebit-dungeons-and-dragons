@@ -149,6 +149,7 @@ fn map_key(key: KeyEvent) -> GameEvent {
         KeyCode::Char('o') => GameEvent::LoadGame,
         KeyCode::Char('b') => GameEvent::ToggleSound,
         KeyCode::Char(',') => GameEvent::OpenSettings,
+        KeyCode::Char('?') => GameEvent::OpenHelp,
 
         // Dialog choices
         KeyCode::Char(c @ '1'..='9') => GameEvent::Choice(c as u8 - b'0'),

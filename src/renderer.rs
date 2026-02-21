@@ -32,6 +32,7 @@ pub enum GameEvent {
     OpenJournal,
     OpenMap,
     OpenSettings,
+    OpenHelp,
     Attack,
     Wait,
     SaveGame,

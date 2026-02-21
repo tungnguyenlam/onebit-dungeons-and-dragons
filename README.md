@@ -56,6 +56,7 @@ scripts/validate_assets.sh
 - `s`: spellbook
 - `n`: journal
 - `m`: world map
+- `?`: toggle help/legend
 - `p`: save game (`saves/slot1.toml`)
 - `o`: load game (`saves/slot1.toml`)
 - `b`: toggle bell sound

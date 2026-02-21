@@ -236,6 +236,7 @@ pub fn sample_monster_defs() -> HashMap<String, MonsterDef> {
             vulnerabilities: vec![],
             immunities: vec![],
             condition_immunities: vec![],
+            loot: vec![],
         },
     );
     map.insert(
@@ -280,6 +281,7 @@ pub fn sample_monster_defs() -> HashMap<String, MonsterDef> {
             vulnerabilities: vec![],
             immunities: vec![],
             condition_immunities: vec![],
+            loot: vec![],
         },
     );
     map.insert(
@@ -324,6 +326,7 @@ pub fn sample_monster_defs() -> HashMap<String, MonsterDef> {
             vulnerabilities: vec![],
             immunities: vec![],
             condition_immunities: vec![],
+            loot: vec![],
         },
     );
     map

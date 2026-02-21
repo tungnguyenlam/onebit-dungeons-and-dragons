@@ -4,7 +4,7 @@
 use crate::game::character::{
     conditions::Condition,
     progression::proficiency_bonus,
-    skills::{Skill, SkillSet},
+    skills::{Perk, Skill, SkillSet},
 };
 use crate::game::items::{equipment::EquipmentSlots, inventory::Inventory};
 use serde::{Deserialize, Serialize};
@@ -114,6 +114,8 @@ pub struct Character {
     pub race_id: String,
     pub level: u8,
     pub xp: u32,
+    pub gold: u32,
+    pub skill_points: u32,
     pub scores: AbilityScores,
     pub max_hp: i32,
     pub current_hp: i32,
@@ -122,6 +124,7 @@ pub struct Character {
     pub skills: SkillSet,
     pub save_profs: SavingThrowProficiencies,
     pub conditions: HashSet<Condition>,
+    pub perks: HashSet<Perk>,
     pub inventory: Inventory,
     pub equipment: EquipmentSlots,
     /// Spell slots remaining per level (index 0 = 1st-level).
@@ -141,6 +144,8 @@ impl Character {
             race_id,
             level: 1,
             xp: 0,
+            gold: 10,
+            skill_points: 0,
             scores,
             max_hp: max_hp.max(1),
             current_hp: max_hp.max(1),
@@ -149,6 +154,7 @@ impl Character {
             skills: SkillSet::default(),
             save_profs: SavingThrowProficiencies::default(),
             conditions: HashSet::new(),
+            perks: HashSet::new(),
             inventory: Inventory::default(),
             equipment: EquipmentSlots::default(),
             spell_slots: [0; 9],

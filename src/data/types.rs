@@ -220,6 +220,14 @@ pub struct MonsterDef {
     pub immunities: Vec<String>,
     #[serde(default)]
     pub condition_immunities: Vec<String>,
+    #[serde(default)]
+    pub loot: Vec<MonsterLoot>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct MonsterLoot {
+    pub item_id: String,
+    pub chance: f32,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]

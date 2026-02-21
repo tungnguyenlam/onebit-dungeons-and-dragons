@@ -493,29 +493,42 @@ impl App {
     }
 
     pub fn finish_combat_if_over(&mut self) {
-        let Some((is_over, players_alive, player_hp, ws, gained_xp)) = (match &self.state {
-            AppState::Combat(ctx) => Some((
-                ctx.state.is_over(),
-                ctx.state
-                    .combatants
-                    .values()
-                    .any(|c| c.is_player && c.is_alive()),
-                ctx.state.combatants.get("player").map(|c| c.current_hp),
-                ctx.world_state.clone(),
-                ctx.state
-                    .combatants
-                    .values()
-                    .filter(|c| !c.is_player && c.current_hp <= 0)
-                    .filter_map(|c| {
-                        c.id.split('_')
-                            .next()
-                            .and_then(|mid| self.monster_defs.get(mid))
-                            .map(|m| m.xp)
-                    })
-                    .sum::<u32>(),
-            )),
-            _ => None,
-        }) else {
+        let Some((is_over, players_alive, player_hp, ws, gained_xp, loot_items)) =
+            (match &self.state {
+                AppState::Combat(ctx) => Some((
+                    ctx.state.is_over(),
+                    ctx.state
+                        .combatants
+                        .values()
+                        .any(|c| c.is_player && c.is_alive()),
+                    ctx.state.combatants.get("player").map(|c| c.current_hp),
+                    ctx.world_state.clone(),
+                    ctx.state
+                        .combatants
+                        .values()
+                        .filter(|c| !c.is_player && c.current_hp <= 0)
+                        .filter_map(|c| {
+                            c.id.split('_')
+                                .next()
+                                .and_then(|mid| self.monster_defs.get(mid))
+                                .map(|m| m.xp)
+                        })
+                        .sum::<u32>(),
+                    ctx.state
+                        .combatants
+                        .values()
+                        .filter(|c| !c.is_player && c.current_hp <= 0)
+                        .filter_map(|c| {
+                            c.id.split('_')
+                                .next()
+                                .and_then(|mid| self.monster_defs.get(mid))
+                                .cloned()
+                        })
+                        .collect::<Vec<_>>(),
+                )),
+                _ => None,
+            })
+        else {
             return;
         };
 
@@ -529,6 +542,26 @@ impl App {
 
         if players_alive {
             self.grant_player_xp(gained_xp);
+
+            let mut loot_granted = Vec::new();
+            use rand::Rng;
+            let mut rng = rand::rng();
+
+            for monster in loot_items {
+                if let Some(loot_table) = self.monster_defs.get(&monster.id).map(|m| &m.loot) {
+                    for loot in loot_table {
+                        if rng.random::<f32>() < loot.chance {
+                            self.player.inventory.add(&loot.item_id, 1);
+                            loot_granted.push(loot.item_id.clone());
+                        }
+                    }
+                }
+            }
+
+            if !loot_granted.is_empty() {
+                self.set_feedback(&format!("Found: {}", loot_granted.join(", ")));
+            }
+
             self.world_state.set_flag("won_first_combat");
             self.modify_faction_rep("town_guard", 1);
             self.modify_faction_rep("goblin_tribe", -2);

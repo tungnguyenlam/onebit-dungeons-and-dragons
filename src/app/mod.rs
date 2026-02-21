@@ -58,6 +58,7 @@ pub struct App {
     pub turn: u64,
     pub focused_pane: FocusedPane,
     pub feedback_message: Option<(String, std::time::Instant)>,
+    pub show_help: bool,
 }
 
 impl App {
@@ -187,6 +188,7 @@ impl App {
             turn: 0,
             focused_pane: FocusedPane::default(),
             feedback_message: None,
+            show_help: false,
         }
     }
 
@@ -276,189 +278,259 @@ impl App {
         }
     }
 
-    pub fn interact_current_tile(&mut self) {
-        let Some(room) = self.current_room() else {
-            return;
+    fn handle_travel(&mut self, target_id: &str) {
+        let epic_progress = self.world_state.counter("epic_quest_progress");
+        let macguffin_acquired = self.world_state.flag("macguffin_acquired");
+        let threat_level = if self.world_state.flag("macguffin_acquired") {
+            3
+        } else if epic_progress >= 2 {
+            2
+        } else if epic_progress >= 1 {
+            1
+        } else {
+            0
         };
-        let (col, row) = (self.player_pos.0, self.player_pos.1);
 
-        if let Some(trigger) = room.trigger_at(col, row).cloned() {
-            match trigger.kind {
-                crate::data::types::TriggerKind::Dialog => {
-                    self.start_dialog_with_npc(&trigger.target_id);
+        if threat_level > 0 {
+            use rand::Rng;
+            let mut rng = rand::rng();
+            let ambush_chance = match threat_level {
+                3 => 4,
+                2 => 5,
+                1 => 6,
+                _ => 0,
+            };
+
+            if rng.random_range(1..=ambush_chance) == 1 {
+                self.queue_sound(SoundEffect::Beep);
+                let ambush_monster = match threat_level {
+                    3 => "ghostly_knight",
+                    2 => "orc_warchief",
+                    _ => "forest_goblin",
+                };
+                self.pending_encounter_monster = Some(ambush_monster.into());
+                let ctx = self.make_combat_context();
+                self.transition(AppState::Combat(ctx));
+
+                if threat_level >= 2 && !self.world_state.flag("antagonist_noticed") {
+                    self.world_state.set_flag("antagonist_noticed");
+                    self.journal.append(
+                        format!("antagonist-notice-{}", self.turn),
+                        self.turn,
+                        JournalCategory::World,
+                        None,
+                        "The Antagonist Notices You",
+                        "Dark scouts have reported your movements. Expect increased hostility.",
+                    );
                 }
-                crate::data::types::TriggerKind::Encounter => {
-                    self.pending_encounter_monster = Some(trigger.target_id.clone());
-                    let ctx = self.make_combat_context();
-                    self.transition(AppState::Combat(ctx));
+                return;
+            }
+        }
+
+        let from_room_id = self.current_room_id.clone();
+
+        if self.region.room(target_id).is_some() {
+            self.current_room_id = target_id.to_string();
+            if let Some(new_room) = self.current_room() {
+                self.player_pos = self.find_entry_pos(new_room, &from_room_id);
+                self.check_room_hostilities();
+            }
+        } else if let Some(conn) = self
+            .region
+            .connections
+            .iter()
+            .find(|c| {
+                c.from_room == self.current_room_id
+                    && (c.to_region == target_id || c.to_room == target_id)
+            })
+            .cloned()
+        {
+            let mut target_region = conn.to_region.clone();
+            let ruined_map = [("ironhold-mines", "ruined-ironhold-mines")];
+
+            for (normal, ruined) in ruined_map {
+                if macguffin_acquired && target_region == normal {
+                    target_region = ruined.into();
+                    break;
                 }
-                crate::data::types::TriggerKind::Lore => {
-                    if let Some(entry) = self.lore_defs.get(&trigger.target_id) {
-                        crate::game::story::events::inspect_lore(
-                            entry,
-                            &mut self.world_state,
-                            &mut self.journal,
-                            self.turn,
-                        );
-                    }
+            }
+
+            if let Ok(loaded) = crate::data::loader::load_region("assets", &target_region) {
+                self.region = Region::from_loaded(&loaded);
+                self.region_npcs = loaded.npcs;
+                self.region_dialogs = loaded.dialogs;
+                self.current_room_id = conn.to_room.clone();
+                if !self.region.rooms.contains_key(&self.current_room_id) {
+                    self.current_room_id = loaded.manifest.entry_room;
                 }
-                crate::data::types::TriggerKind::QuestStage => {
-                    self.world_state.set_flag(trigger.target_id.clone());
-
-                    let macguffins = [
-                        "has_obsidian_eye",
-                        "has_obsidian_heart",
-                        "has_sylvan_glitch_key",
-                        "has_null_scepter",
-                    ];
-
-                    if macguffins.iter().any(|m| *m == trigger.target_id) {
-                        if !self.world_state.flag("macguffin_acquired") {
-                            self.world_state.set_flag("macguffin_acquired");
-                            let macguffin_count = macguffins
-                                .iter()
-                                .filter(|m| self.world_state.flag(m))
-                                .count();
-                            self.world_state
-                                .delta_counter("epic_quest_progress", macguffin_count as i32);
-
-                            self.journal.append(
-                                format!("macguffin-acquired-{}", self.turn),
-                                self.turn,
-                                JournalCategory::World,
-                                None,
-                                "The Antagonist Stirs",
-                                "Dark forces have detected your acquisition. The enemy grows stronger against you.",
-                            );
-                        }
-                    }
+                if let Some(new_room) = self.current_room() {
+                    self.player_pos = self.find_entry_pos(new_room, &from_room_id);
+                    self.check_room_hostilities();
                 }
-                crate::data::types::TriggerKind::Travel => {
-                    let epic_progress = self.world_state.counter("epic_quest_progress");
-                    let macguffin_acquired = self.world_state.flag("macguffin_acquired");
-                    let threat_level = if self.world_state.flag("macguffin_acquired") {
-                        3
-                    } else if epic_progress >= 2 {
-                        2
-                    } else if epic_progress >= 1 {
-                        1
-                    } else {
-                        0
-                    };
+            }
+            self.queue_sound(SoundEffect::Beep);
+        }
+    }
 
-                    if threat_level > 0 {
-                        use rand::Rng;
-                        let mut rng = rand::rng();
-                        let ambush_chance = match threat_level {
-                            3 => 4,
-                            2 => 5,
-                            1 => 6,
-                            _ => 0,
-                        };
+    fn find_entry_pos(
+        &self,
+        room: &crate::game::world::room::Room,
+        from_room_id: &str,
+    ) -> (u32, u32) {
+        // Try to find a travel trigger in the new room that leads back to the old room
+        if let Some(back_trigger) = room.triggers.iter().find(|t| {
+            matches!(t.kind, crate::data::types::TriggerKind::Travel) && t.target_id == from_room_id
+        }) {
+            // Spawn next to the back trigger instead of on top of it, if possible
+            let tx = back_trigger.position[0];
+            let ty = back_trigger.position[1];
 
-                        if rng.random_range(1..=ambush_chance) == 1 {
-                            self.queue_sound(SoundEffect::Beep);
-                            let ambush_monster = match threat_level {
-                                3 => "ghostly_knight",
-                                2 => "orc_warchief",
-                                _ => "forest_goblin",
-                            };
-                            self.pending_encounter_monster = Some(ambush_monster.into());
-                            let ctx = self.make_combat_context();
-                            self.transition(AppState::Combat(ctx));
+            // Just spawn on it for now to ensure it works, but usually you'd offset it
+            return (tx, ty);
+        }
 
-                            if threat_level >= 2 && !self.world_state.flag("antagonist_noticed") {
-                                self.world_state.set_flag("antagonist_noticed");
-                                self.journal.append(
-                                    format!("antagonist-notice-{}", self.turn),
-                                    self.turn,
-                                    JournalCategory::World,
-                                    None,
-                                    "The Antagonist Notices You",
-                                    "Dark scouts have reported your movements. Expect increased hostility.",
-                                );
-                            }
-                            return;
-                        }
-                    }
+        // Fallback to default spawn
+        find_spawn_pos_for_room(room)
+    }
 
-                    if self.region.room(&trigger.target_id).is_some() {
-                        self.current_room_id = trigger.target_id.clone();
-                        if let Some(new_room) = self.current_room() {
-                            self.player_pos = find_spawn_pos_for_room(new_room);
-                            self.check_room_hostilities();
-                        }
-                    } else if let Some(conn) = self
+    fn get_npc_at_player_position(&self) -> Option<&NpcDef> {
+        let (col, row) = self.player_pos;
+        if let Some(room) = self.current_room() {
+            if let Some(room_npc) = room
+                .npcs
+                .iter()
+                .find(|n| n.position[0] == col && n.position[1] == row)
+            {
+                return self.region_npcs.get(&room_npc.id);
+            }
+        }
+        None
+    }
+
+    pub fn interact_current_tile(&mut self) {
+        let room_id = self.current_room_id.clone();
+        let (col, row) = self.player_pos;
+
+        // Check triggers at current position - get fresh borrow
+        if let Some(trigger) = self
+            .region
+            .room(&room_id)
+            .and_then(|r| r.trigger_at(col, row).cloned())
+        {
+            self.execute_trigger(&trigger);
+            return;
+        }
+
+        // Check for NPCs at current position
+        if let Some(room) = self.region.room(&room_id) {
+            if let Some(npc_id) = room
+                .npcs
+                .iter()
+                .find(|n| n.position[0] == col && n.position[1] == row)
+                .map(|n| n.id.clone())
+            {
+                self.start_dialog_with_npc(&npc_id);
+                return;
+            }
+        }
+
+        // Check adjacent for doors/chests/travel
+        let mut interactable_found = false;
+        for dy in -1..=1 {
+            for dx in -1..=1 {
+                if dx == 0 && dy == 0 {
+                    continue;
+                }
+                let nx = col as i32 + dx;
+                let ny = row as i32 + dy;
+                if nx >= 0 && ny >= 0 {
+                    let nx = nx as u32;
+                    let ny = ny as u32;
+
+                    if let Some(trigger) = self
                         .region
-                        .connections
-                        .iter()
-                        .find(|c| {
-                            c.from_room == self.current_room_id
-                                && (c.to_region == trigger.target_id
-                                    || c.to_room == trigger.target_id)
-                        })
-                        .cloned()
+                        .room(&room_id)
+                        .and_then(|r| r.trigger_at(nx, ny).cloned())
                     {
-                        let mut target_region = conn.to_region.clone();
-
-                        let ruined_map = [("ironhold-mines", "ruined-ironhold-mines")];
-
-                        for (normal, ruined) in ruined_map {
-                            if macguffin_acquired && target_region == normal {
-                                target_region = ruined.into();
-                                break;
-                            }
+                        if matches!(trigger.kind, crate::data::types::TriggerKind::Travel) {
+                            self.execute_trigger(&trigger);
+                            interactable_found = true;
+                            break;
                         }
-
-                        if let Ok(loaded) =
-                            crate::data::loader::load_region("assets", &target_region)
-                        {
-                            self.region = Region::from_loaded(&loaded);
-                            self.region_npcs = loaded.npcs;
-                            self.region_dialogs = loaded.dialogs;
-                            self.current_room_id = conn.to_room.clone();
-                            if !self.region.rooms.contains_key(&self.current_room_id) {
-                                self.current_room_id = loaded.manifest.entry_room;
-                            }
-                            if let Some(new_room) = self.current_room() {
-                                self.player_pos = find_spawn_pos_for_room(new_room);
-                                self.check_room_hostilities();
-                            }
-                        }
-                        self.queue_sound(SoundEffect::Beep);
                     }
                 }
             }
-        } else {
-            // No trigger at this tile - provide feedback
-            if let Some(npc) = self.get_npc_at_player_position() {
-                self.set_feedback(&format!("Press Enter to talk to {}", npc.name));
-            } else if self.is_near_door() {
-                self.set_feedback("Press Enter to open/close door");
+            if interactable_found {
+                break;
+            }
+        }
+
+        if !interactable_found {
+            if self.is_near_door() {
+                self.set_feedback("You are near a door. Step on it or face it to interact.");
             } else if self.is_near_chest() {
-                self.set_feedback("Press Enter to open chest");
-            } else if self.is_blocked() {
-                self.set_feedback("Blocked! Cannot move here.");
+                self.set_feedback("You are near a chest. Step on it to open.");
             } else {
                 self.set_feedback("Nothing here to interact with.");
             }
         }
     }
 
-    fn get_npc_at_player_position(&self) -> Option<&NpcDef> {
-        let (col, row) = self.player_pos;
-        if let Some(room) = self.current_room() {
-            if let Some(tile) = room.grid.get(col, row) {
-                if matches!(tile, crate::game::world::map::Tile::NpcSpawn) {
-                    for npc in self.region_npcs.values() {
-                        if !npc.id.is_empty() {
-                            return Some(npc);
-                        }
+    fn execute_trigger(&mut self, trigger: &crate::data::types::TriggerDef) {
+        match trigger.kind {
+            crate::data::types::TriggerKind::Dialog => {
+                self.start_dialog_with_npc(&trigger.target_id);
+            }
+            crate::data::types::TriggerKind::Encounter => {
+                self.pending_encounter_monster = Some(trigger.target_id.clone());
+                let ctx = self.make_combat_context();
+                self.transition(AppState::Combat(ctx));
+            }
+            crate::data::types::TriggerKind::Lore => {
+                if let Some(entry) = self.lore_defs.get(&trigger.target_id) {
+                    crate::game::story::events::inspect_lore(
+                        entry,
+                        &mut self.world_state,
+                        &mut self.journal,
+                        self.turn,
+                    );
+                }
+            }
+            crate::data::types::TriggerKind::QuestStage => {
+                self.world_state.set_flag(trigger.target_id.clone());
+
+                let macguffins = [
+                    "has_obsidian_eye",
+                    "has_obsidian_heart",
+                    "has_sylvan_glitch_key",
+                    "has_null_scepter",
+                ];
+
+                if macguffins.iter().any(|m| *m == trigger.target_id) {
+                    if !self.world_state.flag("macguffin_acquired") {
+                        self.world_state.set_flag("macguffin_acquired");
+                        let macguffin_count = macguffins
+                            .iter()
+                            .filter(|m| self.world_state.flag(m))
+                            .count();
+                        self.world_state
+                            .delta_counter("epic_quest_progress", macguffin_count as i32);
+
+                        self.journal.append(
+                            format!("macguffin-acquired-{}", self.turn),
+                            self.turn,
+                            JournalCategory::World,
+                            None,
+                            "The Antagonist Stirs",
+                            "Dark forces have detected your acquisition. The enemy grows stronger against you.",
+                        );
                     }
                 }
             }
+            crate::data::types::TriggerKind::Travel => {
+                self.handle_travel(&trigger.target_id);
+            }
         }
-        None
     }
 
     fn is_near_door(&self) -> bool {
@@ -613,11 +685,27 @@ impl App {
 
     pub fn grant_player_xp(&mut self, gained_xp: u32) {
         self.player.xp += gained_xp;
+        let old_level = self.player.level;
         let new_level = level_for_xp(self.player.xp);
-        if new_level > self.player.level {
+
+        if new_level > old_level {
+            let levels_gained = new_level - old_level;
             self.player.level = new_level;
-            self.player.max_hp += 8; // simplified
+            self.player.max_hp += 8 * levels_gained as i32;
             self.player.current_hp = self.player.max_hp;
+            self.player.skill_points += (levels_gained * 2) as u32;
+
+            self.set_feedback(&format!(
+                "Leveled up to {}! +{} HP, +{} skill points",
+                new_level,
+                8 * levels_gained as i32,
+                levels_gained * 2
+            ));
+        }
+
+        let gold_found = gained_xp / 10;
+        if gold_found > 0 {
+            self.player.gold += gold_found;
         }
     }
 

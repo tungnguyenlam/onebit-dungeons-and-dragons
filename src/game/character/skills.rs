@@ -131,3 +131,76 @@ impl SkillSet {
         self.expertise.contains(&skill)
     }
 }
+
+/// Player perks that can be purchased with skill points.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Perk {
+    ExtraAttack,
+    Toughness,
+    Lucky,
+    Mobile,
+    Alert,
+    HeavyArmorProf,
+    ShieldProf,
+    MartialWeaponProf,
+    DualWielder,
+    Grappler,
+}
+
+impl Perk {
+    pub fn all() -> &'static [Perk] {
+        &[
+            Perk::ExtraAttack,
+            Perk::Toughness,
+            Perk::Lucky,
+            Perk::Mobile,
+            Perk::Alert,
+            Perk::HeavyArmorProf,
+            Perk::ShieldProf,
+            Perk::MartialWeaponProf,
+            Perk::DualWielder,
+            Perk::Grappler,
+        ]
+    }
+
+    pub fn name(&self) -> &'static str {
+        match self {
+            Perk::ExtraAttack => "Extra Attack",
+            Perk::Toughness => "Toughness",
+            Perk::Lucky => "Lucky",
+            Perk::Mobile => "Mobile",
+            Perk::Alert => "Alert",
+            Perk::HeavyArmorProf => "Heavy Armor Proficiency",
+            Perk::ShieldProf => "Shield Proficiency",
+            Perk::MartialWeaponProf => "Martial Weapon Proficiency",
+            Perk::DualWielder => "Dual Wielder",
+            Perk::Grappler => "Grappler",
+        }
+    }
+
+    pub fn description(&self) -> &'static str {
+        match self {
+            Perk::ExtraAttack => {
+                "You can make an additional attack when you take the Attack action."
+            }
+            Perk::Toughness => "Your hit point maximum increases by 2 per level.",
+            Perk::Lucky => "You have 3 luck points. Spend 1 to reroll a d20 test.",
+            Perk::Mobile => "Your speed increases by 10 ft. Difficult terrain doesn't slow you.",
+            Perk::Alert => {
+                "You can't be surprised. Enemies don't gain advantage from being hidden."
+            }
+            Perk::HeavyArmorProf => "You gain proficiency with heavy armor.",
+            Perk::ShieldProf => "You gain proficiency with shields.",
+            Perk::MartialWeaponProf => "You gain proficiency with all martial weapons.",
+            Perk::DualWielder => "You can use two-weapon fighting without the light property.",
+            Perk::Grappler => {
+                "You have advantage on attack rolls against creatures you're grappling."
+            }
+        }
+    }
+
+    pub fn cost(&self) -> u32 {
+        2
+    }
+}

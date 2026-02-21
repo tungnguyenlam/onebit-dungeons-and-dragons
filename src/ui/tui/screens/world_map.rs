@@ -22,6 +22,10 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     let t = theme();
 
     // Header with region info
+    let room_name = app
+        .current_room()
+        .map(|r| r.name.clone())
+        .unwrap_or_else(|| app.current_room_id.clone());
     let region_weather = if app.region.weather.is_empty() || app.region.weather == "none" {
         String::new()
     } else {
@@ -40,7 +44,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             )
         })
         .style(Style::default().fg(t.text_primary)),
-        Line::from(format!("Room: {}", app.current_room_id))
+        Line::from(format!("Room: {} ({})", room_name, app.current_room_id))
             .style(Style::default().fg(t.text_muted)),
     ])
     .block(
@@ -65,6 +69,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
                 )),
             ),
             Span::raw(format!(" {}/{} ", app.player.current_hp, app.player.max_hp)),
+            Span::raw(format!("Gold:{} ", app.player.gold)),
         ]),
         Line::from(vec![
             Span::raw(format!("Lv{} ", app.player.level)),
@@ -74,6 +79,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
                 Style::default().fg(t.xp),
             ),
             Span::raw(format!(" {} ", app.player.xp)),
+            Span::raw(format!("Skill Pts:{} ", app.player.skill_points)),
         ]),
     ];
     let stats = Paragraph::new(stats_lines)
@@ -121,16 +127,23 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
 
     // Controls footer
     let feedback = app.get_feedback();
-    let footer_lines = if let Some(msg) = feedback {
+    let footer_lines = if app.show_help {
+        vec![
+            Line::from("LEGEND: @=player  n=NPC  !=trigger  /=door  >=stairs down  <=stairs up"),
+            Line::from("       c=chest  +=door closed  ~=deep water  ,=shallow water"),
+            Line::from("       HP=health  MP=mana  XP=experience  $[=gold"),
+            Line::from("Press ? to close help. Move: arrows/hjkl Interact: Enter"),
+        ]
+    } else if let Some(msg) = feedback {
         vec![
             Line::from(msg).style(Style::default().fg(t.warning)),
-            Line::from("Move: arrows/hjkl  Interact: Enter"),
+            Line::from("Move: arrows/hjkl  Interact: Enter  ?: help"),
             Line::from("a combat  i inventory  s spellbook  n journal"),
             Line::from("p save  o load  b toggle sound  q quit"),
         ]
     } else {
         vec![
-            Line::from("Move: arrows/hjkl  Interact: Enter"),
+            Line::from("Move: arrows/hjkl  Interact: Enter  ?: help"),
             Line::from("a combat  i inventory  s spellbook  n journal"),
             Line::from("p save  o load  b toggle sound  q quit"),
         ]
@@ -140,7 +153,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             .style(Style::default().fg(t.text_muted))
             .block(
                 Block::default()
-                    .title("Controls")
+                    .title(if app.show_help { "Legend" } else { "Controls" })
                     .borders(Borders::ALL)
                     .style(Style::default().fg(t.panel_border)),
             ),

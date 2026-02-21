@@ -121,6 +121,9 @@ impl App {
                 self.focused_pane = FocusedPane::Main;
                 self.transition(AppState::Journal);
             }
+            GameEvent::OpenHelp => {
+                self.show_help = !self.show_help;
+            }
             GameEvent::MoveUp => self.try_move_player(0, -1),
             GameEvent::MoveDown => self.try_move_player(0, 1),
             GameEvent::MoveLeft => self.try_move_player(-1, 0),
