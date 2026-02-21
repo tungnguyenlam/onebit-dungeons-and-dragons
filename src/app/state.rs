@@ -2,11 +2,7 @@ use crate::data::types::DialogTree;
 use crate::game::{
     combat::{CombatState, CombatantState},
     dice::DiceExpr,
-    story::{
-        dialog::ResolvedNode,
-        journal::Category as JournalCategory,
-        WorldState,
-    },
+    story::{dialog::ResolvedNode, journal::Category as JournalCategory, WorldState},
 };
 
 // ---------------------------------------------------------------------------

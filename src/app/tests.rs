@@ -1,11 +1,11 @@
 use super::*;
-use crate::renderer::GameEvent;
 use crate::data::types::TriggerKind;
+use crate::data::types::{ItemBonuses, ItemDef, ItemType};
 use crate::game::character::conditions::Condition;
+use crate::game::combat::{roll_attack, AttackProfile, DefenseProfile};
 use crate::game::dice::DiceExpr;
-use crate::game::combat::{AttackProfile, DefenseProfile, roll_attack};
 use crate::game::items::equipment::EquipmentSlot;
-use crate::data::types::{ItemDef, ItemType, ItemBonuses};
+use crate::renderer::GameEvent;
 use std::sync::{Mutex, MutexGuard, OnceLock};
 
 fn save_lock() -> MutexGuard<'static, ()> {
@@ -169,7 +169,7 @@ fn inventory_toggle_equips_weapon_for_combat() {
     match &app.state {
         AppState::Combat(ctx) => {
             let p = ctx.state.combatants.get("player").unwrap();
-            // In App::new longsword is 1d8, versatile 1d10. 
+            // In App::new longsword is 1d8, versatile 1d10.
             // In equipment_bonus_totals it uses w.damage.
             assert_eq!(p.damage_dice, DiceExpr::new(1, 8, 3));
         }
@@ -274,24 +274,29 @@ fn equipment_resistance_halves_elemental_damage() {
         },
     );
     app.player.inventory.add("fire_ring", 1);
-    app.player.equipment.toggle(EquipmentSlot::Ring1, "fire_ring".into());
+    app.player
+        .equipment
+        .toggle(EquipmentSlot::Ring1, "fire_ring".into());
 
     app.transition(AppState::WorldMap);
     app.handle_event(GameEvent::Attack).unwrap(); // enter combat
-    
+
     if let AppState::Combat(ctx) = &mut app.state {
         let p = ctx.state.combatants.get("player").unwrap();
-        assert!(p.resistances.contains("fire"), "Player should have fire resistance");
-        
+        assert!(
+            p.resistances.contains("fire"),
+            "Player should have fire resistance"
+        );
+
         let atk_profile = AttackProfile {
             id: "dragon",
-            attack_bonus: 100, // always hit
+            attack_bonus: 100,                      // always hit
             damage_dice: &DiceExpr::new(1, 10, 10), // 11-20
             damage_type: "fire",
             conditions: &std::collections::HashSet::new(),
             on_hit_condition: None,
         };
-        
+
         let def_profile = DefenseProfile {
             id: "player",
             armor_class: 10,
@@ -301,7 +306,11 @@ fn equipment_resistance_halves_elemental_damage() {
         };
 
         let out = roll_attack(&atk_profile, &def_profile, &ctx.world_state);
-        assert!(out.damage >= 5 && out.damage <= 10, "Damage {} should be halved (orig 11-20)", out.damage);
+        assert!(
+            out.damage >= 5 && out.damage <= 10,
+            "Damage {} should be halved (orig 11-20)",
+            out.damage
+        );
         assert_eq!(out.damage_type, "fire");
     } else {
         panic!("Expected combat state");

@@ -93,9 +93,10 @@ fn validate_region(base: &Path, slug: &str, report: &mut ValidationReport) -> Re
                 TriggerKind::Travel => {
                     travel_count += 1;
                     if !loaded.rooms.contains_key(&trig.target_id) {
-                        let is_external = loaded.manifest.connections.iter().any(|c| {
-                            c.to_region == trig.target_id || c.to_room == trig.target_id
-                        });
+                        let is_external =
+                            loaded.manifest.connections.iter().any(|c| {
+                                c.to_region == trig.target_id || c.to_room == trig.target_id
+                            });
                         if !is_external {
                             report.errors.push(format!(
                                 "region '{slug}' room '{room_id}' has travel trigger to missing room '{}'",
@@ -136,10 +137,8 @@ fn validate_region(base: &Path, slug: &str, report: &mut ValidationReport) -> Re
                 .iter()
                 .filter(|t| t.kind == TriggerKind::Travel)
             {
-                if loaded.rooms.contains_key(&t.target_id) {
-                    if seen.insert(t.target_id.clone()) {
-                        q.push_back(t.target_id.clone());
-                    }
+                if loaded.rooms.contains_key(&t.target_id) && seen.insert(t.target_id.clone()) {
+                    q.push_back(t.target_id.clone());
                 }
             }
         }

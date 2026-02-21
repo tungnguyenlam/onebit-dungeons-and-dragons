@@ -1,16 +1,16 @@
 use crate::data::loader::{load_monsters, load_region};
 use crate::data::types::{
-    ArmorDef, ArmorType, DialogTree, ItemBonuses, ItemDef, ItemType, MonsterAction,
-    MonsterDef, NpcDef, WeaponDef, SpellDef,
+    ArmorDef, ArmorType, DialogTree, ItemBonuses, ItemDef, ItemType, MonsterAction, MonsterDef,
+    NpcDef, SpellDef, WeaponDef,
 }; // Careful: check types here
 use crate::game::{
-    character::{AbilityScores, conditions::Condition},
+    character::{conditions::Condition, AbilityScores},
     combat::CombatantState,
-    dice::DiceExpr,
     combat::EnemyAiRole,
-    world::region::Region,
-    story::journal::Category as JournalCategory,
+    dice::DiceExpr,
     story::events::{EventEngine, EventTrigger, WorldEvent},
+    story::journal::Category as JournalCategory,
+    world::region::Region,
 };
 use std::collections::HashMap;
 

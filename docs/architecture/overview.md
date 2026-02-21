@@ -29,8 +29,13 @@ See → [renderer.md](renderer.md) for the full dual-renderer design.
 ```
 src/
 ├── main.rs          ← CLI --mode flag; dispatches to TuiRenderer or GuiRenderer
-├── app.rs           ← renderer-agnostic AppState + event handling
+├── app/             ← renderer-agnostic AppState + event handling
+│   ├── mod.rs
+│   ├── handlers.rs
+│   ├── combat.rs
+│   └── samples.rs
 ├── renderer.rs      ← GameRenderer trait, GameEvent enum
+
 ├── ui/
 │   ├── mod.rs
 │   ├── tui/                     [feature = "tui"]

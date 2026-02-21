@@ -1,7 +1,7 @@
 use crate::data::loader::{load_global_assets, load_lore, load_monsters, load_quests, load_region};
 use crate::data::types::{
-    ArmorDef, ArmorType, DialogTree, ItemBonuses, ItemDef, ItemType, LoreEntry, MonsterDef, NpcDef,
-    QuestDef, QuestKind, QuestStageDef, QuestTransition, SpellDef, MonsterAction, WeaponDef,
+    ArmorDef, ArmorType, DialogTree, ItemBonuses, ItemDef, ItemType, LoreEntry, MonsterAction,
+    MonsterDef, NpcDef, QuestDef, QuestKind, QuestStageDef, QuestTransition, SpellDef, WeaponDef,
 };
 use crate::game::{
     character::{progression::level_for_xp, AbilityScores, Character},
@@ -10,7 +10,7 @@ use crate::game::{
     save::{load_from_path, save_to_path, SaveGame, SAVE_FORMAT_VERSION},
     story::{
         events::{inspect_lore, EventEngine, EventTrigger, WorldEvent},
-        journal::{Journal, Category as JournalCategory},
+        journal::{Category as JournalCategory, Journal},
         quest::QuestLog,
         WorldState,
     },
@@ -18,16 +18,16 @@ use crate::game::{
 };
 use crate::renderer::{ControlFlow, GameEvent, SoundEffect};
 use anyhow::Result;
-use std::cell::{RefCell};
+use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 
-pub mod state;
-pub mod samples;
 pub mod combat;
 pub mod handlers;
+pub mod samples;
+pub mod state;
 
-pub use state::*;
 use samples::*;
+pub use state::*;
 
 /// Central application object.
 pub struct App {
@@ -77,7 +77,7 @@ impl App {
             .filter(|m| !m.is_empty())
             .unwrap_or_else(sample_monster_defs);
         let lore_defs = load_lore("assets").ok().unwrap_or_default();
-        
+
         let mut player = Character::new(
             "Theron".into(),
             "fighter".into(),
@@ -142,7 +142,7 @@ impl App {
                     .entry()
                     .map(|r| r.id.clone())
                     .unwrap_or_else(|| region.entry_room.clone());
-                let spawn = find_spawn_pos_for_room(&region.room(&room_id).unwrap());
+                let spawn = find_spawn_pos_for_room(region.room(&room_id).unwrap());
                 (region, loaded.npcs, loaded.dialogs, room_id, spawn)
             } else {
                 let (region, npcs, dialogs) = sample_region_bundle();
@@ -150,7 +150,7 @@ impl App {
                     .entry()
                     .map(|r| r.id.clone())
                     .unwrap_or_else(|| region.entry_room.clone());
-                let spawn = find_spawn_pos_for_room(&region.room(&room_id).unwrap());
+                let spawn = find_spawn_pos_for_room(region.room(&room_id).unwrap());
                 (region, npcs, dialogs, room_id, spawn)
             };
 
@@ -262,9 +262,11 @@ impl App {
     }
 
     pub fn interact_current_tile(&mut self) {
-        let Some(room) = self.current_room() else { return };
+        let Some(room) = self.current_room() else {
+            return;
+        };
         let (col, row) = (self.player_pos.0 as i32, self.player_pos.1 as i32);
-        
+
         if let Some(trigger) = room.trigger_at(col as u32, row as u32).cloned() {
             match trigger.kind {
                 crate::data::types::TriggerKind::Dialog => {
@@ -295,10 +297,11 @@ impl App {
                             self.player_pos = find_spawn_pos_for_room(new_room);
                             self.check_room_hostilities();
                         }
-                    } else if let Some(_conn) = self.region.connections.iter()
-                        .find(|c| c.from_room == self.current_room_id && (c.to_region == trigger.target_id || c.to_room == trigger.target_id))
-                    {
-                         self.queue_sound(SoundEffect::Beep);
+                    } else if let Some(_conn) = self.region.connections.iter().find(|c| {
+                        c.from_room == self.current_room_id
+                            && (c.to_region == trigger.target_id || c.to_room == trigger.target_id)
+                    }) {
+                        self.queue_sound(SoundEffect::Beep);
                     }
                 }
             }
@@ -306,16 +309,20 @@ impl App {
     }
 
     pub fn start_dialog_with_npc(&mut self, npc_id: &str) {
-        let Some(npc) = self.region_npcs.get(npc_id) else { return };
+        let Some(npc) = self.region_npcs.get(npc_id) else {
+            return;
+        };
         let tree = if !npc.dialog_ref.is_empty() {
-             self.region_dialogs.get(&npc.dialog_ref).cloned()
+            self.region_dialogs.get(&npc.dialog_ref).cloned()
         } else {
-             self.region_dialogs.get(npc_id).cloned()
+            self.region_dialogs.get(npc_id).cloned()
         };
 
         let Some(tree) = tree else { return };
 
-        if let Some(resolved) = crate::game::story::dialog::resolve(&tree, "START", &mut self.world_state) {
+        if let Some(resolved) =
+            crate::game::story::dialog::resolve(&tree, "START", &mut self.world_state)
+        {
             self.transition(AppState::Dialog(DialogContext {
                 npc_name: npc.name.clone(),
                 tree,
@@ -327,19 +334,24 @@ impl App {
 
     pub fn apply_character_creation(&mut self) {
         self.player.name = self.char_creation_ui.name.clone();
-        self.player.class_id = self.char_creation_ui.class_options[self.char_creation_ui.class_index].clone();
-        self.player.race_id = self.char_creation_ui.race_options[self.char_creation_ui.race_index].clone();
+        self.player.class_id =
+            self.char_creation_ui.class_options[self.char_creation_ui.class_index].clone();
+        self.player.race_id =
+            self.char_creation_ui.race_options[self.char_creation_ui.race_index].clone();
     }
 
     pub fn equipped_item_ids(&self) -> impl Iterator<Item = &str> {
-        self.player.equipment.iter().filter_map(|(_, id)| Some(id.as_str()))
+        self.player
+            .equipment
+            .iter()
+            .map(|(_, id)| id.as_str())
     }
 
     pub fn equipment_bonus_totals(&self) -> (i32, crate::game::dice::DiceExpr, i32, i32, i32, i32) {
         let mut attack_bonus = 0;
         let mut damage_dice = crate::game::dice::DiceExpr::new(1, 4, 0);
         let mut ac_bonus = 0;
-        
+
         for id in self.equipped_item_ids() {
             if let Some(item) = self.item_defs.get(id) {
                 attack_bonus += item.bonuses.attack_bonus;
@@ -412,17 +424,19 @@ impl App {
     }
 
     pub fn check_room_hostilities(&mut self) {
-         // Logic to check if room is hostile
+        // Logic to check if room is hostile
     }
 
     pub fn tick_story_systems(&mut self) {
-        self.world_events.tick(&mut self.world_state, &mut self.journal, self.turn);
-        self.quests.tick(&mut self.world_state, &mut self.journal, self.turn);
+        self.world_events
+            .tick(&mut self.world_state, &mut self.journal, self.turn);
+        self.quests
+            .tick(&mut self.world_state, &mut self.journal, self.turn);
     }
 
     pub fn toggle_equip(&mut self, slot: EquipmentSlot, item_id: &str) {
         if self.player.inventory.count(item_id) > 0 {
-             self.player.equipment.toggle(slot, item_id.to_string());
+            self.player.equipment.toggle(slot, item_id.to_string());
         }
     }
 

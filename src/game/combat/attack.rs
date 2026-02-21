@@ -328,7 +328,7 @@ mod tests {
         let atk_conds = HashSet::new();
         let (def_conds, mut def_res, def_vuln) = target();
         def_res.insert("fire".to_string());
-        
+
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 100, // always hit
@@ -344,7 +344,7 @@ mod tests {
             resistances: &def_res,
             vulnerabilities: &def_vuln,
         };
-        
+
         // Seed 2 gives 3 on d10. 3 / 2 = 1.
         let out = roll_attack_with_seed(&atk, &def, 2);
         assert_eq!(out.damage, 1);
@@ -356,7 +356,7 @@ mod tests {
         let atk_conds = HashSet::new();
         let (def_conds, def_res, mut def_vuln) = target();
         def_vuln.insert("cold".to_string());
-        
+
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 100, // always hit
@@ -372,7 +372,7 @@ mod tests {
             resistances: &def_res,
             vulnerabilities: &def_vuln,
         };
-        
+
         // Seed 2 gives 3 on d10 (after hit roll). 3 * 2 = 6.
         let out = roll_attack_with_seed(&atk, &def, 2);
         assert_eq!(out.damage, 6);

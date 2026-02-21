@@ -1,14 +1,14 @@
 use super::App;
 use crate::app::state::{AppState, FocusedPane, JournalUiState};
-use crate::renderer::{ControlFlow, GameEvent};
-use anyhow::Result;
 use crate::game::{
+    items::equipment::EquipmentSlot,
     story::{
         dialog::{choose as dialog_choose, resolve as dialog_resolve},
         journal::Category as JournalCategory,
     },
-    items::equipment::EquipmentSlot,
 };
+use crate::renderer::{ControlFlow, GameEvent};
+use anyhow::Result;
 
 // Helper for rotating category
 fn next_category(c: JournalCategory) -> JournalCategory {

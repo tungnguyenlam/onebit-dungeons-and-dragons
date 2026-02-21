@@ -11,7 +11,8 @@
 - Architecture index: [architecture/overview.md](architecture/overview.md)
 - Gameplay index: [gameplay/overview.md](gameplay/overview.md)
 - Content index: [content/overview.md](content/overview.md)
-- Testing docs: [testing/tui-agent-smoke.md](testing/tui-agent-smoke.md)
+- Testing docs: [testing/tui-agent-smoke.md](testing/tui-agent-smoke.md), [testing/WRITING_TESTS.md](testing/WRITING_TESTS.md)
+- Knowledge Maps: [CODE_MAP.md](CODE_MAP.md), [ENGINE_RULES.md](ENGINE_RULES.md), [content/SCHEMAS.md](content/SCHEMAS.md)
 - Task tracking: [tasks/current-sprint.md](tasks/current-sprint.md), [tasks/backlog.md](tasks/backlog.md), [tasks/done.md](tasks/done.md)
 
 ---
@@ -74,6 +75,8 @@
 
 - `testing/tui-agent-smoke.md`
   - Related: [AGENT.md](AGENT.md), [README.md](../README.md), `scripts/agent_tui_smoke.sh`, `scripts/agent_verify.sh`
+- `testing/WRITING_TESTS.md`
+  - Related: `src/app/tests.rs`, `src/game/combat/attack.rs`
 
 ---
 

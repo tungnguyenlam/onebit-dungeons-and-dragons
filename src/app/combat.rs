@@ -1,13 +1,13 @@
 use super::App;
+use crate::app::samples::combatant_from_monster;
 use crate::app::state::{AppState, CombatContext};
 use crate::game::{
-    character::{Character, conditions::Condition},
+    character::{conditions::Condition, Character},
     combat::{
         apply_damage, roll_attack, AttackProfile, CombatantState, DefenseProfile, HitType, RollMode,
     },
     dice::DiceExpr,
 };
-use crate::app::samples::combatant_from_monster;
 use std::collections::HashMap;
 
 impl App {
@@ -235,46 +235,54 @@ impl App {
                         Self::resolve_attack(ctx, &current_id, &target_id, 1.0);
                     }
                     crate::game::combat::EnemyAiRole::Ranged => {
-                let (bonus, dice, damage_type, cond) = {
-                    let c = ctx.state.combatants.get(&current_id).unwrap();
-                    (
-                        c.ranged_attack_bonus.unwrap_or(2),
-                        c.ranged_damage_dice.clone().unwrap_or_else(|| DiceExpr::new(1, 6, 0)),
-                        c.ranged_damage_type.clone().unwrap_or_else(|| "piercing".to_string()),
-                        c.ranged_on_hit_condition.clone()
-                    )
-                };
-                Self::resolve_attack_with_stats(
-                    ctx,
-                    &current_id,
-                    &target_id,
-                    bonus,
-                    dice,
-                    &damage_type,
-                    cond,
-                    "shoots",
-                );
+                        let (bonus, dice, damage_type, cond) = {
+                            let c = ctx.state.combatants.get(&current_id).unwrap();
+                            (
+                                c.ranged_attack_bonus.unwrap_or(2),
+                                c.ranged_damage_dice
+                                    .clone()
+                                    .unwrap_or_else(|| DiceExpr::new(1, 6, 0)),
+                                c.ranged_damage_type
+                                    .clone()
+                                    .unwrap_or_else(|| "piercing".to_string()),
+                                c.ranged_on_hit_condition.clone(),
+                            )
+                        };
+                        Self::resolve_attack_with_stats(
+                            ctx,
+                            &current_id,
+                            &target_id,
+                            bonus,
+                            dice,
+                            &damage_type,
+                            cond,
+                            "shoots",
+                        );
                     }
                     crate::game::combat::EnemyAiRole::Spellcaster => {
-                let (bonus, dice, damage_type, cond) = {
-                    let c = ctx.state.combatants.get(&current_id).unwrap();
-                    (
-                        c.spell_attack_bonus.unwrap_or(4),
-                        c.spell_damage_dice.clone().unwrap_or_else(|| DiceExpr::new(1, 8, 0)),
-                        c.spell_damage_type.clone().unwrap_or_else(|| "fire".to_string()),
-                        c.spell_on_hit_condition.clone()
-                    )
-                };
-                Self::resolve_attack_with_stats(
-                    ctx,
-                    &current_id,
-                    &target_id,
-                    bonus,
-                    dice,
-                    &damage_type,
-                    cond,
-                    "casts a spell at",
-                );
+                        let (bonus, dice, damage_type, cond) = {
+                            let c = ctx.state.combatants.get(&current_id).unwrap();
+                            (
+                                c.spell_attack_bonus.unwrap_or(4),
+                                c.spell_damage_dice
+                                    .clone()
+                                    .unwrap_or_else(|| DiceExpr::new(1, 8, 0)),
+                                c.spell_damage_type
+                                    .clone()
+                                    .unwrap_or_else(|| "fire".to_string()),
+                                c.spell_on_hit_condition.clone(),
+                            )
+                        };
+                        Self::resolve_attack_with_stats(
+                            ctx,
+                            &current_id,
+                            &target_id,
+                            bonus,
+                            dice,
+                            &damage_type,
+                            cond,
+                            "casts a spell at",
+                        );
                     }
                 }
             }
@@ -285,11 +293,19 @@ impl App {
 
     pub fn try_spellcaster_support_action(ctx: &mut CombatContext, attacker_id: &str) -> bool {
         let (mut needing_heal, attacker_name) = {
-            let n = ctx.state.combatants.values()
+            let n = ctx
+                .state
+                .combatants
+                .values()
                 .filter(|c| !c.is_player && c.is_alive() && c.current_hp < c.max_hp / 2)
                 .map(|c| (c.id.clone(), c.current_hp, c.max_hp, c.name.clone()))
                 .collect::<Vec<_>>();
-            let a_name = ctx.state.combatants.get(attacker_id).map(|c| c.name.clone()).unwrap_or_default();
+            let a_name = ctx
+                .state
+                .combatants
+                .get(attacker_id)
+                .map(|c| c.name.clone())
+                .unwrap_or_default();
             (n, a_name)
         };
         needing_heal.sort_by_key(|(_, hp, _, _)| *hp);
@@ -316,6 +332,7 @@ impl App {
         false
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn resolve_attack_with_stats(
         ctx: &mut CombatContext,
         attacker_id: &str,
@@ -541,11 +558,21 @@ impl App {
 
         let armor_id = self.player.equipment.armor.as_deref();
         let armor_def = armor_id.and_then(|id| self.item_defs.get(id));
-        let armor_tuple = armor_def.and_then(|d| d.armor.as_ref().map(|a| (a.base_ac, &a.armor_type)));
-        
-        let shield_equipped = self.player.equipment.off_hand.as_deref()
+        let armor_tuple =
+            armor_def.and_then(|d| d.armor.as_ref().map(|a| (a.base_ac, &a.armor_type)));
+
+        let shield_equipped = self
+            .player
+            .equipment
+            .off_hand
+            .as_deref()
             .and_then(|id| self.item_defs.get(id))
-            .map(|d| d.armor.as_ref().map(|a| a.armor_type == crate::data::types::ArmorType::Shield).unwrap_or(false))
+            .map(|d| {
+                d.armor
+                    .as_ref()
+                    .map(|a| a.armor_type == crate::data::types::ArmorType::Shield)
+                    .unwrap_or(false)
+            })
             .unwrap_or(false);
 
         let ac = crate::game::items::armor::armor_class(
@@ -556,7 +583,7 @@ impl App {
 
         let prof = self.player.proficiency_bonus();
         let str_mod = self.player.scores.str_mod() as i32;
-        
+
         let mut p_dmg_dice = dmg_dice;
         p_dmg_dice.modifier += str_mod;
 
@@ -564,7 +591,7 @@ impl App {
             "player",
             self.player.name.clone(),
             true,
-            self.player.max_hp as i32,
+            self.player.max_hp,
             ac,
             30,
             self.player.scores.dex_mod() as i32,
@@ -573,7 +600,7 @@ impl App {
         );
         p_combatant.current_hp = self.player.current_hp;
         p_combatant.resistances = resistances;
-        
+
         // Find damage type of main hand weapon
         if let Some(weapon_id) = self.player.equipment.main_hand.as_deref() {
             if let Some(item) = self.item_defs.get(weapon_id) {
@@ -587,7 +614,7 @@ impl App {
         self.pending_encounter_monster = None;
 
         let mut combatants = vec![p_combatant];
-        
+
         // Add "guard_ally" if flag is set
         if self.world_state.flag("town_guard_trusted") {
             let mut guard = CombatantState::new(
@@ -604,7 +631,7 @@ impl App {
             guard.damage_type = "piercing".into(); // assuming spear/crossbow
             combatants.push(guard);
         }
-        
+
         combatants.append(&mut enemies);
 
         let seed = (std::time::SystemTime::now()

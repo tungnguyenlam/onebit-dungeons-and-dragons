@@ -151,7 +151,9 @@ If you update any gameplay/architecture/content/task doc, review
 | Lore & environmental text | [content/lore.md](content/lore.md) |
 | Region index (world map) | [content/regions/index.md](content/regions/index.md) |
 | Map & region file format | [content/map-format.md](content/map-format.md) |
-| Automated TUI smoke tool | [testing/tui-agent-smoke.md](testing/tui-agent-smoke.md) |
+| **Logic & Engine Maps** | **[CODE_MAP.md](CODE_MAP.md)**, **[ENGINE_RULES.md](ENGINE_RULES.md)** |
+| **Asset Specs** | **[content/SCHEMAS.md](content/SCHEMAS.md)** |
+| Testing & Smoke Scripts | [testing/tui-agent-smoke.md](testing/tui-agent-smoke.md), [testing/WRITING_TESTS.md](testing/WRITING_TESTS.md) |
 
 ---
 
@@ -210,3 +212,5 @@ find ~/.cargo/registry/src -name "*.rs" -path "*/ratatui*" | \
 - **WorldState flags**: Story conditions are boolean/integer flags in `WorldState`. No story code mutates character stats directly.
 - **ADRs**: Settled architecture decisions are in `docs/decisions/`. Do not re-litigate them.
 - **Updating tasks**: When you finish a task, move it from `current-sprint.md` to `done.md` and pull the next item from `backlog.md`.
+- **Sample Syncing**: ⚠️ `src/app/samples.rs` contains hardcoded fallback data used by unit tests. If you change a core data structure (e.g. adding a field to `ItemDef`), you MUST update the samples in this file or unit tests will fail or become unreliable.
+

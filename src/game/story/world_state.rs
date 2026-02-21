@@ -292,7 +292,7 @@ mod tests {
         ws.set_flag("has_eye");
         ws.set_flag("has_heart");
         ws.set_counter("rep", 10);
-        
+
         // A && B && C
         assert!(ws.evaluate("flag:has_eye && flag:has_heart && counter:rep >= 10"));
         // A && B || D (&& binds tighter)
