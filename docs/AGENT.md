@@ -29,6 +29,50 @@ known compile error as their stopping point. Fix it before continuing.
 cleanup unless the active task explicitly requests it. Prioritize feature and
 behavior work; warning cleanup is deferred.
 
+---
+
+## Testing the Game (Choose One)
+
+### Option 1: Step-Through Testing (Recommended for Agents)
+
+This is the **best way for agents to test gameplay** - no TTY required, see text output after each keypress:
+
+```bash
+# Dump initial game state as text (main menu)
+scripts/runtest.sh
+
+# Press a key, see the result
+scripts/runtest.sh j           # move down
+scripts/runtest.sh k           # move up
+scripts/runtest.sh $'\r'       # enter/confirm
+scripts/runtest.sh a           # attack
+scripts/runtest.sh i           # inventory
+scripts/runtest.sh ?           # help/legend
+
+# Full workflow example:
+# 1. Start game
+scripts/runtest.sh
+# 2. Create new character
+scripts/runtest.sh $'\r'       # Enter: New Game
+scripts/runtest.sh j           # Select fighter
+scripts/runtest.sh $'\r'       # Confirm class
+scripts/runtest.sh j           # Select human
+scripts/runtest.sh $'\r'       # Confirm race
+# 3. Now in game world - test movement
+scripts/runtest.sh j           # move down
+scripts/runtest.sh l           # move right
+```
+
+**Why this is great for agents:**
+- No terminal/TTY needed
+- See exact game state after each action
+- Plain text output is easy to parse
+- Perfect for verifying bug fixes
+
+Guide: [testing/step-through-testing.md](testing/step-through-testing.md)
+
+### Option 2: TUI Smoke Test (Automated)
+
 For a non-interactive keyboard smoke check of the TUI:
 ```bash
 scripts/agent_tui_smoke.sh
@@ -53,18 +97,6 @@ For asset graph and progression consistency checks:
 cargo run -- --validate-assets
 scripts/validate_assets.sh
 ```
-
-For step-through testing without TTY (agents can see text output after each key):
-```bash
-# Dump initial game state as text
-scripts/runtest.sh
-
-# Press a key, dump state
-scripts/runtest.sh j       # move down
-scripts/runtest.sh $'\r'   # enter/confirm
-scripts/runtest.sh i       # open inventory
-```
-Guide: [testing/step-through-testing.md](testing/step-through-testing.md)
 
 **Step 3 — Read only the docs for your current task**  
 The handoff block lists which doc files are relevant. Read those and nothing

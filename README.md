@@ -46,6 +46,104 @@ cargo run -- --validate-assets
 scripts/validate_assets.sh
 ```
 
+---
+
+## Step-Through Testing (for Agents)
+
+This is the **recommended way for agents to test the game** without needing a terminal/TTY. Each keypress is processed one at a time, and the game state is dumped as text after each action.
+
+### Quick Start
+
+```bash
+# Dump initial game state (main menu)
+scripts/runtest.sh
+
+# Press a key, see the result
+scripts/runtest.sh j           # move down / vim-style down
+scripts/runtest.sh k           # move up
+scripts/runtest.sh h           # move left
+scripts/runtest.sh l           # move right
+scripts/runtest.sh $'\r'       # Enter / confirm
+scripts/runtest.sh a           # attack
+scripts/runtest.sh i           # inventory
+scripts/runtest.sh n           # journal
+scripts/runtest.sh m           # map
+scripts/runtest.sh ?           # help
+scripts/runtest.sh p           # save game
+scripts/runtest.sh q           # quit
+```
+
+### How It Works
+
+1. **Run with a key**: `scripts/runtest.sh j`
+2. **Game processes that ONE keypress**
+3. **Game state is dumped as text** showing:
+   - Current state (menu, combat, etc.)
+   - Player stats (HP, XP, gold, level)
+   - Inventory contents
+   - Current room layout with player position (`@`)
+   - NPCs and triggers in the room
+
+### Why This is Useful for Agents
+
+- **No TTY required** - works in any environment
+- **See exactly what happens** after each input
+- **Verify bug fixes** by checking state changes
+- **Test gameplay mechanics** step by step
+- **Parse output easily** - plain text format
+
+### Key Mappings
+
+| Key | Action |
+|-----|--------|
+| `j` / `k` | Move down / up |
+| `h` / `l` | Move left / right |
+| `Enter` | Confirm / select |
+| `Esc` | Cancel / back |
+| `i` | Inventory |
+| `s` | Spellbook |
+| `n` | Journal |
+| `m` | World map |
+| `?` | Help / legend |
+| `a` | Attack |
+| `.` | Wait |
+| `p` | Save game |
+| `o` | Load game |
+| `q` | Quit |
+| `1-9` | Dialog choices |
+
+### Example Output
+
+```
+========================================
+GAME STATE
+========================================
+
+--- App State ---
+State: WorldMap
+Turn: 5
+Current Room: ash_gate
+Player Position: (3, 2)
+
+--- Player ---
+Name: Theron
+Level: 1
+XP: 0
+HP: 24/24
+Gold: 10
+
+--- Room Grid ---
+##############
+#..@..!......#
+##############
+
+========================================
+```
+
+For more details, see [`docs/testing/step-through-testing.md`](docs/testing/step-through-testing.md).
+
+---
+
 ### TUI Controls
 
 - `q` / `Ctrl-C`: quit
