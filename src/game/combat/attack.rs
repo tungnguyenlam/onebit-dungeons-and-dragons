@@ -191,8 +191,18 @@ mod tests {
         (DiceExpr::new(1, 8, 2), HashSet::new())
     }
 
-    fn target() -> (HashSet<Condition>, HashSet<String>, HashSet<String>, HashSet<String>) {
-        (HashSet::new(), HashSet::new(), HashSet::new(), HashSet::new())
+    fn target() -> (
+        HashSet<Condition>,
+        HashSet<String>,
+        HashSet<String>,
+        HashSet<String>,
+    ) {
+        (
+            HashSet::new(),
+            HashSet::new(),
+            HashSet::new(),
+            HashSet::new(),
+        )
     }
 
     #[test]

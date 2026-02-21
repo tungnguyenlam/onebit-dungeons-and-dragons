@@ -156,7 +156,7 @@ fn main() -> Result<()> {
 }
 
 /// Text dump mode - headless testing without TTY.
-/// Dumps the current game state as plain text to stdout.
+/// Dumps the current game state as a visual TUI-style text representation.
 pub fn run_text_mode(mut app: App, step: bool, key: &str) -> Result<()> {
     // If step mode, process one input first
     if step && !key.is_empty() {
@@ -166,7 +166,7 @@ pub fn run_text_mode(mut app: App, step: bool, key: &str) -> Result<()> {
         }
     }
 
-    // Dump current state
+    // Print the visual TUI representation
     println!("{}", app.dump_state());
     Ok(())
 }

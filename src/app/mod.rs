@@ -790,85 +790,54 @@ impl App {
         }
     }
 
-    /// Dump the current game state as human-readable text.
-    /// Used for --text mode and debugging.
+    /// Dump the current game state as a visual TUI-style text representation.
+    /// This mimics the actual TUI layout with boxes and panels.
     pub fn dump_state(&self) -> String {
         use crate::game::world::map::Tile;
         use std::fmt::Write;
 
         let mut s = String::new();
 
-        writeln!(s, "========================================").unwrap();
-        writeln!(s, "GAME STATE").unwrap();
-        writeln!(s, "========================================").unwrap();
+        // Header - Region info
+        let region_name = "Valley of Ash";
+        let region_id = &self.current_room_id;
+        writeln!(s, "┌World{:─<54}┐", "").unwrap();
+        writeln!(s, "│Region: {} ({}) {:<35}│", region_name, region_id, "").unwrap();
+        writeln!(s, "└{:─<66}┘", "").unwrap();
 
-        writeln!(s, "").unwrap();
-        writeln!(s, "--- App State ---").unwrap();
-        writeln!(s, "State: {:?}", self.state).unwrap();
-        writeln!(s, "Turn: {}", self.turn).unwrap();
-        writeln!(s, "Current Room: {}", self.current_room_id).unwrap();
+        // Status bar - Player info
+        writeln!(s, "┌Status{:─<59}┐", "").unwrap();
+        let hp_pct = self.player.current_hp as f32 / self.player.max_hp as f32;
+        let hp_bar = "=".repeat((hp_pct * 10.0) as usize);
         writeln!(
             s,
-            "Player Position: ({}, {})",
-            self.player_pos.0, self.player_pos.1
+            "│HP {} {}{}/{}│",
+            self.player.name, hp_bar, self.player.current_hp, self.player.max_hp
         )
         .unwrap();
-        writeln!(s, "Show Help: {}", self.show_help).unwrap();
+        writeln!(
+            s,
+            "│Gold: {}  XP: {}  Level: {}│",
+            self.player.gold, self.player.xp, self.player.level
+        )
+        .unwrap();
+        writeln!(s, "└{:─<66}┘", "").unwrap();
 
-        writeln!(s, "").unwrap();
-        writeln!(s, "--- Player ---").unwrap();
-        writeln!(s, "Name: {}", self.player.name).unwrap();
-        writeln!(s, "Class: {}", self.player.class_id).unwrap();
-        writeln!(s, "Race: {}", self.player.race_id).unwrap();
-        writeln!(s, "Level: {}", self.player.level).unwrap();
-        writeln!(s, "XP: {}", self.player.xp).unwrap();
-        writeln!(s, "HP: {}/{}", self.player.current_hp, self.player.max_hp).unwrap();
-        writeln!(s, "Gold: {}", self.player.gold).unwrap();
-        writeln!(s, "Skill Points: {}", self.player.skill_points).unwrap();
-        writeln!(s, "Perks: {:?}", self.player.perks).unwrap();
-
-        writeln!(s, "").unwrap();
-        writeln!(s, "--- Inventory ---").unwrap();
-        for item in &self.player.inventory.items {
-            writeln!(s, "  {} x{}", item.item_id, item.quantity).unwrap();
-        }
-
+        // Map/Room display
         if let Some(room) = self.region.room(&self.current_room_id) {
-            writeln!(s, "").unwrap();
-            writeln!(s, "--- Current Room ---").unwrap();
-            writeln!(s, "Name: {}", room.name).unwrap();
-            writeln!(s, "Size: {}x{}", room.width(), room.height()).unwrap();
+            writeln!(s, "┌Map{:─<63}┐", "").unwrap();
 
-            if !room.npcs.is_empty() {
-                writeln!(s, "NPCs:").unwrap();
-                for npc in &room.npcs {
-                    writeln!(
-                        s,
-                        "  - {} at ({}, {})",
-                        npc.id, npc.position[0], npc.position[1]
-                    )
-                    .unwrap();
-                }
-            }
+            let room_width = room.width() as usize;
+            let room_height = room.height() as usize;
 
-            if !room.triggers.is_empty() {
-                writeln!(s, "Triggers:").unwrap();
-                for trigger in &room.triggers {
-                    writeln!(
-                        s,
-                        "  - {:?} at ({}, {}) -> {}",
-                        trigger.kind, trigger.position[0], trigger.position[1], trigger.target_id
-                    )
-                    .unwrap();
-                }
-            }
+            // Top border
+            writeln!(s, "│{:─<66}│", "").unwrap();
 
-            writeln!(s, "").unwrap();
-            writeln!(s, "--- Room Grid ---").unwrap();
-            for y in 0..room.height() {
-                let mut row = String::new();
-                for x in 0..room.width() {
-                    let tile = room.grid.get(x, y).unwrap_or(Tile::Wall);
+            // Room grid with player
+            for y in 0..room_height {
+                let mut line = String::from("│");
+                for x in 0..room_width {
+                    let tile = room.grid.get(x as u32, y as u32).unwrap_or(Tile::Wall);
                     let ch = match tile {
                         Tile::Floor => '.',
                         Tile::Wall => '#',
@@ -879,28 +848,52 @@ impl App {
                         Tile::StairsUp => '<',
                         Tile::StairsDown => '>',
                         Tile::Chest => '$',
-                        Tile::NpcSpawn => '@',
+                        Tile::NpcSpawn => '.',
                         Tile::Trigger => '!',
                         Tile::Unknown(_) => '?',
                     };
-                    if (x, y) == self.player_pos {
-                        row.push('@');
+                    if (x as u32, y as u32) == self.player_pos {
+                        line.push('@');
                     } else {
-                        row.push(ch);
+                        line.push(ch);
                     }
                 }
-                writeln!(s, "{}", row).unwrap();
+                // Pad to width
+                while line.len() < 67 {
+                    line.push(' ');
+                }
+                line.push('│');
+                writeln!(s, "{}", line).unwrap();
             }
+
+            // Bottom border and padding
+            for _ in 0..(20usize.saturating_sub(room_height)) {
+                writeln!(s, "│{:─<66}│", "").unwrap();
+            }
+            writeln!(s, "└{:─<66}┘", "").unwrap();
         }
 
+        // Controls bar
+        writeln!(s, "┌Controls{:─<58}┐", "").unwrap();
+        writeln!(
+            s,
+            "│Move: arrows/hjkl  Interact: Enter  ?: help             │"
+        )
+        .unwrap();
+        writeln!(
+            s,
+            "│a combat  i inventory  s spellbook  n journal             │"
+        )
+        .unwrap();
+        writeln!(s, "└{:─<66}┘", "").unwrap();
+
+        // Feedback message if any
         if let Some(feedback) = self.get_feedback() {
             writeln!(s, "").unwrap();
-            writeln!(s, "--- Feedback ---").unwrap();
-            writeln!(s, "{}", feedback).unwrap();
+            writeln!(s, "┌Message{:─<59}┐", "").unwrap();
+            writeln!(s, "│{:<66}│", feedback).unwrap();
+            writeln!(s, "└{:─<66}┘", "").unwrap();
         }
-
-        writeln!(s, "").unwrap();
-        writeln!(s, "========================================").unwrap();
 
         s
     }

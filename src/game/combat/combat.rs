@@ -124,7 +124,10 @@ impl CombatantState {
     }
 
     pub fn apply_condition(&mut self, condition: Condition, duration_rounds: Option<u8>) {
-        if self.condition_immunities.contains(&condition.name().to_lowercase()) {
+        if self
+            .condition_immunities
+            .contains(&condition.name().to_lowercase())
+        {
             return;
         }
         self.conditions.insert(condition.clone());
