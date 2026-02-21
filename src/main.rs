@@ -155,19 +155,53 @@ fn main() -> Result<()> {
     }
 }
 
-/// Text dump mode - headless testing without TTY.
-/// Dumps the current game state as a visual TUI-style text representation.
-pub fn run_text_mode(mut app: App, step: bool, key: &str) -> Result<()> {
-    // If step mode, process one input first
+pub fn run_text_mode(mut app: App, step: bool, key: &str) -> anyhow::Result<()> {
+    use ratatui::{backend::TestBackend, Terminal};
+    
+    // Attempt to load existing test state to persist between step runs
+    let _ = app.load_from_default_path();
+
+    // 1. Process the input key if we are stepping
     if step && !key.is_empty() {
-        let event = char_to_game_event(key.chars().next().unwrap_or(' '));
-        if let Some(event) = event {
-            app.handle_event(event)?;
+        let key_char = key.chars().next().unwrap_or(' ');
+        if let Some(event) = char_to_game_event(key_char) {
+            let _ = app.handle_event(event);
         }
     }
 
-    // Print the visual TUI representation
-    println!("{}", app.dump_state());
+    // Save the state for the next runtest.sh invocation
+    let _ = app.save_to_default_path();
+
+    // 2. Set up a headless 88x24 TUI backend (matches your grid size)
+    let backend = TestBackend::new(88, 24);
+    let mut terminal = Terminal::new(backend)?;
+
+    // 3. Render the actual TUI to our headless buffer
+    terminal.draw(|f| {
+        match &app.state {
+            app::AppState::MainMenu => ui::tui::screens::main_menu::render(f, &app),
+            app::AppState::CharacterCreation => ui::tui::screens::character_creation::render(f, &app),
+            app::AppState::WorldMap => ui::tui::screens::world_map::render(f, &app),
+            app::AppState::Combat(_) => ui::tui::screens::combat::render(f, &app),
+            app::AppState::Dialog(_) => ui::tui::screens::dialog::render(f, &app),
+            app::AppState::Journal => ui::tui::screens::journal::render(f, &app),
+            app::AppState::Inventory => ui::tui::screens::inventory::render(f, &app),
+            app::AppState::Spellbook => ui::tui::screens::spellbook::render(f, &app),
+            app::AppState::Settings => ui::tui::screens::settings::render(f, &app),
+            app::AppState::GameOver => ui::tui::screens::game_over::render(f, &app),
+        }
+    })?;
+
+    // 4. Print the buffer row by row to standard output
+    let buffer = terminal.backend().buffer();
+    for y in 0..buffer.area.height {
+        let mut row = String::with_capacity(buffer.area.width as usize);
+        for x in 0..buffer.area.width {
+            row.push_str(buffer.cell((x, y)).unwrap().symbol());
+        }
+        println!("{}", row);
+    }
+    
     Ok(())
 }
 

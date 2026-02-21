@@ -113,56 +113,15 @@ scripts/runtest.sh .            # Wait
 
 ## Output Format
 
-The text dump shows:
+The text dump now outputs the **exact visual TUI layout** using Ratatui's `TestBackend`. This provides a character-for-character replication of what the human player sees, including all boxes, text, colors (stripped to text), and UI elements for the 88x24 terminal grid.
 
-```
-========================================
-GAME STATE
-========================================
-
---- App State ---
-State: WorldMap
-Turn: 5
-Current Room: ash_gate
-Player Position: (3, 2)
-Show Help: false
-
---- Player ---
-Name: Theron
-Class: fighter
-Race: human
-Level: 1
-XP: 0
-HP: 24/24
-Gold: 10
-Skill Points: 0
-Perks: {}
-
---- Inventory ---
-  longsword x1
-  leather_armor x1
-  shield x1
-  healing_potion x3
-
---- Current Room ---
-Name: Ash Gate
-Size: 14x7
-NPCs:
-  - captain_kael at (3, 2)
-  - elder_vaelen at (8, 2)
-Triggers:
-  - Dialog at (6, 2) -> captain_kael
-  - Travel at (5, 3) -> ember_square
-
---- Room Grid ---
-##############
-#............#
-#..@..!......#
-#..../.......#
-#............#
-##############
-
-========================================
+```text
+┌World─────────────────────────────────────────────────────────────────────────────────┐
+│ Region: Valley of Ash (valley-of-ash)            Day: 1                              │
+│ Room: ash_gate                                   Weather: Ash                        │
+│ Player: Theron at (3, 2)                         Threat: None                        │
+├Map───────────────────────────────────────────────────────────────────────────────────┤
+...
 ```
 
 ## Integration with Agents
@@ -200,7 +159,7 @@ Usage:
 
 ## Notes
 
-- The game state persists in `saves/slot1.toml` between runs
+- The game state persists in `save.toml` between runs
 - Use `scripts/runtest.sh -h` for full help
 - This mode does not require any terminal/TTY
-- Output is plain text that can be parsed by agents
+- Output is plain text directly mirroring the TUI grid, naturally parsed line-by-line.

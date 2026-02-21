@@ -91,7 +91,7 @@ pub fn init_terminal_tier() -> TerminalTier {
     } else {
         TerminalTier::T0
     };
-    *TIER.get_or_init(|| tier)
+    tier
 }
 
 pub fn terminal_tier() -> TerminalTier {

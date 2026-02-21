@@ -92,7 +92,7 @@ EXAMPLES:
 NOTES:
     - If no KEY provided, reads from stdin (blocks until input)
     - Use 'echo -n' to pass key without newline
-    - Game state persists in saves/slot1.toml
+    - Game state persists in save.toml
 
 EOF
 }

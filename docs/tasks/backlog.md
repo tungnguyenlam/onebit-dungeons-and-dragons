@@ -61,7 +61,7 @@
 | M48 | World Map Enhancements | ✅ done | [milestones/m48.md](milestones/m48.md) |
 | M49 | Settings & Accessibility Panel | ✅ done | [milestones/m49.md](milestones/m49.md) |
 | M50 | Sound & Music System | ✅ done | [milestones/m50.md](milestones/m50.md) |
-| M51 | Step-Through Testing Tool Fix | 🔲 next | [milestones/m51.md](milestones/m51.md) |
+| M51 | Step-Through Testing Tool Fix | ✅ done | [milestones/m51.md](milestones/m51.md) |
 
 Status: ✅ done · 🚧 in progress · 🔲 next / planned
 

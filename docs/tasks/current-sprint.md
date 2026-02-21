@@ -9,11 +9,11 @@
 
 ## Active Task
 
-**Milestone:** M51 - Step-Through Testing Tool Fix
+**Milestone:** Pull next from backlog
 
-**Goal:** Fix the step-through testing tool so that state persists between runs, allowing agents to test gameplay mechanics properly.
+**Goal:** Determine next task.
 
-**Spec:** See [milestones/m51.md](milestones/m51.md)
+**Spec:** See [milestones/m52.md](milestones/m52.md) if one exists.
 
 ---
 
@@ -21,52 +21,34 @@
 
 ```
 Date:          2026-02-21
-Completed:     All tasks completed
+Completed:     M51 completed
 
 Tasks completed this session:
-  1. Fixed compilation errors in src/app/mod.rs:
-     - get_npc_at_player_position() - was using NpcDef.position which doesn't exist
-       (NPCs are placed via tile grid, not coordinates)
-     - Fixed type mismatches (i32 vs u32) in is_near_door, is_near_chest, is_blocked
-     - interact_current_tile now properly checks for triggers at player position
-  
-  2. Added feedback message system:
-     - Added feedback_message field to App struct
-     - Added set_feedback() and get_feedback() methods (3 second timeout)
-     - Updated interact_current_tile() to provide feedback for failed interactions
-     - Updated world_map.rs to display feedback in footer area
-  
-  3. Extended region system with unique characteristics:
-     - Added region_type field (volcanic, forest, underwater, underground, mountain)
-     - Added weather field (ash, fog, rain, none)
-     - Updated all 6 region manifest files with these new fields
-     - Updated world_map.rs to display weather in header
-     - Updated docs/content/regions/index.md with new regions
-
-  4. Verified icon fallback system:
-     - Icon system already has proper T0/T1 ASCII fallbacks
-     - Both icon() and icon_with_fallback() functions work correctly
+  1. Updated `run_text_mode` in `src/main.rs`:
+     - Replaced custom print loop with Ratatui's `TestBackend`
+     - Added auto-load and auto-save of state to `save.toml`
+  2. Fixed a deadlock bug in `src/ui/tui/theme.rs`:
+     - `TIER.get_or_init(init_terminal_tier)` called `init_terminal_tier` which then called `TIER.get_or_init` again, causing an infinite hang. 
+     - Fixed `init_terminal_tier` so it directly returns `TerminalTier` without going through the OnceLock.
+  3. Updated `docs/testing/step-through-testing.md` to document new test output format and precise state persistence file (`save.toml`).
+  4. Updated `scripts/runtest.sh` string documenting where state is persisted.
 
 Files modified:
-  - src/app/mod.rs: Fixed type errors, added feedback system
-  - src/ui/tui/screens/world_map.rs: Added feedback display
-  - src/data/types.rs: Added region_type and weather to RegionManifest
-  - src/game/world/region.rs: Added region_type and weather to Region struct, fixed test
-  - src/app/samples.rs: Added region_type and weather to fallback
-  - assets/regions/*/region.toml: Added region_type and weather to all 6 regions
-  - docs/content/regions/index.md: Updated region list and details
+  - src/main.rs
+  - src/ui/tui/theme.rs
+  - scripts/runtest.sh
+  - docs/testing/step-through-testing.md
 
-Build status: cargo build --release passes (13 warnings only)
+Build status: cargo check passes (14 minor warnings)
+Runtest script functions correctly without hanging and outputs full TUI buffers.
 
 All requirements complete:
-  ✅ Fixed broken mechanics (compilation errors)
-  ✅ Add feedback messages for non-interactable things
-  ✅ Expand map with unique region characteristics
-  ✅ Icons have proper ASCII fallbacks for T0/T1 terminals
+  ✅ State persists via save/load in run_text_mode
+  ✅ `runtest.sh j` and similar commands move the player with saved context between invovcations
+  ✅ Documentation updated with accurate test runner info
 
 Next for incoming agent:
-  - Playtest the game in a TTY environment to verify gameplay
-  - Consider adding region-specific visual effects based on region_type
+  - Proceed with the next milestone from the backlog
 ```
 Date:          2026-02-21
 Completed:     Bug fixes and feature enhancements
