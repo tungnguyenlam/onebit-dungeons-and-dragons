@@ -163,9 +163,10 @@ pub fn run_text_mode(mut app: App, step: bool, key: &str) -> anyhow::Result<()> 
 
     // 1. Process the input key if we are stepping
     if step && !key.is_empty() {
-        let key_char = key.chars().next().unwrap_or(' ');
-        if let Some(event) = char_to_game_event(key_char) {
-            let _ = app.handle_event(event);
+        for c in key.chars() {
+            if let Some(event) = char_to_game_event(c) {
+                let _ = app.handle_event(event);
+            }
         }
     }
 
@@ -293,6 +294,7 @@ fn char_to_game_event(c: char) -> Option<GameEvent> {
         'o' | 'O' => Some(GameEvent::LoadGame),
         'a' | 'A' => Some(GameEvent::Attack),
         '.' => Some(GameEvent::Wait),
+        't' | 'T' => Some(GameEvent::Tick),
         '?' => Some(GameEvent::OpenHelp),
         'b' | 'B' => Some(GameEvent::ToggleSound),
         'q' | 'Q' => Some(GameEvent::Quit),

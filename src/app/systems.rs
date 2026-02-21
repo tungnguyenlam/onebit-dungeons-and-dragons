@@ -14,6 +14,7 @@ impl App {
             region_slug: self.region.slug.clone(),
             room_id: self.current_room_id.clone(),
             player_pos: self.player_pos,
+            state: self.state.clone(),
         };
         save_to_path("save.toml", &save)
     }
@@ -26,6 +27,7 @@ impl App {
         self.turn = save.turn;
         self.current_room_id = save.room_id;
         self.player_pos = save.player_pos;
+        self.state = save.state;
         Ok(())
     }
 

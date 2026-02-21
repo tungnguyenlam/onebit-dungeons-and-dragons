@@ -1,7 +1,6 @@
-/// Per-turn action economy tracking.
-///
-/// Mirrors 5e's action + bonus action + reaction plus movement budget.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ActionSlots {
     pub action: bool,
     pub bonus_action: bool,

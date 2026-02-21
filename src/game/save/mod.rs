@@ -1,6 +1,9 @@
-use crate::game::{
-    character::Character,
-    story::{Journal, WorldState},
+use crate::{
+    app::AppState,
+    game::{
+        character::Character,
+        story::{Journal, WorldState},
+    },
 };
 use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
@@ -26,6 +29,8 @@ pub struct SaveGame {
     pub region_slug: String,
     pub room_id: String,
     pub player_pos: (u32, u32),
+    #[serde(default)]
+    pub state: AppState,
 }
 
 fn default_save_version() -> u32 {
@@ -213,6 +218,7 @@ mod tests {
             region_slug: "valley-of-ash".into(),
             room_id: "ash_gate".into(),
             player_pos: (3, 4),
+            state: AppState::WorldMap,
         }
     }
 

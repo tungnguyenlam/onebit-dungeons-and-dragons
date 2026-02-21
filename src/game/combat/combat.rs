@@ -8,8 +8,9 @@ use crate::game::{
     dice::DiceExpr,
 };
 use std::collections::{HashMap, HashSet};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum EnemyAiRole {
     #[default]
     Melee,
@@ -17,7 +18,7 @@ pub enum EnemyAiRole {
     Spellcaster,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CombatantState {
     pub id: String,
     pub name: String,
@@ -166,7 +167,7 @@ impl CombatantState {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CombatState {
     pub combatants: HashMap<String, CombatantState>,
     pub turn_queue: Vec<String>,

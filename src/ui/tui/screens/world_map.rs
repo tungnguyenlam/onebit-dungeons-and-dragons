@@ -12,8 +12,8 @@ use ratatui::{
 pub fn render(frame: &mut Frame<'_>, app: &App) {
     let area = frame.area();
     let chunks = Layout::vertical([
-        Constraint::Length(3),
-        Constraint::Length(3),
+        Constraint::Length(4),
+        Constraint::Length(4),
         Constraint::Min(7),
         Constraint::Length(4),
     ])
@@ -44,7 +44,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             )
         })
         .style(Style::default().fg(t.text_primary)),
-        Line::from(format!("Room: {} ({})", room_name, app.current_room_id))
+        Line::from(format!("Room: {} ({}) | Turn: {}", room_name, app.current_room_id, app.turn))
             .style(Style::default().fg(t.text_muted)),
     ])
     .block(
@@ -98,11 +98,19 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         for r in 0..room.height() {
             let mut line = Vec::new();
             for c in 0..room.width() {
-                if (c, r) == app.player_pos {
+                let pos = (c, r);
+                if pos == app.player_pos {
                     line.push(Span::styled(
                         "@",
                         Style::default().fg(t.player).add_modifier(Modifier::BOLD),
                     ));
+                } else if let Some(_npc) = room.npc_at(c, r) {
+                    line.push(Span::styled("n", Style::default().fg(t.npc)));
+                } else if let Some(_item) = room.items.iter().find(|i| i.position == [c, r]) {
+                    line.push(Span::styled("c", Style::default().fg(t.item)));
+                } else if let Some(trigger) = room.trigger_at(c, r) {
+                    let (glyph, style) = render_trigger_tile(trigger, &t);
+                    line.push(Span::styled(glyph.to_string(), style));
                 } else {
                     let (glyph, style) = render_map_tile(room.grid.get(c, r));
                     line.push(Span::styled(glyph.to_string(), style));
@@ -161,7 +169,17 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     );
 }
 
+use crate::data::types::TriggerKind;
 use ratatui::text::Span;
+
+fn render_trigger_tile(trigger: &crate::data::types::TriggerDef, t: &crate::ui::tui::theme::Theme) -> (char, Style) {
+    match trigger.kind {
+        TriggerKind::Travel => ('>', Style::default().fg(t.success)),
+        TriggerKind::Dialog => ('!', Style::default().fg(t.warning)),
+        TriggerKind::Encounter => ('!', Style::default().fg(t.danger)),
+        _ => ('!', Style::default().fg(t.warning)),
+    }
+}
 
 fn render_map_tile(tile: Option<Tile>) -> (char, Style) {
     let t = theme();

@@ -709,6 +709,7 @@ impl App {
             world_state: self.world_state.clone(),
             log: vec!["A new battle begins!".into()],
             seed,
+            selected_enemy_id: None,
         }
     }
 

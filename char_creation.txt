@@ -1,0 +1,24 @@
+┌Character Creation────────────────────────────────────────────────────────────────────┐
+│> Name: Theron                                                                        │
+│  Class: fighter                                                                      │
+│  Race: human                                                                         │
+│  Start Adventure                                                                     │
+│                                                                                      │
+│↑/↓ choose field  ←/→ cycle class/race                                                │
+│When Name is selected, press 1-9 to append digits                                     │
+│Enter on Start Adventure to continue                                                  │
+│Esc to return                                                                         │
+│                                                                                      │
+│                                                                                      │
+│                                                                                      │
+│                                                                                      │
+│                                                                                      │
+│                                                                                      │
+│                                                                                      │
+│                                                                                      │
+│                                                                                      │
+│                                                                                      │
+│                                                                                      │
+│                                                                                      │
+│                                                                                      │
+└──────────────────────────────────────────────────────────────────────────────────────┘

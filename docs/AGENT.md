@@ -33,41 +33,29 @@ behavior work; warning cleanup is deferred.
 
 ## Testing the Game (Choose One)
 
-### Option 1: Step-Through Testing (Recommended for Agents)
+### Option 1: Visual Step-Through Testing (Recommended)
 
-This is the **best way for agents to test gameplay** - no TTY required, see text output after each keypress:
+This is the **primary way for agents to test gameplay** - it uses a dedicated tool to manage scenarios and snapshots:
 
 ```bash
-# Dump initial game state as text (main menu)
-scripts/runtest.sh
+# List available test scenarios
+python3 scripts/visual_check.py -l
 
-# Press a key, see the result
-scripts/runtest.sh j           # move down
-scripts/runtest.sh k           # move up
-scripts/runtest.sh $'\r'       # enter/confirm
-scripts/runtest.sh a           # attack
-scripts/runtest.sh i           # inventory
-scripts/runtest.sh ?           # help/legend
+# Run a specific scenario and show output
+python3 scripts/visual_check.py --scenario enter_world --show
 
-# Full workflow example:
-# 1. Start game
-scripts/runtest.sh
-# 2. Create new character
-scripts/runtest.sh $'\r'       # Enter: New Game
-scripts/runtest.sh j           # Select fighter
-scripts/runtest.sh $'\r'       # Confirm class
-scripts/runtest.sh j           # Select human
-scripts/runtest.sh $'\r'       # Confirm race
-# 3. Now in game world - test movement
-scripts/runtest.sh j           # move down
-scripts/runtest.sh l           # move right
+# Run custom keys and save as a named snapshot
+python3 scripts/visual_check.py "llll" --name moving_east --show
+
+# Reset state and run keys
+python3 scripts/visual_check.py "a" --reset --show
 ```
 
 **Why this is great for agents:**
-- No terminal/TTY needed
-- See exact game state after each action
-- Plain text output is easy to parse
-- Perfect for verifying bug fixes
+- **Scenarios**: Repeatable sequences defined in `tests/visual_scenarios.json`.
+- **Snapshots**: Automatically saves the TUI to `test_outputs/` for comparison.
+- **Persistence**: Handles the `save.toml` state management for you.
+- **Convenience**: No TTY needed; text output is easy to review.
 
 Guide: [testing/step-through-testing.md](testing/step-through-testing.md)
 

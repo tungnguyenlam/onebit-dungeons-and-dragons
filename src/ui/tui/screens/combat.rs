@@ -193,8 +193,21 @@ fn render_battlefield(ctx: &crate::app::state::CombatContext) -> Paragraph<'stat
 
     for (idx, c) in ctx.state.turn_queue.iter().enumerate() {
         if let Some(comb) = ctx.state.combatants.get(c) {
-            let marker = if comb.is_player { "▶" } else { "●" };
-            let color = if comb.is_player { t.player } else { t.enemy };
+            let is_selected = ctx.selected_enemy_id.as_ref() == Some(c);
+            let marker = if comb.is_player {
+                "▶"
+            } else if is_selected {
+                "*"
+            } else {
+                "●"
+            };
+            let color = if comb.is_player {
+                t.player
+            } else if is_selected {
+                t.warning
+            } else {
+                t.enemy
+            };
             let hp_bar = progress_bar(comb.current_hp, comb.max_hp.max(1), 8);
             let hp_color = theme::health_color(comb.current_hp, comb.max_hp);
 

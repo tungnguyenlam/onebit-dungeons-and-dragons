@@ -4,6 +4,7 @@ use crate::game::{
     dice::DiceExpr,
     story::{dialog::ResolvedNode, journal::Category as JournalCategory, WorldState},
 };
+use serde::{Deserialize, Serialize};
 
 // ---------------------------------------------------------------------------
 // AppState
@@ -11,7 +12,7 @@ use crate::game::{
 
 /// Which screen / mode is currently active. The renderer inspects this to
 /// decide which screen module to call.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub enum AppState {
     #[default]
     MainMenu,
@@ -27,12 +28,13 @@ pub enum AppState {
 }
 
 /// Placeholder — will be expanded in `src/game/combat/`.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CombatContext {
     pub state: CombatState,
     pub world_state: WorldState,
     pub log: Vec<String>,
     pub seed: u32,
+    pub selected_enemy_id: Option<String>,
 }
 
 impl Default for CombatContext {
@@ -91,12 +93,13 @@ impl Default for CombatContext {
                 "Press Esc to leave combat.".into(),
             ],
             seed,
+            selected_enemy_id: None,
         }
     }
 }
 
 /// Placeholder — will be expanded in `src/game/story/dialog.rs`.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DialogContext {
     pub npc_name: String,
     pub tree: DialogTree,
@@ -104,7 +107,7 @@ pub struct DialogContext {
     pub resolved: ResolvedNode,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct JournalUiState {
     pub category: JournalCategory,
     pub selected: usize,
@@ -121,12 +124,12 @@ impl Default for JournalUiState {
     }
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct MainMenuUiState {
     pub selected: usize,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct SettingsConfig {
     pub enemy_hp_multiplier: f32,
     pub player_damage_multiplier: f32,
@@ -143,12 +146,12 @@ impl Default for SettingsConfig {
     }
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SettingsUiState {
     pub selected: usize,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CharacterCreationUiState {
     pub selected: usize,
     pub name: String,
@@ -171,7 +174,7 @@ impl Default for CharacterCreationUiState {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum FocusedPane {
     #[default]
     Main,

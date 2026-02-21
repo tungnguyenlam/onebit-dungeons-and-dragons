@@ -136,6 +136,35 @@ impl App {
 
     pub fn handle_combat(&mut self, event: GameEvent) -> Result<()> {
         match event {
+            GameEvent::MoveUp | GameEvent::MoveDown => {
+                if let AppState::Combat(ctx) = &mut self.state {
+                    let targets = ctx
+                        .state
+                        .combatants
+                        .values()
+                        .filter(|c| !c.is_player && c.is_alive())
+                        .map(|c| c.id.clone())
+                        .collect::<Vec<_>>();
+                    if !targets.is_empty() {
+                        let current_idx = ctx
+                            .selected_enemy_id
+                            .as_ref()
+                            .and_then(|id| targets.iter().position(|tid| tid == id))
+                            .unwrap_or(0);
+
+                        let next_idx = if event == GameEvent::MoveUp {
+                            if current_idx == 0 {
+                                targets.len() - 1
+                            } else {
+                                current_idx - 1
+                            }
+                        } else {
+                            (current_idx + 1) % targets.len()
+                        };
+                        ctx.selected_enemy_id = Some(targets[next_idx].clone());
+                    }
+                }
+            }
             GameEvent::Attack | GameEvent::Choice(1) => {
                 if let AppState::Combat(ctx) = &mut self.state {
                     let Some(attacker_id) = ctx.state.current_combatant_id().map(str::to_string)
@@ -154,11 +183,16 @@ impl App {
                         return Ok(());
                     }
 
-                    let Some(target_id) = ctx.state.next_enemy_id(&attacker_id).map(str::to_string)
-                    else {
+                    let target_id = ctx
+                        .selected_enemy_id
+                        .clone()
+                        .or_else(|| ctx.state.next_enemy_id(&attacker_id).map(str::to_string));
+
+                    let Some(target_id) = target_id else {
                         Self::push_log(ctx, "No valid target.");
                         return Ok(());
                     };
+
                     let _ = Self::resolve_attack(
                         ctx,
                         &attacker_id,

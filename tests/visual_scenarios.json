@@ -1,0 +1,34 @@
+{
+  "scenarios": {
+    "start_game": {
+      "keys": "\r",
+      "reset": true,
+      "description": "Start a new game and land in character creation"
+    },
+    "enter_world": {
+      "keys": "\rjjj\r",
+      "reset": true,
+      "description": "Start game, select default character and enter world"
+    },
+    "move_around": {
+      "keys": "llllkk",
+      "reset": false,
+      "description": "Move the player character in the world"
+    },
+    "open_inventory": {
+      "keys": "i",
+      "reset": false,
+      "description": "Open the inventory screen"
+    },
+    "combat_init": {
+      "keys": "a",
+      "reset": false,
+      "description": "Enter combat"
+    },
+    "combat_attack": {
+      "keys": "a",
+      "reset": false,
+      "description": "Execute an attack in combat"
+    }
+  }
+}

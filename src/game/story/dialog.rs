@@ -3,14 +3,15 @@ use crate::{
     data::types::{DialogChoice, DialogEffect, DialogNode, DialogTree},
     game::story::world_state::WorldState,
 };
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ResolvedChoice {
     pub text: String,
     pub next: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ResolvedNode {
     pub id: String,
     pub text: String,
