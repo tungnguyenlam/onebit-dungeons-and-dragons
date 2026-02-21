@@ -789,6 +789,121 @@ impl App {
             self.player.spell_slots[slot_idx] -= 1;
         }
     }
+
+    /// Dump the current game state as human-readable text.
+    /// Used for --text mode and debugging.
+    pub fn dump_state(&self) -> String {
+        use crate::game::world::map::Tile;
+        use std::fmt::Write;
+
+        let mut s = String::new();
+
+        writeln!(s, "========================================").unwrap();
+        writeln!(s, "GAME STATE").unwrap();
+        writeln!(s, "========================================").unwrap();
+
+        writeln!(s, "").unwrap();
+        writeln!(s, "--- App State ---").unwrap();
+        writeln!(s, "State: {:?}", self.state).unwrap();
+        writeln!(s, "Turn: {}", self.turn).unwrap();
+        writeln!(s, "Current Room: {}", self.current_room_id).unwrap();
+        writeln!(
+            s,
+            "Player Position: ({}, {})",
+            self.player_pos.0, self.player_pos.1
+        )
+        .unwrap();
+        writeln!(s, "Show Help: {}", self.show_help).unwrap();
+
+        writeln!(s, "").unwrap();
+        writeln!(s, "--- Player ---").unwrap();
+        writeln!(s, "Name: {}", self.player.name).unwrap();
+        writeln!(s, "Class: {}", self.player.class_id).unwrap();
+        writeln!(s, "Race: {}", self.player.race_id).unwrap();
+        writeln!(s, "Level: {}", self.player.level).unwrap();
+        writeln!(s, "XP: {}", self.player.xp).unwrap();
+        writeln!(s, "HP: {}/{}", self.player.current_hp, self.player.max_hp).unwrap();
+        writeln!(s, "Gold: {}", self.player.gold).unwrap();
+        writeln!(s, "Skill Points: {}", self.player.skill_points).unwrap();
+        writeln!(s, "Perks: {:?}", self.player.perks).unwrap();
+
+        writeln!(s, "").unwrap();
+        writeln!(s, "--- Inventory ---").unwrap();
+        for item in &self.player.inventory.items {
+            writeln!(s, "  {} x{}", item.item_id, item.quantity).unwrap();
+        }
+
+        if let Some(room) = self.region.room(&self.current_room_id) {
+            writeln!(s, "").unwrap();
+            writeln!(s, "--- Current Room ---").unwrap();
+            writeln!(s, "Name: {}", room.name).unwrap();
+            writeln!(s, "Size: {}x{}", room.width(), room.height()).unwrap();
+
+            if !room.npcs.is_empty() {
+                writeln!(s, "NPCs:").unwrap();
+                for npc in &room.npcs {
+                    writeln!(
+                        s,
+                        "  - {} at ({}, {})",
+                        npc.id, npc.position[0], npc.position[1]
+                    )
+                    .unwrap();
+                }
+            }
+
+            if !room.triggers.is_empty() {
+                writeln!(s, "Triggers:").unwrap();
+                for trigger in &room.triggers {
+                    writeln!(
+                        s,
+                        "  - {:?} at ({}, {}) -> {}",
+                        trigger.kind, trigger.position[0], trigger.position[1], trigger.target_id
+                    )
+                    .unwrap();
+                }
+            }
+
+            writeln!(s, "").unwrap();
+            writeln!(s, "--- Room Grid ---").unwrap();
+            for y in 0..room.height() {
+                let mut row = String::new();
+                for x in 0..room.width() {
+                    let tile = room.grid.get(x, y).unwrap_or(Tile::Wall);
+                    let ch = match tile {
+                        Tile::Floor => '.',
+                        Tile::Wall => '#',
+                        Tile::DoorClosed => '+',
+                        Tile::DoorOpen => '/',
+                        Tile::DeepWater => '~',
+                        Tile::ShallowWater => '~',
+                        Tile::StairsUp => '<',
+                        Tile::StairsDown => '>',
+                        Tile::Chest => '$',
+                        Tile::NpcSpawn => '@',
+                        Tile::Trigger => '!',
+                        Tile::Unknown(_) => '?',
+                    };
+                    if (x, y) == self.player_pos {
+                        row.push('@');
+                    } else {
+                        row.push(ch);
+                    }
+                }
+                writeln!(s, "{}", row).unwrap();
+            }
+        }
+
+        if let Some(feedback) = self.get_feedback() {
+            writeln!(s, "").unwrap();
+            writeln!(s, "--- Feedback ---").unwrap();
+            writeln!(s, "{}", feedback).unwrap();
+        }
+
+        writeln!(s, "").unwrap();
+        writeln!(s, "========================================").unwrap();
+
+        s
+    }
 }
 
 fn find_spawn_pos_for_room(room: &crate::game::world::room::Room) -> (u32, u32) {

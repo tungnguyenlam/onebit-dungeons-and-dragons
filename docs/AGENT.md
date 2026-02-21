@@ -54,6 +54,18 @@ cargo run -- --validate-assets
 scripts/validate_assets.sh
 ```
 
+For step-through testing without TTY (agents can see text output after each key):
+```bash
+# Dump initial game state as text
+scripts/runtest.sh
+
+# Press a key, dump state
+scripts/runtest.sh j       # move down
+scripts/runtest.sh $'\r'   # enter/confirm
+scripts/runtest.sh i       # open inventory
+```
+Guide: [testing/step-through-testing.md](testing/step-through-testing.md)
+
 **Step 3 — Read only the docs for your current task**  
 The handoff block lists which doc files are relevant. Read those and nothing
 else. Do not read the full backlog or unrelated gameplay docs.
