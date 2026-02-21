@@ -14,12 +14,14 @@ description = "Water flows sluggishly through this grand aqueduct. Archways stre
 [[triggers]]
 position = [5, 1]
 type = "travel"
+auto_trigger = true
 target_id = "drowned_temple"
 once = false
 
 [[triggers]]
 position = [4, 1]
 type = "travel"
+auto_trigger = true
 target_id = "flooded_plaza"
 once = false
 

@@ -12,12 +12,14 @@ description = "The central plaza, now a basin for cold ocean currents. Ruined pi
 [[triggers]]
 position = [5, 1]
 type = "travel"
+auto_trigger = true
 target_id = "submerged_aqueduct"
 once = false
 
 [[triggers]]
 position = [4, 1]
 type = "travel"
+auto_trigger = true
 target_id = "whispering-woods"
 once = false
 

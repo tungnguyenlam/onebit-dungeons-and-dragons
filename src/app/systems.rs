@@ -15,6 +15,10 @@ impl App {
             room_id: self.current_room_id.clone(),
             player_pos: self.player_pos,
             state: self.state.clone(),
+            menu_ui: self.menu_ui.clone(),
+            char_creation_ui: self.char_creation_ui.clone(),
+            journal_ui: self.journal_ui.clone(),
+            settings_ui: self.settings_ui.clone(),
         };
         save_to_path("save.toml", &save)
     }
@@ -28,6 +32,10 @@ impl App {
         self.current_room_id = save.room_id;
         self.player_pos = save.player_pos;
         self.state = save.state;
+        self.menu_ui = save.menu_ui;
+        self.char_creation_ui = save.char_creation_ui;
+        self.journal_ui = save.journal_ui;
+        self.settings_ui = save.settings_ui;
         Ok(())
     }
 

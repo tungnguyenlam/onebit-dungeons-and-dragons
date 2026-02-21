@@ -1,5 +1,5 @@
 ┌Character Creation────────────────────────────────────────────────────────────────────┐
-│> Name: Theron                                                                        │
+│> Name: Theron123                                                                     │
 │  Class: fighter                                                                      │
 │  Race: human                                                                         │
 │  Start Adventure                                                                     │

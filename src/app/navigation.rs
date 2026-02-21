@@ -15,6 +15,18 @@ impl App {
         let next_row = self.player_pos.1 as i32 + dy;
         if room.grid.is_passable(next_col, next_row) {
             self.player_pos = (next_col as u32, next_row as u32);
+            
+            // Check for auto-triggers at the new position
+            let room_id = self.current_room_id.clone();
+            if let Some(trigger) = self
+                .region
+                .room(&room_id)
+                .and_then(|r| r.trigger_at(next_col as u32, next_row as u32).cloned())
+            {
+                if trigger.auto_trigger {
+                    self.execute_trigger(&trigger);
+                }
+            }
         }
     }
 
@@ -174,7 +186,7 @@ impl App {
             }
         }
 
-        // Check adjacent for doors/chests/travel
+        // Check adjacent for doors/chests/travel/dialog/NPCs
         let mut interactable_found = false;
         for dy in -1..=1 {
             for dx in -1..=1 {
@@ -187,12 +199,26 @@ impl App {
                     let nx = nx as u32;
                     let ny = ny as u32;
 
+                    // Check for adjacent NPCs
+                    if let Some(room) = self.region.room(&room_id) {
+                        if let Some(npc_id) = room
+                            .npcs
+                            .iter()
+                            .find(|n| n.position[0] == nx && n.position[1] == ny)
+                            .map(|n| n.id.clone())
+                        {
+                            self.start_dialog_with_npc(&npc_id);
+                            interactable_found = true;
+                            break;
+                        }
+                    }
+
                     if let Some(trigger) = self
                         .region
                         .room(&room_id)
                         .and_then(|r| r.trigger_at(nx, ny).cloned())
                     {
-                        if matches!(trigger.kind, TriggerKind::Travel) {
+                        if matches!(trigger.kind, TriggerKind::Travel | TriggerKind::Dialog) {
                             self.execute_trigger(&trigger);
                             interactable_found = true;
                             break;

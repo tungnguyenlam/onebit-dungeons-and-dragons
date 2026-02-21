@@ -24,11 +24,13 @@ once = false
 [[triggers]]
 position = [5, 3]
 type = "travel"
+auto_trigger = true
 target_id = "deep_shaft"
 once = false
 
 [[triggers]]
 position = [12, 4]
 type = "travel"
+auto_trigger = true
 target_id = "ore_chamber"
 once = false

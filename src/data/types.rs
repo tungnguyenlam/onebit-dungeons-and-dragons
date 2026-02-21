@@ -100,6 +100,8 @@ pub struct TriggerDef {
     pub condition: String,
     #[serde(default)]
     pub once: bool,
+    #[serde(default)]
+    pub auto_trigger: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]

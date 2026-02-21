@@ -3,10 +3,10 @@ turn = 0
 region_slug = "valley-of-ash"
 room_id = "ash_gate"
 player_pos = [
-    3,
+    4,
     2,
 ]
-state = "MainMenu"
+state = "WorldMap"
 
 [player]
 name = "Theron"
@@ -94,3 +94,30 @@ equipped = false
 [journal]
 entries = []
 has_unread = false
+
+[menu_ui]
+selected = 0
+
+[char_creation_ui]
+selected = 3
+name = "Theron"
+class_options = [
+    "fighter",
+    "wizard",
+    "rogue",
+]
+class_index = 0
+race_options = [
+    "human",
+    "elf",
+    "dwarf",
+]
+race_index = 0
+
+[journal_ui]
+category = "quest"
+selected = 0
+detail_scroll = 0
+
+[settings_ui]
+selected = 0

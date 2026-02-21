@@ -24,17 +24,20 @@ once = false
 [[triggers]]
 position = [5, 3]
 type = "travel"
+auto_trigger = true
 target_id = "obsidian_bridge"
 once = false
 
 [[triggers]]
 position = [12, 4]
 type = "travel"
+auto_trigger = true
 target_id = "lava_shelf"
 once = false
 
 [[triggers]]
 position = [1, 4]
 type = "travel"
+auto_trigger = true
 target_id = "valley-of-ash"
 once = false

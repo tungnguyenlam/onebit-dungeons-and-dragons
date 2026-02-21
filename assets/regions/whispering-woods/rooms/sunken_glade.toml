@@ -14,18 +14,21 @@ grid = """
 [[triggers]]
 position = [12, 1]
 type = "travel"
+auto_trigger = true
 target_id = "woods_edge"
 once = false
 
 [[triggers]]
 position = [1, 5]
 type = "travel"
+auto_trigger = true
 target_id = "elder_canopy"
 once = false
 
 [[triggers]]
 position = [12, 5]
 type = "travel"
+auto_trigger = true
 target_id = "overgrown_path"
 once = false
 

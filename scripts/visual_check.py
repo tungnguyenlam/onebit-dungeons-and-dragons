@@ -55,7 +55,8 @@ def main():
     if args.scenario:
         if args.scenario in scenarios:
             s = scenarios[args.scenario]
-            keys = s.get("keys", "")
+            scenario_keys = s.get("keys", "")
+            keys = scenario_keys + (keys if keys else "")
             reset = reset or s.get("reset", False)
             scenario_name = scenario_name or args.scenario
         else:

@@ -15,6 +15,7 @@ grid = """
 [[triggers]]
 position = [5, 5]
 type = "travel"
+auto_trigger = true
 target_id = "peak_crater"
 once = false
 

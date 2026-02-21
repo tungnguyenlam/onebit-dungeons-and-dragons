@@ -31,6 +31,14 @@ pub struct SaveGame {
     pub player_pos: (u32, u32),
     #[serde(default)]
     pub state: AppState,
+    #[serde(default)]
+    pub menu_ui: crate::app::state::MainMenuUiState,
+    #[serde(default)]
+    pub char_creation_ui: crate::app::state::CharacterCreationUiState,
+    #[serde(default)]
+    pub journal_ui: crate::app::state::JournalUiState,
+    #[serde(default)]
+    pub settings_ui: crate::app::state::SettingsUiState,
 }
 
 fn default_save_version() -> u32 {
