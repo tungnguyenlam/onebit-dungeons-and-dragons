@@ -57,6 +57,15 @@ pub struct Theme {
     pub floor: Color,
 }
 
+impl Theme {
+    pub fn wall(&self) -> &'static str {
+        "#"
+    }
+    pub fn floor(&self) -> &'static str {
+        "."
+    }
+}
+
 static TIER: OnceLock<TerminalTier> = OnceLock::new();
 
 pub fn init_terminal_tier() -> TerminalTier {
