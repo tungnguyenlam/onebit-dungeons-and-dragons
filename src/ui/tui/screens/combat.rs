@@ -24,13 +24,12 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         AppState::Combat(ctx) => Some(ctx),
         _ => None,
     }) else {
-        let p = Paragraph::new("Combat screen requested outside combat state.")
-            .block(
-                Block::default()
-                    .title("Combat")
-                    .borders(Borders::ALL)
-                    .style(theme::panel_style()),
-            );
+        let p = Paragraph::new("Combat screen requested outside combat state.").block(
+            Block::default()
+                .title("Combat")
+                .borders(Borders::ALL)
+                .style(theme::panel_style()),
+        );
         frame.render_widget(p, area);
         return;
     };
@@ -195,13 +194,17 @@ fn last_turn_summary(log: &[String]) -> String {
 
 fn style_for_log_line(line: &str) -> Style {
     let base = if line.contains("CRITS") || line.contains("critical") {
-        Style::default().fg(theme::theme().warning).add_modifier(Modifier::BOLD)
+        Style::default()
+            .fg(theme::theme().warning)
+            .add_modifier(Modifier::BOLD)
     } else if line.contains("miss") {
         Style::default().fg(theme::theme().text_muted)
     } else if line.contains("recovers") || line.contains("restoring") {
         Style::default().fg(theme::theme().success)
     } else if line.contains("drops to 0 HP") {
-        Style::default().fg(theme::theme().danger).add_modifier(Modifier::BOLD)
+        Style::default()
+            .fg(theme::theme().danger)
+            .add_modifier(Modifier::BOLD)
     } else {
         Style::default().fg(theme::theme().text_primary)
     };

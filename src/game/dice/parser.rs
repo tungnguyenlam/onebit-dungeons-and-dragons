@@ -11,7 +11,7 @@ pub fn parse(s: &str) -> Result<DiceExpr> {
 
     // Find 'd' / 'D' delimiter
     let d_pos = s
-        .find(|c| c == 'd' || c == 'D')
+        .find(['d', 'D'])
         .ok_or_else(|| anyhow!("invalid dice expression '{s}': missing 'd'"))?;
 
     // Die count (left of 'd') — defaults to 1 if omitted
@@ -52,7 +52,11 @@ pub fn parse(s: &str) -> Result<DiceExpr> {
         return Err(anyhow!("die count must be > 0 (got '{s}')"));
     }
 
-    Ok(DiceExpr { count, sides, modifier })
+    Ok(DiceExpr {
+        count,
+        sides,
+        modifier,
+    })
 }
 
 // ---------------------------------------------------------------------------

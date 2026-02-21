@@ -60,16 +60,16 @@ impl Tile {
     /// The canonical display glyph for this tile.
     pub fn glyph(self) -> char {
         match self {
-            Tile::Wall       => '#',
-            Tile::Floor      => '.',
+            Tile::Wall => '#',
+            Tile::Floor => '.',
             Tile::DoorClosed => '+',
-            Tile::DoorOpen   => '-',
-            Tile::Water      => '~',
-            Tile::StairsUp   => '^',
+            Tile::DoorOpen => '-',
+            Tile::Water => '~',
+            Tile::StairsUp => '^',
             Tile::StairsDown => 'v',
-            Tile::Chest      => 'X',
-            Tile::NpcSpawn   => '@',
-            Tile::Trigger    => '!',
+            Tile::Chest => 'X',
+            Tile::NpcSpawn => '@',
+            Tile::Trigger => '!',
             Tile::Unknown(c) => c,
         }
     }
@@ -88,7 +88,7 @@ impl From<char> for Tile {
             'X' => Tile::Chest,
             '@' => Tile::NpcSpawn,
             '!' => Tile::Trigger,
-            c   => Tile::Unknown(c),
+            c => Tile::Unknown(c),
         }
     }
 }
@@ -102,7 +102,7 @@ impl From<char> for Tile {
 /// Rows are stored in row-major order: `tiles[row][col]`.
 #[derive(Debug, Clone)]
 pub struct TileGrid {
-    pub width:  u32,
+    pub width: u32,
     pub height: u32,
     tiles: Vec<Vec<Tile>>,
 }
@@ -121,7 +121,7 @@ impl TileGrid {
             .map(|line| line.chars().map(Tile::from).collect())
             .collect();
 
-        let width  = rows.iter().map(Vec::len).max().unwrap_or(0) as u32;
+        let width = rows.iter().map(Vec::len).max().unwrap_or(0) as u32;
         let height = rows.len() as u32;
 
         // Pad all rows to the same width.
@@ -133,7 +133,11 @@ impl TileGrid {
             })
             .collect();
 
-        TileGrid { width, height, tiles }
+        TileGrid {
+            width,
+            height,
+            tiles,
+        }
     }
 
     /// Get the tile at `(col, row)`, or `None` if the position is outside the
@@ -205,8 +209,8 @@ mod tests {
     #[test]
     fn parse_dimensions() {
         let g = TileGrid::from_str(SAMPLE);
-        assert_eq!(g.width,  10);
-        assert_eq!(g.height,  5);
+        assert_eq!(g.width, 10);
+        assert_eq!(g.height, 5);
     }
 
     #[test]

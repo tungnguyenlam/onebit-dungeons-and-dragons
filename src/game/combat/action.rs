@@ -3,9 +3,9 @@
 /// Mirrors 5e's action + bonus action + reaction plus movement budget.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ActionSlots {
-    pub action:             bool,
-    pub bonus_action:       bool,
-    pub reaction:           bool,
+    pub action: bool,
+    pub bonus_action: bool,
+    pub reaction: bool,
     pub movement_remaining: u32,
 }
 

@@ -19,17 +19,17 @@ use crate::game::world::room::Room;
 #[derive(Debug, Clone)]
 pub struct Region {
     /// The unique folder-name slug, e.g. `"valley-of-ash"`.
-    pub slug:        String,
-    pub name:        String,
+    pub slug: String,
+    pub name: String,
     pub description: String,
     /// Id of the room where the player spawns when entering this region.
-    pub entry_room:  String,
+    pub entry_room: String,
     /// Optional ambient flavour tag (passed to the audio sub-system).
-    pub ambient:     String,
+    pub ambient: String,
     /// Exit connections to neighbouring regions.
     pub connections: Vec<RegionConnection>,
     /// All rooms in this region, keyed by room id.
-    pub rooms:       HashMap<String, Room>,
+    pub rooms: HashMap<String, Room>,
 }
 
 impl Region {
@@ -45,11 +45,11 @@ impl Region {
             .collect();
 
         Region {
-            slug:        lr.manifest.slug.clone(),
-            name:        lr.manifest.name.clone(),
+            slug: lr.manifest.slug.clone(),
+            name: lr.manifest.name.clone(),
             description: lr.manifest.description.clone(),
-            entry_room:  lr.manifest.entry_room.clone(),
-            ambient:     lr.manifest.ambient.clone(),
+            entry_room: lr.manifest.entry_room.clone(),
+            ambient: lr.manifest.ambient.clone(),
             connections: lr.manifest.connections.clone(),
             rooms,
         }
@@ -87,38 +87,44 @@ mod tests {
 
     fn make_loaded_region() -> LoadedRegion {
         let manifest = RegionManifest {
-            slug:        "test-region".into(),
-            name:        "Test Region".into(),
+            slug: "test-region".into(),
+            name: "Test Region".into(),
             description: "For testing.".into(),
-            entry_room:  "start".into(),
-            ambient:     String::new(),
-            rooms:       vec![RoomRef { id: "start".into(), file: "rooms/start.toml".into() }],
+            entry_room: "start".into(),
+            ambient: String::new(),
+            rooms: vec![RoomRef {
+                id: "start".into(),
+                file: "rooms/start.toml".into(),
+            }],
             connections: vec![],
         };
 
         let mut rooms = HashMap::new();
-        rooms.insert("start".into(), RoomDef {
-            id:          "start".into(),
-            name:        "Start Room".into(),
-            description: "The beginning.".into(),
-            grid:        "#####\n#...#\n#####\n".into(),
-            terminal:    false,
-            npcs:        vec![],
-            items:       vec![],
-            triggers:    vec![],
-        });
+        rooms.insert(
+            "start".into(),
+            RoomDef {
+                id: "start".into(),
+                name: "Start Room".into(),
+                description: "The beginning.".into(),
+                grid: "#####\n#...#\n#####\n".into(),
+                terminal: false,
+                npcs: vec![],
+                items: vec![],
+                triggers: vec![],
+            },
+        );
 
         LoadedRegion {
             manifest,
             rooms,
-            npcs:    HashMap::new(),
+            npcs: HashMap::new(),
             dialogs: HashMap::new(),
         }
     }
 
     #[test]
     fn region_built_from_loader() {
-        let lr  = make_loaded_region();
+        let lr = make_loaded_region();
         let reg = Region::from_loaded(&lr);
         assert_eq!(reg.slug, "test-region");
         assert!(reg.room("start").is_some());
@@ -127,7 +133,7 @@ mod tests {
 
     #[test]
     fn entry_room_accessible() {
-        let lr  = make_loaded_region();
+        let lr = make_loaded_region();
         let reg = Region::from_loaded(&lr);
         assert!(reg.entry().is_some());
         assert_eq!(reg.entry().unwrap().id, "start");
@@ -135,7 +141,7 @@ mod tests {
 
     #[test]
     fn exits_from_empty_when_no_connections() {
-        let lr  = make_loaded_region();
+        let lr = make_loaded_region();
         let reg = Region::from_loaded(&lr);
         assert!(reg.exits_from("start").is_empty());
     }

@@ -17,10 +17,10 @@ pub fn armor_class(
 ) -> i32 {
     let base = match armor_base_ac {
         None => 10 + dex_modifier as i32,
-        Some((base, ArmorType::Light))  => base as i32 + dex_modifier as i32,
+        Some((base, ArmorType::Light)) => base as i32 + dex_modifier as i32,
         Some((base, ArmorType::Medium)) => base as i32 + (dex_modifier as i32).min(2),
-        Some((base, ArmorType::Heavy))  => base as i32,
-        Some((_, ArmorType::Shield))    => 10 + dex_modifier as i32, // shouldn't happen
+        Some((base, ArmorType::Heavy)) => base as i32,
+        Some((_, ArmorType::Shield)) => 10 + dex_modifier as i32, // shouldn't happen
     };
     base + if shield_equipped { 2 } else { 0 }
 }

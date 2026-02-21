@@ -1,3 +1,4 @@
+pub mod character_creation;
 pub mod combat;
 pub mod dialog;
 pub mod game_over;
@@ -6,4 +7,3 @@ pub mod journal;
 pub mod main_menu;
 pub mod spellbook;
 pub mod world_map;
-pub mod character_creation;

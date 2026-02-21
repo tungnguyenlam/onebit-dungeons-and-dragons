@@ -8,8 +8,12 @@ use ratatui::{
 
 pub fn render(frame: &mut Frame<'_>, app: &App) {
     let area = frame.area();
-    let chunks = Layout::vertical([Constraint::Length(3), Constraint::Min(5), Constraint::Length(7)])
-        .split(area);
+    let chunks = Layout::vertical([
+        Constraint::Length(3),
+        Constraint::Min(5),
+        Constraint::Length(7),
+    ])
+    .split(area);
 
     let Some(ctx) = (match &app.state {
         AppState::Dialog(ctx) => Some(ctx),

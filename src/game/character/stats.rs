@@ -16,24 +16,24 @@ use std::collections::HashSet;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct AbilityScores {
-    pub strength:     u8,
-    pub dexterity:    u8,
+    pub strength: u8,
+    pub dexterity: u8,
     pub constitution: u8,
     pub intelligence: u8,
-    pub wisdom:       u8,
-    pub charisma:     u8,
+    pub wisdom: u8,
+    pub charisma: u8,
 }
 
 impl AbilityScores {
     /// Standard array: [15, 14, 13, 12, 10, 8].
     pub fn standard_array() -> Self {
         Self {
-            strength:     15,
-            dexterity:    14,
+            strength: 15,
+            dexterity: 14,
             constitution: 13,
             intelligence: 12,
-            wisdom:       10,
-            charisma:     8,
+            wisdom: 10,
+            charisma: 8,
         }
     }
 
@@ -42,23 +42,35 @@ impl AbilityScores {
         (score as i8 - 10) / 2
     }
 
-    pub fn str_mod(&self) -> i8 { Self::modifier(self.strength) }
-    pub fn dex_mod(&self) -> i8 { Self::modifier(self.dexterity) }
-    pub fn con_mod(&self) -> i8 { Self::modifier(self.constitution) }
-    pub fn int_mod(&self) -> i8 { Self::modifier(self.intelligence) }
-    pub fn wis_mod(&self) -> i8 { Self::modifier(self.wisdom) }
-    pub fn cha_mod(&self) -> i8 { Self::modifier(self.charisma) }
+    pub fn str_mod(&self) -> i8 {
+        Self::modifier(self.strength)
+    }
+    pub fn dex_mod(&self) -> i8 {
+        Self::modifier(self.dexterity)
+    }
+    pub fn con_mod(&self) -> i8 {
+        Self::modifier(self.constitution)
+    }
+    pub fn int_mod(&self) -> i8 {
+        Self::modifier(self.intelligence)
+    }
+    pub fn wis_mod(&self) -> i8 {
+        Self::modifier(self.wisdom)
+    }
+    pub fn cha_mod(&self) -> i8 {
+        Self::modifier(self.charisma)
+    }
 
     /// Get modifier by ability name (lowercase).
     pub fn modifier_by_name(&self, name: &str) -> i8 {
         match name {
-            "strength"     => self.str_mod(),
-            "dexterity"    => self.dex_mod(),
+            "strength" => self.str_mod(),
+            "dexterity" => self.dex_mod(),
             "constitution" => self.con_mod(),
             "intelligence" => self.int_mod(),
-            "wisdom"       => self.wis_mod(),
-            "charisma"     => self.cha_mod(),
-            _              => 0,
+            "wisdom" => self.wis_mod(),
+            "charisma" => self.cha_mod(),
+            _ => 0,
         }
     }
 }
@@ -69,24 +81,24 @@ impl AbilityScores {
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct SavingThrowProficiencies {
-    pub strength:     bool,
-    pub dexterity:    bool,
+    pub strength: bool,
+    pub dexterity: bool,
     pub constitution: bool,
     pub intelligence: bool,
-    pub wisdom:       bool,
-    pub charisma:     bool,
+    pub wisdom: bool,
+    pub charisma: bool,
 }
 
 impl SavingThrowProficiencies {
     pub fn is_proficient(&self, ability: &str) -> bool {
         match ability {
-            "strength"     => self.strength,
-            "dexterity"    => self.dexterity,
+            "strength" => self.strength,
+            "dexterity" => self.dexterity,
             "constitution" => self.constitution,
             "intelligence" => self.intelligence,
-            "wisdom"       => self.wisdom,
-            "charisma"     => self.charisma,
-            _              => false,
+            "wisdom" => self.wisdom,
+            "charisma" => self.charisma,
+            _ => false,
         }
     }
 }
@@ -97,23 +109,23 @@ impl SavingThrowProficiencies {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Character {
-    pub name:          String,
-    pub class_id:      String,
-    pub race_id:       String,
-    pub level:         u8,
-    pub xp:            u32,
-    pub scores:        AbilityScores,
-    pub max_hp:        i32,
-    pub current_hp:    i32,
-    pub temp_hp:       i32,
-    pub speed:         u32,
-    pub skills:        SkillSet,
-    pub save_profs:    SavingThrowProficiencies,
-    pub conditions:    HashSet<Condition>,
-    pub inventory:     Inventory,
-    pub equipment:     EquipmentSlots,
+    pub name: String,
+    pub class_id: String,
+    pub race_id: String,
+    pub level: u8,
+    pub xp: u32,
+    pub scores: AbilityScores,
+    pub max_hp: i32,
+    pub current_hp: i32,
+    pub temp_hp: i32,
+    pub speed: u32,
+    pub skills: SkillSet,
+    pub save_profs: SavingThrowProficiencies,
+    pub conditions: HashSet<Condition>,
+    pub inventory: Inventory,
+    pub equipment: EquipmentSlots,
     /// Spell slots remaining per level (index 0 = 1st-level).
-    pub spell_slots:   [u8; 9],
+    pub spell_slots: [u8; 9],
     /// Spell slots max per level.
     pub spell_slots_max: [u8; 9],
 }
@@ -152,7 +164,9 @@ impl Character {
     /// Passive Perception = 10 + WIS modifier + proficiency (if proficient).
     pub fn passive_perception(&self) -> i32 {
         10 + self.scores.wis_mod() as i32
-            + self.skills.bonus(Skill::Perception, self.proficiency_bonus())
+            + self
+                .skills
+                .bonus(Skill::Perception, self.proficiency_bonus())
     }
 
     /// Total skill check bonus for a given skill.
@@ -218,8 +232,12 @@ mod tests {
             "fighter".into(),
             "human".into(),
             AbilityScores {
-                strength: 16, dexterity: 14, constitution: 14,
-                intelligence: 10, wisdom: 12, charisma: 8,
+                strength: 16,
+                dexterity: 14,
+                constitution: 14,
+                intelligence: 10,
+                wisdom: 12,
+                charisma: 8,
             },
         )
     }
@@ -228,7 +246,7 @@ mod tests {
     fn modifier_formula() {
         assert_eq!(AbilityScores::modifier(10), 0);
         assert_eq!(AbilityScores::modifier(12), 1);
-        assert_eq!(AbilityScores::modifier(8),  -1);
+        assert_eq!(AbilityScores::modifier(8), -1);
         assert_eq!(AbilityScores::modifier(20), 5);
     }
 

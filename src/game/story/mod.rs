@@ -13,6 +13,6 @@ pub mod journal;
 pub mod quest;
 pub mod world_state;
 
-pub use journal::{Category as JournalCategory, Journal, JournalEntry};
-pub use quest::{QuestLog, QuestStatus};
+pub use journal::Journal;
+// pub use quest::{QuestLog, QuestStatus};
 pub use world_state::WorldState;

@@ -4,11 +4,11 @@ use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct InitiativeCombatant {
-    pub entity_id:    String,
+    pub entity_id: String,
     pub dex_modifier: i32,
-    pub is_player:    bool,
+    pub is_player: bool,
     /// Stable input index used as final deterministic tie-breaker.
-    pub index:        usize,
+    pub index: usize,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -16,15 +16,15 @@ pub struct InitiativeOrder {
     /// Initiative total -> entity ids at that total.
     pub buckets: BTreeMap<i32, Vec<String>>,
     /// Flat queue in actual turn order (highest initiative first).
-    pub queue:   Vec<String>,
+    pub queue: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct InitiativeEntry {
     entity_id: String,
-    total:     i32,
+    total: i32,
     is_player: bool,
-    index:     usize,
+    index: usize,
 }
 
 /// Roll initiative with non-deterministic RNG.
@@ -45,7 +45,7 @@ fn roll_initiative_with_rng<R: Rng + ?Sized>(
 ) -> InitiativeOrder {
     let mut entries = Vec::with_capacity(combatants.len());
     for c in combatants {
-        let d20 = rng.random_range(1..=20) as i32;
+        let d20 = rng.random_range(1..=20);
         entries.push(InitiativeEntry {
             entity_id: c.entity_id.clone(),
             total: d20 + c.dex_modifier,
@@ -65,7 +65,10 @@ fn roll_initiative_with_rng<R: Rng + ?Sized>(
     let mut buckets = BTreeMap::<i32, Vec<String>>::new();
     let mut queue = Vec::with_capacity(entries.len());
     for e in entries {
-        buckets.entry(e.total).or_default().push(e.entity_id.clone());
+        buckets
+            .entry(e.total)
+            .or_default()
+            .push(e.entity_id.clone());
         queue.push(e.entity_id);
     }
 

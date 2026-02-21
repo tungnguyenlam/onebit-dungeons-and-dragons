@@ -16,19 +16,19 @@ use crate::game::world::map::TileGrid;
 
 #[derive(Debug, Clone)]
 pub struct Room {
-    pub id:          String,
-    pub name:        String,
+    pub id: String,
+    pub name: String,
     pub description: String,
     /// The parsed tile grid for this room.
-    pub grid:        TileGrid,
+    pub grid: TileGrid,
     /// NPC spawn points declared in the TOML, in load order.
-    pub npcs:        Vec<RoomNpc>,
+    pub npcs: Vec<RoomNpc>,
     /// Item spawn points.
-    pub items:       Vec<RoomItem>,
+    pub items: Vec<RoomItem>,
     /// Trigger zones (dialog, encounter, lore, quest_stage, travel).
-    pub triggers:    Vec<TriggerDef>,
+    pub triggers: Vec<TriggerDef>,
     /// When true this is a deliberate dead-end; no outbound travel trigger required.
-    pub terminal:    bool,
+    pub terminal: bool,
 }
 
 impl Room {
@@ -38,22 +38,26 @@ impl Room {
     /// the def so that the def can be dropped afterwards.
     pub fn from_def(def: &RoomDef) -> Self {
         Room {
-            id:          def.id.clone(),
-            name:        def.name.clone(),
+            id: def.id.clone(),
+            name: def.name.clone(),
             description: def.description.clone(),
-            grid:        TileGrid::from_str(&def.grid),
-            npcs:        def.npcs.clone(),
-            items:       def.items.clone(),
-            triggers:    def.triggers.clone(),
-            terminal:    def.terminal,
+            grid: TileGrid::from_str(&def.grid),
+            npcs: def.npcs.clone(),
+            items: def.items.clone(),
+            triggers: def.triggers.clone(),
+            terminal: def.terminal,
         }
     }
 
     /// Width of the tile grid in columns.
-    pub fn width(&self) -> u32 { self.grid.width }
+    pub fn width(&self) -> u32 {
+        self.grid.width
+    }
 
     /// Height of the tile grid in rows.
-    pub fn height(&self) -> u32 { self.grid.height }
+    pub fn height(&self) -> u32 {
+        self.grid.height
+    }
 
     /// Find the trigger at `(col, row)`, if any.
     pub fn trigger_at(&self, col: u32, row: u32) -> Option<&TriggerDef> {
@@ -77,23 +81,26 @@ impl Room {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::data::types::{TriggerKind};
+    use crate::data::types::TriggerKind;
 
     fn make_def() -> RoomDef {
         RoomDef {
-            id:          "test-room".into(),
-            name:        "Test Room".into(),
+            id: "test-room".into(),
+            name: "Test Room".into(),
             description: "A room for testing.".into(),
-            grid:        "##########\n#........#\n#..@..!..#\n#........#\n##########\n".into(),
-            terminal:    false,
-            npcs: vec![RoomNpc { id: "guard".into(), position: [3, 2] }],
+            grid: "##########\n#........#\n#..@..!..#\n#........#\n##########\n".into(),
+            terminal: false,
+            npcs: vec![RoomNpc {
+                id: "guard".into(),
+                position: [3, 2],
+            }],
             items: vec![],
             triggers: vec![TriggerDef {
-                position:  [6, 2],
-                kind:      TriggerKind::Dialog,
+                position: [6, 2],
+                kind: TriggerKind::Dialog,
                 target_id: "npc_dialog".into(),
                 condition: String::new(),
-                once:      true,
+                once: true,
             }],
         }
     }
@@ -101,8 +108,8 @@ mod tests {
     #[test]
     fn dimensions_parsed() {
         let room = Room::from_def(&make_def());
-        assert_eq!(room.width(),  10);
-        assert_eq!(room.height(),  5);
+        assert_eq!(room.width(), 10);
+        assert_eq!(room.height(), 5);
     }
 
     #[test]

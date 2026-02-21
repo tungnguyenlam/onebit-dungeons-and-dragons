@@ -29,7 +29,7 @@ pub mod region;
 pub mod room;
 
 // Convenience re-exports.
-pub use fov::compute as compute_fov;
-pub use map::{Tile, TileGrid};
-pub use region::Region;
-pub use room::Room;
+// pub use fov::compute as compute_fov;
+// pub use map::{Tile, TileGrid};
+// pub use region::Region;
+// pub use room::Room;

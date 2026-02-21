@@ -18,10 +18,10 @@ use std::collections::HashSet;
 // ---------------------------------------------------------------------------
 
 const MULT: [[i32; 8]; 4] = [
-    [ 1,  0,  0, -1, -1,  0,  0,  1], // xx
-    [ 0,  1, -1,  0,  0, -1,  1,  0], // xy
-    [ 0,  1,  1,  0,  0, -1, -1,  0], // yx
-    [ 1,  0,  0,  1, -1,  0,  0, -1], // yy
+    [1, 0, 0, -1, -1, 0, 0, 1], // xx
+    [0, 1, -1, 0, 0, -1, 1, 0], // xy
+    [0, 1, 1, 0, 0, -1, -1, 0], // yx
+    [1, 0, 0, 1, -1, 0, 0, -1], // yy
 ];
 
 // ---------------------------------------------------------------------------
@@ -46,15 +46,16 @@ pub fn compute(origin: (i32, i32), radius: u32, grid: &TileGrid) -> HashSet<(i32
     let r = radius as i32;
     let (cx, cy) = origin;
 
+    #[allow(clippy::needless_range_loop)]
     for octant in 0..8usize {
         cast_light(
             &mut visible,
             grid,
             cx,
             cy,
-            1,     // starting row (distance step)
-            1.0,   // start slope
-            0.0,   // end slope
+            1,   // starting row (distance step)
+            1.0, // start slope
+            0.0, // end slope
             r,
             MULT[0][octant],
             MULT[1][octant],
@@ -80,17 +81,17 @@ pub fn compute(origin: (i32, i32), radius: u32, grid: &TileGrid) -> HashSet<(i32
 #[allow(clippy::too_many_arguments)]
 fn cast_light(
     visible: &mut HashSet<(i32, i32)>,
-    grid:    &TileGrid,
-    cx:      i32,
-    cy:      i32,
-    row:     i32,
-    start:   f32,
-    end:     f32,
-    radius:  i32,
-    xx:      i32,
-    xy:      i32,
-    yx:      i32,
-    yy:      i32,
+    grid: &TileGrid,
+    cx: i32,
+    cy: i32,
+    row: i32,
+    start: f32,
+    end: f32,
+    radius: i32,
+    xx: i32,
+    xy: i32,
+    yx: i32,
+    yy: i32,
 ) {
     if start < end {
         return;
@@ -104,7 +105,7 @@ fn cast_light(
         let dy = -j;
         // dx starts at -(j+1); the first thing inside the loop increments it
         // to -j, so the scan range per row is -j ..= 0.
-        let mut dx      = -(j + 1);
+        let mut dx = -(j + 1);
         let mut blocked = false;
         let mut new_start = 0.0f32; // set before read, init is defensive only
 
@@ -140,14 +141,26 @@ fn cast_light(
                 } else {
                     // Transition: blocked → open. Resume arc from new_start.
                     blocked = false;
-                    start   = new_start;
+                    start = new_start;
                 }
             } else if grid.blocks_sight(x, y) && j < radius {
                 // Transition: open → blocked. Recurse with narrowed arc then
                 // record where the next potential open run begins.
                 blocked = true;
-                cast_light(visible, grid, cx, cy, j + 1, start, l_slope,
-                           radius, xx, xy, yx, yy);
+                cast_light(
+                    visible,
+                    grid,
+                    cx,
+                    cy,
+                    j + 1,
+                    start,
+                    l_slope,
+                    radius,
+                    xx,
+                    xy,
+                    yx,
+                    yy,
+                );
                 new_start = r_slope;
             }
         }
@@ -172,14 +185,14 @@ mod tests {
     #[test]
     fn origin_always_visible() {
         let grid = TileGrid::from_str(".....\n.....\n.....\n.....\n.....\n");
-        let vis  = compute((2, 2), 5, &grid);
+        let vis = compute((2, 2), 5, &grid);
         assert!(vis.contains(&(2, 2)), "origin must be visible");
     }
 
     #[test]
     fn zero_radius_only_origin() {
         let grid = TileGrid::from_str(".....\n.....\n.....\n");
-        let vis  = compute((2, 1), 0, &grid);
+        let vis = compute((2, 1), 0, &grid);
         assert_eq!(vis.len(), 1);
         assert!(vis.contains(&(2, 1)));
     }
@@ -254,6 +267,9 @@ mod tests {
         // Player is directly west of the pillar at (1,1).
         let vis = compute((1, 1), 10, &grid);
         // (5,1) is directly behind the pillar from (1,1) and should be hidden.
-        assert!(!vis.contains(&(5, 1)), "(5,1) should be in the pillar's shadow");
+        assert!(
+            !vis.contains(&(5, 1)),
+            "(5,1) should be in the pillar's shadow"
+        );
     }
 }

@@ -11,8 +11,8 @@
 
 ```
 Date:          2026-02-21
-Completed:     Milestones 20-25 — Save hardening, region depth, quest robustness,
-               combat AI, release pipeline, and faction simulation expansion
+Completed:     Milestones 20-26 — Save hardening, region depth, quest robustness,
+               combat AI, release pipeline, faction simulation, and second region content.
 
 Tasks completed:
   M20 — Save/State Drift Hardening
@@ -58,37 +58,42 @@ Tasks completed:
   - ✅ Hooked up Volcanic Curse quest acceptance via Warden Brom's task flag
   - ✅ Validated all region assets
 
+  Advanced TUI (Foundation)
+  - ✅ FocusedPane enum and state added to App for independent widget focus.
+  - ✅ Architecture doc updated with OpenCode-style TUI interaction patterns.
+
 Tests at close: 149 passed, 0 failed
 
 Next for incoming agent:
-  - Pull M27 from backlog.md
-  - Review Audio & Ambient Layer requirements
+  - Start M27 (Audio & Ambient Layer)
+  - Implement SoundQueue/SoundEffect systems.
+  - Implement the independent scrollbar/focus logic on the Journal screen.
 ```
 
 ---
 
 ## Active Task
 
-### Task: M26 — Second Region Content Pass
+### Task: M27 — Audio & Ambient Layer
 
 **Files to touch:**
-- assets/regions/emberpeak-summit/region.toml
-- assets/regions/emberpeak-summit/rooms/summit_crater.toml
-- assets/regions/emberpeak-summit/npcs/*.toml
-- assets/quests/side/volcanic_curse.toml
+- src/app.rs
+- src/renderer.rs
+- src/ui/tui/mod.rs
+- src/ui/tui/screens/world_map.rs
 
 **Done when:**
-- [x] `summit_crater.toml` exists and is linked in `region.toml`.
-- [x] `warden_brom` and `archivist_nyra` belong to `emberpeak_dwarves` faction.
-- [x] At least one `encounter` trigger exists in the region (Targeting `ember_wraith`).
-- [x] Quest `volcanic_curse` is accepted via `warden_brom` and has at least two stages.
-- [x] `cargo run -- --validate-assets` passes.
+- [ ] `SoundEffect` enum exists and is used by `App` to queue sounds.
+- [ ] At least 3 different game events trigger distinct beep patterns.
+- [ ] The current region's `ambient` tag (e.g., "Ash Drift") is visible on the World Map screen.
+- [ ] Atmospheric flavor text appears in the log periodically for regions with ambient tags.
+- [ ] `cargo test` passes.
 
 **Blocked by:** none
 
 **Relevant docs:**
-- docs/content/regions/index.md
-- docs/tasks/milestones/m26.md
+- docs/tasks/milestones/m27.md
+- docs/architecture/tui-visual-system.md
 
 ---
 

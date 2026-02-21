@@ -2,7 +2,7 @@ use crate::game::{
     character::Character,
     story::{Journal, WorldState},
 };
-use anyhow::{Context, Result, bail};
+use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
@@ -100,7 +100,12 @@ pub fn check_save_invariants(save: &SaveGame) -> SaveDriftReport {
     if p.level > 20 {
         report.error(format!("player level {} exceeds 20", p.level));
     }
-    for (i, (&slot, &max)) in p.spell_slots.iter().zip(p.spell_slots_max.iter()).enumerate() {
+    for (i, (&slot, &max)) in p
+        .spell_slots
+        .iter()
+        .zip(p.spell_slots_max.iter())
+        .enumerate()
+    {
         if slot > max {
             report.error(format!(
                 "spell_slots[{i}] ({slot}) exceeds spell_slots_max[{i}] ({max})"

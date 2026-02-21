@@ -30,12 +30,18 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     }
     lines.push(Line::from(""));
     lines.push(Line::from("↑/↓ choose field  ←/→ cycle class/race"));
-    lines.push(Line::from("When Name is selected, press 1-9 to append digits"));
+    lines.push(Line::from(
+        "When Name is selected, press 1-9 to append digits",
+    ));
     lines.push(Line::from("Enter on Start Adventure to continue"));
     lines.push(Line::from("Esc to return"));
 
     frame.render_widget(
-        Paragraph::new(lines).block(Block::default().title("Character Creation").borders(Borders::ALL)),
+        Paragraph::new(lines).block(
+            Block::default()
+                .title("Character Creation")
+                .borders(Borders::ALL),
+        ),
         area,
     );
 }

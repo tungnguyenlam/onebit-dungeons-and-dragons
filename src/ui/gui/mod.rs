@@ -11,7 +11,6 @@
 /// interface. In production, `run()` is used instead of the trait.
 // pub mod screens;
 // pub mod widgets;
-
 use crate::app::{App, AppState};
 use crate::renderer::{ControlFlow, GameEvent, GameRenderer};
 use anyhow::Result;
@@ -57,7 +56,10 @@ impl eframe::App for GuiApp {
         // Collect input events and forward to game logic.
         ctx.input(|input| {
             for event in &input.events {
-                if let egui::Event::Key { key, pressed: true, .. } = event {
+                if let egui::Event::Key {
+                    key, pressed: true, ..
+                } = event
+                {
                     if let Some(game_event) = map_key(*key) {
                         if let Ok(cf) = self.app.handle_event(game_event) {
                             if cf == ControlFlow::Exit {
@@ -167,10 +169,7 @@ impl GameRenderer for GuiRenderer {
     }
 
     fn poll_event(&mut self) -> Result<GameEvent> {
-        Ok(self
-            .pending_events
-            .pop_front()
-            .unwrap_or(GameEvent::Tick))
+        Ok(self.pending_events.pop_front().unwrap_or(GameEvent::Tick))
     }
 
     fn teardown(self: Box<Self>) -> Result<()> {

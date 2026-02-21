@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(unused_imports)]
 /// Entry point.
 ///
 /// Parses the `--mode tui|gui` CLI flag (defaults to `tui`), constructs the
@@ -62,9 +64,15 @@ fn main() -> Result<()> {
             for err in &report.errors {
                 eprintln!("[error] {err}");
             }
-            anyhow::bail!("asset validation failed with {} error(s)", report.errors.len());
+            anyhow::bail!(
+                "asset validation failed with {} error(s)",
+                report.errors.len()
+            );
         }
-        println!("asset validation passed ({} warning(s))", report.warnings.len());
+        println!(
+            "asset validation passed ({} warning(s))",
+            report.warnings.len()
+        );
         return Ok(());
     }
 

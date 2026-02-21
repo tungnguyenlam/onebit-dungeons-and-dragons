@@ -14,7 +14,8 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     let slots_line = format!(
         "{} Slots L1: {}/{}",
         theme::icon("magic"),
-        app.player.spell_slots[0], app.player.spell_slots_max[0]
+        app.player.spell_slots[0],
+        app.player.spell_slots_max[0]
     );
     let header = Paragraph::new(vec![
         Line::from(slots_line),
@@ -46,13 +47,11 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         lines.push(Line::from("(no known spells)"));
     }
 
-    let body = Paragraph::new(lines)
-        .wrap(Wrap { trim: true })
-        .block(
-            Block::default()
-                .title("Known Spells")
-                .borders(Borders::ALL)
-                .style(theme::panel_style()),
-        );
+    let body = Paragraph::new(lines).wrap(Wrap { trim: true }).block(
+        Block::default()
+            .title("Known Spells")
+            .borders(Borders::ALL)
+            .style(theme::panel_style()),
+    );
     frame.render_widget(body, chunks[1]);
 }

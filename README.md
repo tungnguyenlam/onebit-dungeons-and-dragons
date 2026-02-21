@@ -179,6 +179,19 @@ For the detailed design see [docs/architecture/overview.md](docs/architecture/ov
 | M11 — NPC/Faction Simulation 2.0 | ✅ Done |
 | M12 — UX & Presentation Polish 2.0 | ✅ Done |
 | M13 — Release Readiness | ✅ Done |
+| M14 — Playtest UX & Ash Gate Flow | ✅ Done |
+| M15 — Interactive Playtest Harness | ✅ Done |
+| M16 — Room/Traversal Reliability Sweep | ✅ Done |
+| M17 — Combat UX Readability | ✅ Done |
+| M18 — Quest/Dialog Consistency | ✅ Done |
+| M19 — Long-Session Automation & CI Soak | ✅ Done |
+| M20 — Save/State Drift Hardening | ✅ Done |
+| M21 — Region Navigation Depth | ✅ Done |
+| M22 — Quest Runtime Robustness | ✅ Done |
+| M23 — Combat Depth Pass | ✅ Done |
+| M24 — Release Candidate Pipeline | ✅ Done |
+| M25 — Faction Simulation Expansion | ✅ Done |
+| M26 — Second Region Content Pass | ✅ Done |
 
 ---
 

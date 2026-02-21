@@ -12,7 +12,7 @@ pub enum Condition {
     Blinded,
     Charmed,
     Deafened,
-    Exhaustion(u8),  // 1–6
+    Exhaustion(u8), // 1–6
     Frightened,
     Grappled,
     Incapacitated,
@@ -30,21 +30,21 @@ impl Condition {
     /// Human-readable name (for UI display).
     pub fn name(&self) -> String {
         match self {
-            Condition::Blinded       => "Blinded".into(),
-            Condition::Charmed       => "Charmed".into(),
-            Condition::Deafened      => "Deafened".into(),
+            Condition::Blinded => "Blinded".into(),
+            Condition::Charmed => "Charmed".into(),
+            Condition::Deafened => "Deafened".into(),
             Condition::Exhaustion(n) => format!("Exhaustion {n}"),
-            Condition::Frightened    => "Frightened".into(),
-            Condition::Grappled      => "Grappled".into(),
+            Condition::Frightened => "Frightened".into(),
+            Condition::Grappled => "Grappled".into(),
             Condition::Incapacitated => "Incapacitated".into(),
-            Condition::Invisible     => "Invisible".into(),
-            Condition::Paralyzed     => "Paralyzed".into(),
-            Condition::Petrified     => "Petrified".into(),
-            Condition::Poisoned      => "Poisoned".into(),
-            Condition::Prone         => "Prone".into(),
-            Condition::Restrained    => "Restrained".into(),
-            Condition::Stunned       => "Stunned".into(),
-            Condition::Unconscious   => "Unconscious".into(),
+            Condition::Invisible => "Invisible".into(),
+            Condition::Paralyzed => "Paralyzed".into(),
+            Condition::Petrified => "Petrified".into(),
+            Condition::Poisoned => "Poisoned".into(),
+            Condition::Prone => "Prone".into(),
+            Condition::Restrained => "Restrained".into(),
+            Condition::Stunned => "Stunned".into(),
+            Condition::Unconscious => "Unconscious".into(),
         }
     }
 
@@ -53,9 +53,9 @@ impl Condition {
         matches!(
             self,
             Condition::Paralyzed
-            | Condition::Petrified
-            | Condition::Stunned
-            | Condition::Unconscious
+                | Condition::Petrified
+                | Condition::Stunned
+                | Condition::Unconscious
         )
     }
 
@@ -64,10 +64,10 @@ impl Condition {
         matches!(
             self,
             Condition::Blinded
-            | Condition::Frightened
-            | Condition::Poisoned
-            | Condition::Prone
-            | Condition::Restrained
+                | Condition::Frightened
+                | Condition::Poisoned
+                | Condition::Prone
+                | Condition::Restrained
         )
     }
 
@@ -76,10 +76,10 @@ impl Condition {
         matches!(
             self,
             Condition::Incapacitated
-            | Condition::Paralyzed
-            | Condition::Petrified
-            | Condition::Stunned
-            | Condition::Unconscious
+                | Condition::Paralyzed
+                | Condition::Petrified
+                | Condition::Stunned
+                | Condition::Unconscious
         )
     }
 }

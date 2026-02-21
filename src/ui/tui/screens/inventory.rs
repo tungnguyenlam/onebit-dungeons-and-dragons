@@ -44,13 +44,11 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         lines.push(Line::from("(no items)"));
     }
 
-    let list = Paragraph::new(lines)
-        .wrap(Wrap { trim: true })
-        .block(
-            Block::default()
-                .title(format!("Items {}", theme::icon("quest")))
-                .borders(Borders::ALL)
-                .style(theme::panel_style()),
-        );
+    let list = Paragraph::new(lines).wrap(Wrap { trim: true }).block(
+        Block::default()
+            .title(format!("Items {}", theme::icon("quest")))
+            .borders(Borders::ALL)
+            .style(theme::panel_style()),
+    );
     frame.render_widget(list, chunks[1]);
 }

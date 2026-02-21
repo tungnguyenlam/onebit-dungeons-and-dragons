@@ -37,48 +37,45 @@ impl Skill {
     /// The ability score this skill is based on.
     pub fn ability(self) -> &'static str {
         match self {
-            Skill::Athletics                          => "strength",
-            Skill::Acrobatics
-            | Skill::SleightOfHand
-            | Skill::Stealth                         => "dexterity",
+            Skill::Athletics => "strength",
+            Skill::Acrobatics | Skill::SleightOfHand | Skill::Stealth => "dexterity",
             Skill::Arcana
             | Skill::History
             | Skill::Investigation
             | Skill::Nature
-            | Skill::Religion                        => "intelligence",
+            | Skill::Religion => "intelligence",
             Skill::AnimalHandling
             | Skill::Insight
             | Skill::Medicine
             | Skill::Perception
-            | Skill::Survival                        => "wisdom",
-            Skill::Deception
-            | Skill::Intimidation
-            | Skill::Performance
-            | Skill::Persuasion                      => "charisma",
+            | Skill::Survival => "wisdom",
+            Skill::Deception | Skill::Intimidation | Skill::Performance | Skill::Persuasion => {
+                "charisma"
+            }
         }
     }
 
     /// Human-readable display name.
     pub fn display_name(self) -> &'static str {
         match self {
-            Skill::Athletics       => "Athletics",
-            Skill::Acrobatics      => "Acrobatics",
-            Skill::SleightOfHand   => "Sleight of Hand",
-            Skill::Stealth         => "Stealth",
-            Skill::Arcana          => "Arcana",
-            Skill::History         => "History",
-            Skill::Investigation   => "Investigation",
-            Skill::Nature          => "Nature",
-            Skill::Religion        => "Religion",
-            Skill::AnimalHandling  => "Animal Handling",
-            Skill::Insight         => "Insight",
-            Skill::Medicine        => "Medicine",
-            Skill::Perception      => "Perception",
-            Skill::Survival        => "Survival",
-            Skill::Deception       => "Deception",
-            Skill::Intimidation    => "Intimidation",
-            Skill::Performance     => "Performance",
-            Skill::Persuasion      => "Persuasion",
+            Skill::Athletics => "Athletics",
+            Skill::Acrobatics => "Acrobatics",
+            Skill::SleightOfHand => "Sleight of Hand",
+            Skill::Stealth => "Stealth",
+            Skill::Arcana => "Arcana",
+            Skill::History => "History",
+            Skill::Investigation => "Investigation",
+            Skill::Nature => "Nature",
+            Skill::Religion => "Religion",
+            Skill::AnimalHandling => "Animal Handling",
+            Skill::Insight => "Insight",
+            Skill::Medicine => "Medicine",
+            Skill::Perception => "Perception",
+            Skill::Survival => "Survival",
+            Skill::Deception => "Deception",
+            Skill::Intimidation => "Intimidation",
+            Skill::Performance => "Performance",
+            Skill::Persuasion => "Persuasion",
         }
     }
 
@@ -86,13 +83,23 @@ impl Skill {
     pub fn all() -> &'static [Skill] {
         &[
             Skill::Athletics,
-            Skill::Acrobatics, Skill::SleightOfHand, Skill::Stealth,
-            Skill::Arcana, Skill::History, Skill::Investigation,
-            Skill::Nature, Skill::Religion,
-            Skill::AnimalHandling, Skill::Insight, Skill::Medicine,
-            Skill::Perception, Skill::Survival,
-            Skill::Deception, Skill::Intimidation,
-            Skill::Performance, Skill::Persuasion,
+            Skill::Acrobatics,
+            Skill::SleightOfHand,
+            Skill::Stealth,
+            Skill::Arcana,
+            Skill::History,
+            Skill::Investigation,
+            Skill::Nature,
+            Skill::Religion,
+            Skill::AnimalHandling,
+            Skill::Insight,
+            Skill::Medicine,
+            Skill::Perception,
+            Skill::Survival,
+            Skill::Deception,
+            Skill::Intimidation,
+            Skill::Performance,
+            Skill::Persuasion,
         ]
     }
 }
@@ -101,7 +108,7 @@ impl Skill {
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct SkillSet {
     pub proficient: HashSet<Skill>,
-    pub expertise:  HashSet<Skill>,  // double proficiency
+    pub expertise: HashSet<Skill>, // double proficiency
 }
 
 impl SkillSet {

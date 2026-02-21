@@ -12,8 +12,8 @@ pub struct ResolvedChoice {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ResolvedNode {
-    pub id:      String,
-    pub text:    String,
+    pub id: String,
+    pub text: String,
     pub choices: Vec<ResolvedChoice>,
 }
 

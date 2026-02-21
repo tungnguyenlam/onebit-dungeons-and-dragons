@@ -1,8 +1,8 @@
 use crate::data::loader::{load_global_assets, load_lore, load_monsters, load_quests, load_region};
 use crate::data::types::{
     ArmorDef, ArmorType, DialogTree, ItemBonuses, ItemDef, ItemType, LoreEntry, MonsterAction,
-    MonsterDef,
-    NpcDef, QuestDef, QuestKind, QuestStageDef, QuestTransition, SpellDef, TriggerKind, WeaponDef,
+    MonsterDef, NpcDef, QuestDef, QuestKind, QuestStageDef, QuestTransition, SpellDef, TriggerKind,
+    WeaponDef,
 };
 use crate::game::{
     character::{
@@ -150,15 +150,9 @@ impl Default for JournalUiState {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct MainMenuUiState {
     pub selected: usize,
-}
-
-impl Default for MainMenuUiState {
-    fn default() -> Self {
-        Self { selected: 0 }
-    }
 }
 
 #[derive(Debug, Clone)]
@@ -688,9 +682,10 @@ impl App {
     }
 
     fn interact_current_tile(&mut self) {
-        let trigger = self
-            .current_room()
-            .and_then(|room| room.trigger_at(self.player_pos.0, self.player_pos.1).cloned());
+        let trigger = self.current_room().and_then(|room| {
+            room.trigger_at(self.player_pos.0, self.player_pos.1)
+                .cloned()
+        });
         if let Some(trigger) = trigger {
             match trigger.kind {
                 TriggerKind::Dialog => {
@@ -778,14 +773,16 @@ impl App {
     }
 
     fn apply_character_creation(&mut self) {
-        let class_id = self.char_creation_ui.class_options[self.char_creation_ui.class_index].clone();
+        let class_id =
+            self.char_creation_ui.class_options[self.char_creation_ui.class_index].clone();
         let race_id = self.char_creation_ui.race_options[self.char_creation_ui.race_index].clone();
         self.player.name = self.char_creation_ui.name.clone();
         self.player.class_id = class_id;
         self.player.race_id = race_id;
         self.player.level = 1;
         self.player.xp = 0;
-        self.player.spell_slots_max = spell_slots_for_class_level(&self.player.class_id, self.player.level);
+        self.player.spell_slots_max =
+            spell_slots_for_class_level(&self.player.class_id, self.player.level);
         self.player.spell_slots = self.player.spell_slots_max;
         self.player.current_hp = self.player.max_hp;
         self.current_room_id = self
@@ -815,19 +812,20 @@ impl App {
 
     fn equipment_bonus_totals(&self) -> (i32, i32, i32, i32, i32, i32) {
         // attack, damage, ac, spell_attack, spell_damage, max_hp
-        self.equipped_item_ids().fold((0, 0, 0, 0, 0, 0), |acc, id| {
-            let Some(item) = self.item_defs.get(id) else {
-                return acc;
-            };
-            (
-                acc.0 + item.bonuses.attack_bonus,
-                acc.1 + item.bonuses.damage_bonus,
-                acc.2 + item.bonuses.armor_class_bonus,
-                acc.3 + item.bonuses.spell_attack_bonus,
-                acc.4 + item.bonuses.spell_damage_bonus,
-                acc.5 + item.bonuses.max_hp_bonus,
-            )
-        })
+        self.equipped_item_ids()
+            .fold((0, 0, 0, 0, 0, 0), |acc, id| {
+                let Some(item) = self.item_defs.get(id) else {
+                    return acc;
+                };
+                (
+                    acc.0 + item.bonuses.attack_bonus,
+                    acc.1 + item.bonuses.damage_bonus,
+                    acc.2 + item.bonuses.armor_class_bonus,
+                    acc.3 + item.bonuses.spell_attack_bonus,
+                    acc.4 + item.bonuses.spell_damage_bonus,
+                    acc.5 + item.bonuses.max_hp_bonus,
+                )
+            })
     }
 
     fn grant_player_xp(&mut self, gained_xp: u32) {
@@ -1424,7 +1422,7 @@ impl App {
                     JournalCategory::World,
                     None,
                     "Hostile Intercept",
-                    format!("An NPC from a hostile faction has intercepted you!"),
+                    "An NPC from a hostile faction has intercepted you!".to_string(),
                 );
             }
         }
@@ -1562,10 +1560,15 @@ impl App {
             Self::push_log(ctx, "No bonus action remaining.");
             return;
         }
-        let heal = DiceExpr::new(1, 10, actor.max_hp.min(20) / 10).roll().max(1);
+        let heal = DiceExpr::new(1, 10, actor.max_hp.min(20) / 10)
+            .roll()
+            .max(1);
         let _ = actor.action_slots.use_bonus_action();
         actor.current_hp = (actor.current_hp + heal).min(actor.max_hp);
-        Self::push_log(ctx, format!("Player uses Second Wind and recovers {heal} HP."));
+        Self::push_log(
+            ctx,
+            format!("Player uses Second Wind and recovers {heal} HP."),
+        );
     }
 
     fn cast_known_spell(&mut self, idx: usize) {
@@ -1610,7 +1613,9 @@ impl App {
                     format!("Cast {}", spell.name),
                     format!(
                         "You recover {amount} HP{}.",
-                        slot_level.map(|lvl| format!(" (slot {lvl})")).unwrap_or_default()
+                        slot_level
+                            .map(|lvl| format!(" (slot {lvl})"))
+                            .unwrap_or_default()
                     ),
                 );
             }
@@ -1628,7 +1633,9 @@ impl App {
                     format!("Cast {}", spell.name),
                     format!(
                         "Spell deals {amount} {damage_type} damage{}.",
-                        slot_level.map(|lvl| format!(" (slot {lvl})")).unwrap_or_default()
+                        slot_level
+                            .map(|lvl| format!(" (slot {lvl})"))
+                            .unwrap_or_default()
                     ),
                 );
             }
@@ -1687,9 +1694,9 @@ impl App {
             .and_then(|id| self.item_defs.get(id))
             .and_then(|it| it.weapon.as_ref())
             .cloned();
-        let weapon_uses_dex = main_weapon.as_ref().is_some_and(|w| {
-            w.properties.iter().any(|p| p == "finesse" || p == "ranged")
-        });
+        let weapon_uses_dex = main_weapon
+            .as_ref()
+            .is_some_and(|w| w.properties.iter().any(|p| p == "finesse" || p == "ranged"));
         let ability_mod = if weapon_uses_dex {
             self.player.scores.dex_mod() as i32
         } else {
@@ -1707,13 +1714,12 @@ impl App {
                 .unwrap_or_else(|| DiceExpr::new(1, 4, 0))
         } else {
             main_weapon
-            .as_ref()
-            .map(|w| w.damage.clone())
-            .unwrap_or_else(|| DiceExpr::new(1, 4, 0))
+                .as_ref()
+                .map(|w| w.damage.clone())
+                .unwrap_or_else(|| DiceExpr::new(1, 4, 0))
         };
         damage.modifier += ability_mod + damage_bonus;
-        let attack_bonus =
-            ability_mod + self.player.proficiency_bonus() + attack_bonus_bonus;
+        let attack_bonus = ability_mod + self.player.proficiency_bonus() + attack_bonus_bonus;
 
         let mut combatants = vec![CombatantState::new(
             "player",
@@ -1788,9 +1794,9 @@ impl App {
 
 fn next_category(c: JournalCategory) -> JournalCategory {
     match c {
-        JournalCategory::Quest  => JournalCategory::Lore,
-        JournalCategory::Lore   => JournalCategory::World,
-        JournalCategory::World  => JournalCategory::Combat,
+        JournalCategory::Quest => JournalCategory::Lore,
+        JournalCategory::Lore => JournalCategory::World,
+        JournalCategory::World => JournalCategory::Combat,
         JournalCategory::Combat => JournalCategory::Dialog,
         JournalCategory::Dialog => JournalCategory::System,
         JournalCategory::System => JournalCategory::Quest,
@@ -1799,9 +1805,9 @@ fn next_category(c: JournalCategory) -> JournalCategory {
 
 fn prev_category(c: JournalCategory) -> JournalCategory {
     match c {
-        JournalCategory::Quest  => JournalCategory::System,
-        JournalCategory::Lore   => JournalCategory::Quest,
-        JournalCategory::World  => JournalCategory::Lore,
+        JournalCategory::Quest => JournalCategory::System,
+        JournalCategory::Lore => JournalCategory::Quest,
+        JournalCategory::World => JournalCategory::Lore,
         JournalCategory::Combat => JournalCategory::World,
         JournalCategory::Dialog => JournalCategory::Combat,
         JournalCategory::System => JournalCategory::Dialog,
@@ -1865,7 +1871,11 @@ fn sample_region_bundle() -> (Region, HashMap<String, NpcDef>, HashMap<String, D
         npcs: HashMap::new(),
         dialogs: HashMap::new(),
     };
-    (Region::from_loaded(&fallback), HashMap::new(), HashMap::new())
+    (
+        Region::from_loaded(&fallback),
+        HashMap::new(),
+        HashMap::new(),
+    )
 }
 
 fn sample_item_defs() -> HashMap<String, ItemDef> {

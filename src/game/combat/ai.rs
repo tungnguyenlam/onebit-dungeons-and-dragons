@@ -34,24 +34,15 @@ pub fn choose_target<'a>(state: &'a CombatState, actor_id: &str) -> Option<&'a s
     let chosen = match actor.enemy_role {
         EnemyAiRole::Melee => {
             // Focus-fire: lowest current HP  → finish them off
-            living_players
-                .iter()
-                .min_by_key(|c| c.current_hp)
-                .copied()
+            living_players.iter().min_by_key(|c| c.current_hp).copied()
         }
         EnemyAiRole::Ranged => {
             // Soften: highest current HP → spread damage
-            living_players
-                .iter()
-                .max_by_key(|c| c.current_hp)
-                .copied()
+            living_players.iter().max_by_key(|c| c.current_hp).copied()
         }
         EnemyAiRole::Spellcaster => {
             // Easiest to hit: lowest AC
-            living_players
-                .iter()
-                .min_by_key(|c| c.armor_class)
-                .copied()
+            living_players.iter().min_by_key(|c| c.armor_class).copied()
         }
     };
 
@@ -96,11 +87,11 @@ impl EncounterTier {
     /// Human-readable label used in UI/journal entries.
     pub fn label(self) -> &'static str {
         match self {
-            Self::Trivial  => "Trivial",
-            Self::Easy     => "Easy",
-            Self::Medium   => "Medium",
-            Self::Hard     => "Hard",
-            Self::Deadly   => "Deadly",
+            Self::Trivial => "Trivial",
+            Self::Easy => "Easy",
+            Self::Medium => "Medium",
+            Self::Hard => "Hard",
+            Self::Deadly => "Deadly",
         }
     }
 }

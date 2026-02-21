@@ -1,7 +1,4 @@
-use crate::{
-    app::App,
-    game::story::journal::Category as JournalCategory,
-};
+use crate::{app::App, game::story::journal::Category as JournalCategory};
 use ratatui::{
     layout::{Constraint, Layout},
     style::{Modifier, Style},
@@ -17,12 +14,19 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     let category = app.journal_ui.category;
     let entries = app.journal.entries_by_category(category);
 
-    let mut left = vec![Line::from(format!("Category: {}", category_label(category)))];
+    let mut left = vec![Line::from(format!(
+        "Category: {}",
+        category_label(category)
+    ))];
     left.push(Line::from("←/→ switch  ↑/↓ select"));
     left.push(Line::from("Esc close"));
     left.push(Line::from(""));
     for (idx, entry) in entries.iter().enumerate() {
-        let marker = if idx == app.journal_ui.selected { ">" } else { " " };
+        let marker = if idx == app.journal_ui.selected {
+            ">"
+        } else {
+            " "
+        };
         left.push(Line::from(format!("{marker} {}", entry.title)));
     }
 
@@ -56,9 +60,9 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
 
 fn category_label(c: JournalCategory) -> &'static str {
     match c {
-        JournalCategory::Quest  => "Quest",
-        JournalCategory::Lore   => "Lore",
-        JournalCategory::World  => "World",
+        JournalCategory::Quest => "Quest",
+        JournalCategory::Lore => "Lore",
+        JournalCategory::World => "World",
         JournalCategory::Combat => "Combat",
         JournalCategory::Dialog => "Dialog",
         JournalCategory::System => "System",

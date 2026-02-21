@@ -15,12 +15,12 @@ pub enum Category {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct JournalEntry {
-    pub id:        String,
+    pub id: String,
     pub timestamp: u64,
-    pub category:  Category,
-    pub quest_id:  Option<String>,
-    pub title:     String,
-    pub body:      String,
+    pub category: Category,
+    pub quest_id: Option<String>,
+    pub title: String,
+    pub body: String,
 }
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]

@@ -11,15 +11,16 @@ use ratatui::{
 
 pub fn render(frame: &mut Frame<'_>, app: &App) {
     let area = frame.area();
-    let chunks = Layout::vertical([Constraint::Length(5), Constraint::Min(7), Constraint::Length(4)])
-        .split(area);
+    let chunks = Layout::vertical([
+        Constraint::Length(5),
+        Constraint::Min(7),
+        Constraint::Length(4),
+    ])
+    .split(area);
 
     let header = Paragraph::new(vec![
-        Line::from(format!(
-            "Region: {} ({})",
-            app.region.name, app.region.slug
-        ))
-        .style(theme::accent_style()),
+        Line::from(format!("Region: {} ({})", app.region.name, app.region.slug))
+            .style(theme::accent_style()),
         Line::from(format!("Room: {}", app.current_room_id)),
         Line::from(format!(
             "Player: {} {} at ({}, {})",

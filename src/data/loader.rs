@@ -108,17 +108,15 @@ pub struct GlobalAssets {
 /// Missing directories are treated as empty (not an error).
 pub fn load_global_assets(base: impl AsRef<Path>) -> Result<GlobalAssets> {
     let base = base.as_ref();
-    let mut ga = GlobalAssets::default();
-
-    ga.monsters = load_dir(base.join("monsters"))?;
-    ga.classes = load_dir(base.join("classes"))?;
-    ga.races = load_dir(base.join("races"))?;
-    ga.items = load_dir(base.join("items"))?;
-    ga.spells = load_dir(base.join("spells"))?;
-    ga.quests = load_dir_nested(base.join("quests"))?;
-    ga.lore = load_dir(base.join("lore"))?;
-
-    Ok(ga)
+    Ok(GlobalAssets {
+        monsters: load_dir(base.join("monsters"))?,
+        classes: load_dir(base.join("classes"))?,
+        races: load_dir(base.join("races"))?,
+        items: load_dir(base.join("items"))?,
+        spells: load_dir(base.join("spells"))?,
+        quests: load_dir_nested(base.join("quests"))?,
+        lore: load_dir(base.join("lore"))?,
+    })
 }
 
 /// Load all quest definitions from `assets/quests/` (supports nested folders).

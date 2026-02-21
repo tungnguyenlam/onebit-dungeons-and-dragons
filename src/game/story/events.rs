@@ -1,7 +1,10 @@
 /// Emergent world events and lore inspection helpers.
 use crate::{
     data::types::LoreEntry,
-    game::story::{journal::{Category, Journal}, world_state::WorldState},
+    game::story::{
+        journal::{Category, Journal},
+        world_state::WorldState,
+    },
 };
 
 #[derive(Debug, Clone)]
@@ -12,9 +15,17 @@ pub enum WorldEvent {
         title: String,
         body: String,
     },
-    SetFlag { key: String },
-    DeltaCounter { key: String, delta: i32 },
-    ModifyFactionRep { faction: String, delta: i32 },
+    SetFlag {
+        key: String,
+    },
+    DeltaCounter {
+        key: String,
+        delta: i32,
+    },
+    ModifyFactionRep {
+        faction: String,
+        delta: i32,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -40,8 +51,20 @@ impl EventEngine {
                 continue;
             }
             match &t.event {
-                WorldEvent::AddJournalEntry { id, category, title, body } => {
-                    journal.append(id.clone(), turn, *category, None, title.clone(), body.clone());
+                WorldEvent::AddJournalEntry {
+                    id,
+                    category,
+                    title,
+                    body,
+                } => {
+                    journal.append(
+                        id.clone(),
+                        turn,
+                        *category,
+                        None,
+                        title.clone(),
+                        body.clone(),
+                    );
                 }
                 WorldEvent::SetFlag { key } => world.set_flag(key.clone()),
                 WorldEvent::DeltaCounter { key, delta } => world.delta_counter(key.clone(), *delta),

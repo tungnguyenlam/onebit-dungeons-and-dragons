@@ -11,12 +11,12 @@
 ///
 /// See docs/tasks/backlog.md for the full plan.
 pub mod character;
+pub mod combat;
 pub mod dice;
 pub mod items;
+pub mod save;
 pub mod story;
 pub mod world;
-pub mod combat;
-pub mod save;
 
 // Planned — uncomment when implemented:
 // pub mod npc;

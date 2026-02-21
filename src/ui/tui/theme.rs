@@ -26,7 +26,9 @@ static TIER: OnceLock<TerminalTier> = OnceLock::new();
 pub fn init_terminal_tier() -> TerminalTier {
     let no_color = std::env::var("NO_COLOR").is_ok();
     let term = std::env::var("TERM").unwrap_or_default();
-    let colorterm = std::env::var("COLORTERM").unwrap_or_default().to_lowercase();
+    let colorterm = std::env::var("COLORTERM")
+        .unwrap_or_default()
+        .to_lowercase();
     let lang = std::env::var("LANG").unwrap_or_default().to_lowercase();
 
     let utf8 = lang.contains("utf-8") || lang.contains("utf8");
@@ -101,11 +103,15 @@ pub fn panel_style() -> Style {
 }
 
 pub fn emph_style() -> Style {
-    Style::default().fg(theme().text_emphasis).add_modifier(Modifier::BOLD)
+    Style::default()
+        .fg(theme().text_emphasis)
+        .add_modifier(Modifier::BOLD)
 }
 
 pub fn accent_style() -> Style {
-    Style::default().fg(theme().accent_primary).add_modifier(Modifier::BOLD)
+    Style::default()
+        .fg(theme().accent_primary)
+        .add_modifier(Modifier::BOLD)
 }
 
 pub fn muted_style() -> Style {

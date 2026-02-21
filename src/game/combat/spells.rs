@@ -1,5 +1,8 @@
 /// Spell slot and effect resolution.
-use crate::{data::types::SpellDef, game::{character::conditions::Condition, dice::DiceExpr}};
+use crate::{
+    data::types::SpellDef,
+    game::{character::conditions::Condition, dice::DiceExpr},
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SpellEffect {
@@ -155,8 +158,14 @@ mod tests {
         };
         let low = resolve_effect(&spell, None, 1, 0).unwrap();
         let high = resolve_effect(&spell, None, 11, 0).unwrap();
-        let (SpellEffect::Damage { amount: low_amt, .. }, SpellEffect::Damage { amount: high_amt, .. }) =
-            (low, high)
+        let (
+            SpellEffect::Damage {
+                amount: low_amt, ..
+            },
+            SpellEffect::Damage {
+                amount: high_amt, ..
+            },
+        ) = (low, high)
         else {
             panic!("expected damage");
         };

@@ -16,14 +16,18 @@ use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiceExpr {
-    pub count:    u32,
-    pub sides:    u32,
+    pub count: u32,
+    pub sides: u32,
     pub modifier: i32,
 }
 
 impl DiceExpr {
     pub fn new(count: u32, sides: u32, modifier: i32) -> Self {
-        Self { count, sides, modifier }
+        Self {
+            count,
+            sides,
+            modifier,
+        }
     }
 
     /// Roll the dice and return the total (sum of dice + modifier).
@@ -71,8 +75,8 @@ impl fmt::Display for DiceExpr {
         write!(f, "{}d{}", self.count, self.sides)?;
         match self.modifier.cmp(&0) {
             std::cmp::Ordering::Greater => write!(f, "+{}", self.modifier),
-            std::cmp::Ordering::Less    => write!(f, "{}", self.modifier),
-            std::cmp::Ordering::Equal   => Ok(()),
+            std::cmp::Ordering::Less => write!(f, "{}", self.modifier),
+            std::cmp::Ordering::Equal => Ok(()),
         }
     }
 }
@@ -152,7 +156,7 @@ mod tests {
         assert_eq!(DiceExpr::new(1, 6, 0).average(), 3);
         // 2d6: 2*(3) = 6  — floor((1+6)/2.0)*2 = 3*2 = 6
         assert_eq!(DiceExpr::new(2, 6, 0).average(), 7); // (7/2)*2 = 7
-        // 1d8+2: 4+2 = 6  — floor((1+8)/2.0) = 4, 4+2=6
+                                                         // 1d8+2: 4+2 = 6  — floor((1+8)/2.0) = 4, 4+2=6
         assert_eq!(DiceExpr::new(1, 8, 2).average(), 6);
     }
 }

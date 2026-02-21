@@ -1,8 +1,6 @@
 /// Attack and saving-throw resolution.
 use crate::game::{
-    character::conditions::Condition,
-    combat::combat::CombatantState,
-    dice::DiceExpr,
+    character::conditions::Condition, combat::combat::CombatantState, dice::DiceExpr,
     story::world_state::WorldState,
 };
 use rand::{Rng, SeedableRng};
@@ -25,27 +23,27 @@ pub enum RollMode {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AttackOutcome {
     pub attacker_id: String,
-    pub target_id:   String,
-    pub d20:         i32,
-    pub total:       i32,
-    pub roll_mode:   RollMode,
-    pub hit_type:    HitType,
-    pub damage:      u32,
+    pub target_id: String,
+    pub d20: i32,
+    pub total: i32,
+    pub roll_mode: RollMode,
+    pub hit_type: HitType,
+    pub damage: u32,
     pub inflicted_condition: Option<Condition>,
 }
 
 #[derive(Debug, Clone)]
 pub struct AttackProfile<'a> {
-    pub id:          &'a str,
+    pub id: &'a str,
     pub attack_bonus: i32,
     pub damage_dice: &'a DiceExpr,
-    pub conditions:  &'a HashSet<Condition>,
+    pub conditions: &'a HashSet<Condition>,
     pub on_hit_condition: Option<Condition>,
 }
 
 #[derive(Debug, Clone)]
 pub struct DefenseProfile<'a> {
-    pub id:         &'a str,
+    pub id: &'a str,
     pub armor_class: i32,
     pub conditions: &'a HashSet<Condition>,
 }
@@ -99,14 +97,14 @@ fn roll_attack_with_rng<R: Rng + ?Sized>(
         .any(Condition::grants_advantage_to_attackers);
 
     let (d20, roll_mode) = if attacker_disadv == target_grants_adv {
-        (rng.random_range(1..=20) as i32, RollMode::Normal)
+        (rng.random_range(1..=20), RollMode::Normal)
     } else if target_grants_adv {
-        let a = rng.random_range(1..=20) as i32;
-        let b = rng.random_range(1..=20) as i32;
+        let a = rng.random_range(1..=20);
+        let b = rng.random_range(1..=20);
         (a.max(b), RollMode::Advantage)
     } else {
-        let a = rng.random_range(1..=20) as i32;
-        let b = rng.random_range(1..=20) as i32;
+        let a = rng.random_range(1..=20);
+        let b = rng.random_range(1..=20);
         (a.min(b), RollMode::Disadvantage)
     };
 
@@ -147,7 +145,7 @@ fn roll_saving_throw_with_rng<R: Rng + ?Sized>(
     dc: i32,
     rng: &mut R,
 ) -> SaveOutcome {
-    let d20 = rng.random_range(1..=20) as i32;
+    let d20 = rng.random_range(1..=20);
     let total = d20 + save_bonus;
     if d20 == 1 || total < dc {
         SaveOutcome::Failure { d20, total }

@@ -3,14 +3,18 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ItemInstance {
-    pub item_id:  String,
+    pub item_id: String,
     pub quantity: u32,
     pub equipped: bool,
 }
 
 impl ItemInstance {
     pub fn new(item_id: impl Into<String>, quantity: u32) -> Self {
-        Self { item_id: item_id.into(), quantity, equipped: false }
+        Self {
+            item_id: item_id.into(),
+            quantity,
+            equipped: false,
+        }
     }
 }
 
@@ -43,7 +47,8 @@ impl Inventory {
     }
 
     pub fn count(&self, item_id: &str) -> u32 {
-        self.items.iter()
+        self.items
+            .iter()
             .filter(|i| i.item_id == item_id)
             .map(|i| i.quantity)
             .sum()

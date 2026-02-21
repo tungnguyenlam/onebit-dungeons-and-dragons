@@ -1,7 +1,10 @@
 /// Quest stage machine runtime.
 use crate::{
     data::types::{DialogEffect, QuestDef},
-    game::story::{journal::{Category, Journal}, world_state::WorldState},
+    game::story::{
+        journal::{Category, Journal},
+        world_state::WorldState,
+    },
 };
 use std::collections::HashMap;
 
@@ -30,9 +33,9 @@ pub enum BlockedReason {
 /// Diagnostic snapshot for a blocked quest.
 #[derive(Debug, Clone)]
 pub struct QuestBlockedDiag {
-    pub quest_id:  String,
-    pub stage_id:  String,
-    pub reason:    BlockedReason,
+    pub quest_id: String,
+    pub stage_id: String,
+    pub reason: BlockedReason,
 }
 
 // ---------------------------------------------------------------------------
@@ -41,7 +44,7 @@ pub struct QuestBlockedDiag {
 
 #[derive(Debug, Clone, Default)]
 pub struct QuestLog {
-    pub defs:   HashMap<String, QuestDef>,
+    pub defs: HashMap<String, QuestDef>,
     pub states: HashMap<String, QuestStatus>,
 }
 
@@ -51,7 +54,10 @@ impl QuestLog {
         for def in defs {
             map.insert(def.id.clone(), def);
         }
-        Self { defs: map, states: HashMap::new() }
+        Self {
+            defs: map,
+            states: HashMap::new(),
+        }
     }
 
     pub fn accept_quest(
@@ -74,7 +80,9 @@ impl QuestLog {
         world.set_flag(format!("quest_{quest_id}_active"));
         self.states.insert(
             quest_id.to_string(),
-            QuestStatus::Active { stage_id: start.id.clone() },
+            QuestStatus::Active {
+                stage_id: start.id.clone(),
+            },
         );
         apply_effects(&start.on_enter, world);
         journal.append(
@@ -117,7 +125,9 @@ impl QuestLog {
                 if t.stage == "END" || t.stage == "DONE" {
                     self.states.insert(
                         quest_id.to_string(),
-                        QuestStatus::Completed { stage_id: current_stage_id.clone() },
+                        QuestStatus::Completed {
+                            stage_id: current_stage_id.clone(),
+                        },
                     );
                     world.clear_flag(format!("quest_{quest_id}_active"));
                     world.set_flag(format!("quest_{quest_id}_completed"));
@@ -128,7 +138,9 @@ impl QuestLog {
                 };
                 self.states.insert(
                     quest_id.to_string(),
-                    QuestStatus::Active { stage_id: next_stage.id.clone() },
+                    QuestStatus::Active {
+                        stage_id: next_stage.id.clone(),
+                    },
                 );
                 apply_effects(&next_stage.on_enter, world);
                 journal.append(
@@ -163,17 +175,17 @@ impl QuestLog {
             };
             let Some(def) = self.defs.get(quest_id.as_str()) else {
                 out.push(QuestBlockedDiag {
-                    quest_id:  quest_id.clone(),
-                    stage_id:  stage_id.clone(),
-                    reason:    BlockedReason::MissingDef,
+                    quest_id: quest_id.clone(),
+                    stage_id: stage_id.clone(),
+                    reason: BlockedReason::MissingDef,
                 });
                 continue;
             };
             let Some(stage) = def.stages.iter().find(|s| s.id == *stage_id) else {
                 out.push(QuestBlockedDiag {
-                    quest_id:  quest_id.clone(),
-                    stage_id:  stage_id.clone(),
-                    reason:    BlockedReason::MissingStage(stage_id.clone()),
+                    quest_id: quest_id.clone(),
+                    stage_id: stage_id.clone(),
+                    reason: BlockedReason::MissingStage(stage_id.clone()),
                 });
                 continue;
             };
@@ -185,9 +197,9 @@ impl QuestLog {
             let any_satisfied = stage.next.iter().any(|t| world.evaluate(&t.condition));
             if !any_satisfied {
                 out.push(QuestBlockedDiag {
-                    quest_id:  quest_id.clone(),
-                    stage_id:  stage_id.clone(),
-                    reason:    BlockedReason::NoSatisfiedTransition,
+                    quest_id: quest_id.clone(),
+                    stage_id: stage_id.clone(),
+                    reason: BlockedReason::NoSatisfiedTransition,
                 });
             }
         }
@@ -372,9 +384,9 @@ mod tests {
         assert_eq!(count, 1);
         // Journal should have an entry tagged System for the hint
         let entries: Vec<_> = j.entries().collect();
-        let has_hint = entries.iter().any(|e| {
-            e.category == Category::System && e.body.contains("stuck")
-        });
+        let has_hint = entries
+            .iter()
+            .any(|e| e.category == Category::System && e.body.contains("stuck"));
         assert!(has_hint);
     }
 

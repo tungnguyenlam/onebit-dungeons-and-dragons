@@ -51,18 +51,16 @@ impl GameRenderer for TuiRenderer {
             print!("\x07");
             let _ = io::stdout().flush();
         }
-        self.terminal.draw(|frame| {
-            match &app.state {
-                AppState::MainMenu => screens::main_menu::render(frame, app),
-                AppState::CharacterCreation => screens::character_creation::render(frame, app),
-                AppState::WorldMap => screens::world_map::render(frame, app),
-                AppState::Combat(_) => screens::combat::render(frame, app),
-                AppState::Dialog(_) => screens::dialog::render(frame, app),
-                AppState::Journal => screens::journal::render(frame, app),
-                AppState::Inventory => screens::inventory::render(frame, app),
-                AppState::Spellbook => screens::spellbook::render(frame, app),
-                AppState::GameOver => screens::game_over::render(frame, app),
-            }
+        self.terminal.draw(|frame| match &app.state {
+            AppState::MainMenu => screens::main_menu::render(frame, app),
+            AppState::CharacterCreation => screens::character_creation::render(frame, app),
+            AppState::WorldMap => screens::world_map::render(frame, app),
+            AppState::Combat(_) => screens::combat::render(frame, app),
+            AppState::Dialog(_) => screens::dialog::render(frame, app),
+            AppState::Journal => screens::journal::render(frame, app),
+            AppState::Inventory => screens::inventory::render(frame, app),
+            AppState::Spellbook => screens::spellbook::render(frame, app),
+            AppState::GameOver => screens::game_over::render(frame, app),
         })?;
         Ok(())
     }

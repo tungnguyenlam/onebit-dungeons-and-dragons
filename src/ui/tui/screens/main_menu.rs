@@ -10,8 +10,12 @@ use ratatui::{
 
 pub fn render(frame: &mut Frame<'_>, app: &App) {
     let area = frame.area();
-    let chunks = Layout::vertical([Constraint::Length(3), Constraint::Min(8), Constraint::Length(4)])
-        .split(area);
+    let chunks = Layout::vertical([
+        Constraint::Length(3),
+        Constraint::Min(8),
+        Constraint::Length(4),
+    ])
+    .split(area);
 
     let title = Paragraph::new("OneBit Dungeons & Dragons")
         .alignment(Alignment::Center)
@@ -26,7 +30,11 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     let items = ["New Game", "Continue", "Load Save", "Quit (press q)"];
     let mut lines = Vec::new();
     for (idx, item) in items.iter().enumerate() {
-        let marker = if idx == app.menu_ui.selected { ">" } else { " " };
+        let marker = if idx == app.menu_ui.selected {
+            ">"
+        } else {
+            " "
+        };
         lines.push(
             Line::from(format!("{marker} {item}")).style(if idx == app.menu_ui.selected {
                 theme::accent_style()

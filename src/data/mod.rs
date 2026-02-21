@@ -5,5 +5,3 @@
 pub mod loader;
 pub mod types;
 pub mod validate;
-
-pub use loader::{GlobalAssets, LoadedRegion};
