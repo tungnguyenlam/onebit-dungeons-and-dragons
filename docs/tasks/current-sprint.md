@@ -7,6 +7,16 @@
 
 ---
 
+## Active Task
+
+**Milestone:** M51 - Step-Through Testing Tool Fix
+
+**Goal:** Fix the step-through testing tool so that state persists between runs, allowing agents to test gameplay mechanics properly.
+
+**Spec:** See [milestones/m51.md](milestones/m51.md)
+
+---
+
 ## Last Session Handoff
 
 ```
