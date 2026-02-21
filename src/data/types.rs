@@ -217,6 +217,8 @@ pub struct MonsterAction {
     pub attack_bonus: Option<i32>,
     pub damage: Option<DiceExpr>,
     pub damage_type: Option<String>,
+    #[serde(default)]
+    pub on_hit_condition: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]

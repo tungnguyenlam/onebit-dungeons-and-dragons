@@ -1284,7 +1284,7 @@ impl App {
                                 &target_id,
                                 bonus,
                                 dice,
-                                None,
+                                actor.ranged_on_hit_condition.clone(),
                                 "ranged",
                             );
                         } else {
@@ -2234,11 +2234,12 @@ fn sample_monster_defs() -> HashMap<String, MonsterDef> {
             cha_score: 8,
             xp: 50,
             actions: vec![MonsterAction {
-                name: "Scimitar".into(),
+                name: "Club".into(),
                 description: "Melee attack".into(),
                 attack_bonus: Some(4),
                 damage: Some(DiceExpr::new(1, 6, 2)),
-                damage_type: Some("slashing".into()),
+                damage_type: Some("bludgeoning".into()),
+                on_hit_condition: None,
             }],
             traits: vec![],
         },
@@ -2269,6 +2270,7 @@ fn sample_monster_defs() -> HashMap<String, MonsterDef> {
                     attack_bonus: Some(4),
                     damage: Some(DiceExpr::new(1, 6, 2)),
                     damage_type: Some("slashing".into()),
+                    on_hit_condition: None,
                 },
                 MonsterAction {
                     name: "Shortbow".into(),
@@ -2276,6 +2278,7 @@ fn sample_monster_defs() -> HashMap<String, MonsterDef> {
                     attack_bonus: Some(4),
                     damage: Some(DiceExpr::new(1, 6, 2)),
                     damage_type: Some("piercing".into()),
+                    on_hit_condition: None,
                 },
             ],
             traits: vec![],
@@ -2307,6 +2310,7 @@ fn sample_monster_defs() -> HashMap<String, MonsterDef> {
                     attack_bonus: Some(3),
                     damage: Some(DiceExpr::new(1, 4, 1)),
                     damage_type: Some("piercing".into()),
+                    on_hit_condition: None,
                 },
                 MonsterAction {
                     name: "Poison Bolt".into(),
@@ -2314,6 +2318,7 @@ fn sample_monster_defs() -> HashMap<String, MonsterDef> {
                     attack_bonus: Some(4),
                     damage: Some(DiceExpr::new(1, 8, 1)),
                     damage_type: Some("poison".into()),
+                    on_hit_condition: Some("poisoned".into()),
                 },
             ],
             traits: vec![],
@@ -2390,6 +2395,10 @@ fn combatant_from_monster(
     let mut spell_damage_dice = None;
     let mut role = EnemyAiRole::Melee;
 
+    let mut melee_on_hit_condition = None;
+    let mut ranged_on_hit_condition = None;
+    let mut spell_on_hit_condition = None;
+
     for action in &monster.actions {
         let name = action.name.to_lowercase();
         let desc = action.description.to_lowercase();
@@ -2400,6 +2409,7 @@ fn combatant_from_monster(
         let is_ranged = name.contains("bow")
             || name.contains("sling")
             || name.contains("shot")
+            || name.contains("dart")
             || desc.contains("ranged");
 
         let bonus = action.attack_bonus.unwrap_or(2);
@@ -2408,15 +2418,34 @@ fn combatant_from_monster(
             .clone()
             .unwrap_or_else(|| DiceExpr::new(1, 4, 0));
 
+        let cond = action.on_hit_condition.as_deref().and_then(|s| match s {
+            "blinded" => Some(crate::game::character::conditions::Condition::Blinded),
+            "charmed" => Some(crate::game::character::conditions::Condition::Charmed),
+            "frightened" => Some(crate::game::character::conditions::Condition::Frightened),
+            "grappled" => Some(crate::game::character::conditions::Condition::Grappled),
+            "incapacitated" => Some(crate::game::character::conditions::Condition::Incapacitated),
+            "invisible" => Some(crate::game::character::conditions::Condition::Invisible),
+            "paralyzed" => Some(crate::game::character::conditions::Condition::Paralyzed),
+            "petrified" => Some(crate::game::character::conditions::Condition::Petrified),
+            "poisoned" => Some(crate::game::character::conditions::Condition::Poisoned),
+            "prone" => Some(crate::game::character::conditions::Condition::Prone),
+            "restrained" => Some(crate::game::character::conditions::Condition::Restrained),
+            "stunned" => Some(crate::game::character::conditions::Condition::Stunned),
+            "unconscious" => Some(crate::game::character::conditions::Condition::Unconscious),
+            _ => None,
+        });
+
         if is_spell {
             spell_attack_bonus = Some(bonus);
             spell_damage_dice = Some(damage);
+            spell_on_hit_condition = cond;
             role = EnemyAiRole::Spellcaster;
             continue;
         }
         if is_ranged {
             ranged_attack_bonus = Some(bonus);
             ranged_damage_dice = Some(damage);
+            ranged_on_hit_condition = cond;
             if role != EnemyAiRole::Spellcaster {
                 role = EnemyAiRole::Ranged;
             }
@@ -2424,6 +2453,7 @@ fn combatant_from_monster(
         }
         melee_bonus = bonus;
         melee_damage = damage;
+        melee_on_hit_condition = cond;
     }
 
     let max_hp = (monster.hp.average() as f32 * hp_multiplier).max(1.0) as i32;
@@ -2443,9 +2473,9 @@ fn combatant_from_monster(
     c.ranged_damage_dice = ranged_damage_dice;
     c.spell_attack_bonus = spell_attack_bonus;
     c.spell_damage_dice = spell_damage_dice;
-    if role == EnemyAiRole::Spellcaster {
-        c.spell_on_hit_condition = Some(crate::game::character::conditions::Condition::Poisoned);
-    }
+    c.spell_on_hit_condition = spell_on_hit_condition;
+    c.ranged_on_hit_condition = ranged_on_hit_condition;
+    c.on_hit_condition = melee_on_hit_condition;
     c
 }
 

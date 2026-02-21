@@ -1,0 +1,27 @@
+id = "twig_blight"
+name = "Twig Blight"
+cr = 0.125
+size = "small"
+monster_type = "plant"
+alignment = "neutral_evil"
+hp = "1d6+1"
+ac = 13
+speed = 20
+str_score = 6
+dex_score = 13
+con_score = 12
+int_score = 4
+wis_score = 8
+cha_score = 3
+xp = 25
+
+[[actions]]
+name = "Claws"
+description = "Melee attack"
+attack_bonus = 3
+damage = "1d4+1"
+damage_type = "piercing"
+
+[[traits]]
+name = "False Appearance"
+description = "Indistinguishable from a dead shrub while motionless."

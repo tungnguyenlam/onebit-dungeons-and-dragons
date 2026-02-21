@@ -1,0 +1,27 @@
+id = "treant"
+name = "Treant"
+cr = 9.0
+size = "huge"
+monster_type = "plant"
+alignment = "chaotic_good"
+hp = "12d12+60"
+ac = 16
+speed = 30
+str_score = 23
+dex_score = 8
+con_score = 21
+int_score = 12
+wis_score = 16
+cha_score = 12
+xp = 5000
+
+[[actions]]
+name = "Slam"
+description = "Melee attack"
+attack_bonus = 10
+damage = "3d6+6"
+damage_type = "bludgeoning"
+
+[[traits]]
+name = "False Appearance"
+description = "While it remains motionless, the treant is indistinguishable from a normal tree."

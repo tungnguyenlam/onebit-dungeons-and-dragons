@@ -1,0 +1,35 @@
+id = "giant_spider"
+name = "Giant Spider"
+cr = 1.0
+size = "large"
+monster_type = "beast"
+alignment = "unaligned"
+hp = "4d10+4"
+ac = 14
+speed = 30
+str_score = 14
+dex_score = 16
+con_score = 12
+int_score = 2
+wis_score = 11
+cha_score = 4
+xp = 200
+
+[[actions]]
+name = "Bite"
+description = "Melee attack that can potentially poison"
+attack_bonus = 5
+damage = "1d8+3"
+damage_type = "piercing"
+on_hit_condition = "poisoned"
+
+[[actions]]
+name = "Web"
+description = "Ranged attack that can potentially restrain"
+attack_bonus = 5
+
+on_hit_condition = "restrained"
+
+[[traits]]
+name = "Spider Climb"
+description = "Can climb difficult surfaces without needing to make an ability check."

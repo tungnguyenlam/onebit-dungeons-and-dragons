@@ -1,0 +1,35 @@
+id = "dryad"
+name = "Dryad"
+cr = 1.0
+size = "medium"
+monster_type = "fey"
+alignment = "neutral"
+hp = "5d8"
+ac = 11
+speed = 30
+str_score = 10
+dex_score = 12
+con_score = 11
+int_score = 14
+wis_score = 15
+cha_score = 18
+xp = 200
+
+[[actions]]
+name = "Club"
+description = "Melee attack"
+attack_bonus = 2
+damage = "1d4"
+damage_type = "bludgeoning"
+
+[[actions]]
+name = "Fey Charm"
+description = "The dryad attempts to magically charm a creature."
+attack_bonus = 4
+damage = "1d1"
+damage_type = "psychic"
+on_hit_condition = "charmed"
+
+[[traits]]
+name = "Tree Stride"
+description = "Can use 10 feet of movement to magically step into one living tree within her reach and emerge from a second living tree."

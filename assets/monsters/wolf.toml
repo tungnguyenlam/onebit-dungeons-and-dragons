@@ -1,0 +1,27 @@
+id = "wolf"
+name = "Wolf"
+cr = 0.25
+size = "medium"
+monster_type = "beast"
+alignment = "unaligned"
+hp = "2d8+2"
+ac = 13
+speed = 40
+str_score = 12
+dex_score = 15
+con_score = 12
+int_score = 3
+wis_score = 12
+cha_score = 6
+xp = 50
+
+[[actions]]
+name = "Bite"
+description = "Melee attack"
+attack_bonus = 4
+damage = "2d4+2"
+damage_type = "piercing"
+
+[[traits]]
+name = "Pack Tactics"
+description = "The wolf has advantage on attack rolls if an ally is within 5 feet of the target."

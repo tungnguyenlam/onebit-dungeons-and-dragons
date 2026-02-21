@@ -86,31 +86,36 @@ Tasks completed:
   - ✅ Modified validation to support cross-region room targets.
   - ✅ Connected valley-of-ash (ash_hollow) and whispering-woods mutually.
 
+  M32 — Bestiary Expansion Part 1
+  - ✅ Created 10+ new enemies in `assets/monsters/`.
+  - ✅ Fixed serialization bugs involving `damage` properties and `on_hit_condition`.
+  - ✅ Ensured enemies correctly load combatant status with their parsed conditions.
+
 Tests at close: 149 passed, 0 failed
 
 Next for incoming agent:
-  - Start M32 (Bestiary Expansion Part 1)
+  - Start M33 (Item Pool Expansion Part 1)
 ```
 
 ---
 
 ## Active Task
 
-### Task: M32 — Bestiary Expansion Part 1
+### Task: M33 — Item Pool Expansion Part 1
 
 **Files to touch:**
-- `assets/monsters/`
-- `src/game/combat/`
+- `assets/items/`
+- `assets/spells/`
 
 **Done when:**
-- [ ] 10+ new enemies defined and correctly initialized in combat tests.
-- [ ] Unique abilities apply status effects as expected in automated tests.
-- [ ] Encounter builder recognizes the expanded list.
+- [ ] 20+ new items properly serialize/deserialize.
+- [ ] Items display correctly in Inventory UI.
+- [ ] Tests verify elemental damage/damage resistance mechanics on specialized armors/weapons.
 
 **Blocked by:** none
 
 **Relevant docs:**
-- docs/tasks/milestones/m32.md
+- docs/tasks/milestones/m33.md
 
 ---
 

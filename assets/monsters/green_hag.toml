@@ -1,0 +1,31 @@
+id = "green_hag"
+name = "Green Hag"
+cr = 3.0
+size = "medium"
+monster_type = "fey"
+alignment = "neutral_evil"
+hp = "11d8+33"
+ac = 17
+speed = 30
+str_score = 18
+dex_score = 12
+con_score = 16
+int_score = 13
+wis_score = 14
+cha_score = 14
+xp = 700
+
+[[actions]]
+name = "Claws"
+description = "Melee attack"
+attack_bonus = 6
+damage = "2d8+4"
+damage_type = "slashing"
+
+[[traits]]
+name = "Amphibious"
+description = "The hag can breathe air and water."
+
+[[traits]]
+name = "Mimicry"
+description = "The hag can mimic animal sounds and humanoid voices."

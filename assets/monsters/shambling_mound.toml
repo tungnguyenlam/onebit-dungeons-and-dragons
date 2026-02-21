@@ -1,0 +1,27 @@
+id = "shambling_mound"
+name = "Shambling Mound"
+cr = 5.0
+size = "large"
+monster_type = "plant"
+alignment = "unaligned"
+hp = "16d10+48"
+ac = 15
+speed = 20
+str_score = 18
+dex_score = 8
+con_score = 16
+int_score = 5
+wis_score = 10
+cha_score = 5
+xp = 1800
+
+[[actions]]
+name = "Slam"
+description = "Melee attack"
+attack_bonus = 7
+damage = "2d8+4"
+damage_type = "bludgeoning"
+
+[[traits]]
+name = "Lightning Absorption"
+description = "When subjected to lightning damage, it takes no damage and instead regains a number of hit points equal to the lightning damage dealt."

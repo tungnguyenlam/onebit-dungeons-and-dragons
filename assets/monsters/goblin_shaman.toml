@@ -28,3 +28,4 @@ description = "Spell attack"
 attack_bonus = 4
 damage = "1d8+1"
 damage_type = "poison"
+on_hit_condition = "poisoned"

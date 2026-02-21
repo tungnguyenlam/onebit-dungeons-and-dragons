@@ -1,0 +1,28 @@
+id = "dire_wolf"
+name = "Dire Wolf"
+cr = 1.0
+size = "large"
+monster_type = "beast"
+alignment = "unaligned"
+hp = "5d10+10"
+ac = 14
+speed = 50
+str_score = 17
+dex_score = 15
+con_score = 15
+int_score = 3
+wis_score = 12
+cha_score = 7
+xp = 200
+
+[[actions]]
+name = "Bite"
+description = "Melee attack that can potentially knock prone."
+attack_bonus = 5
+damage = "2d6+3"
+damage_type = "piercing"
+on_hit_condition = "prone"
+
+[[traits]]
+name = "Pack Tactics"
+description = "The dire wolf has advantage on attack rolls if an ally is within 5 feet."

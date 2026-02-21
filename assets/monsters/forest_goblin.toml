@@ -1,0 +1,35 @@
+id = "forest_goblin"
+name = "Forest Goblin"
+cr = 0.5
+size = "small"
+monster_type = "humanoid"
+alignment = "neutral_evil"
+hp = "2d6+2"
+ac = 14
+speed = 30
+str_score = 10
+dex_score = 14
+con_score = 12
+int_score = 10
+wis_score = 9
+cha_score = 8
+xp = 100
+
+[[actions]]
+name = "Wooden Spear"
+description = "Melee attack"
+attack_bonus = 4
+damage = "1d6+2"
+damage_type = "piercing"
+
+[[actions]]
+name = "Poison Dart"
+description = "Ranged attack that applies poison"
+attack_bonus = 4
+damage = "1d4+2"
+damage_type = "poison"
+on_hit_condition = "poisoned"
+
+[[traits]]
+name = "Nimble Escape"
+description = "Can take the Disengage or Hide action as a bonus action."
