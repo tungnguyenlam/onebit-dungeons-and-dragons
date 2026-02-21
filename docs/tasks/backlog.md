@@ -51,6 +51,16 @@
 | M38 | Epic Threat Escalation | ✅ done | [milestones/m38.md](milestones/m38.md) |
 | M39 | v0.3.0 Release Candidate & Polish | ✅ done | [milestones/m39.md](milestones/m39.md) |
 | M40 | Retained-Mode VFX Engine | ✅ done | [milestones/m40.md](milestones/m40.md) |
+| M41 | Headless Integration Testing Framework | 🔲 planned | [milestones/m41.md](milestones/m41.md) |
+| M42 | Visual Regression Testing | 🔲 planned | [milestones/m42.md](milestones/m42.md) |
+| M43 | Automated Playtest Agent | 🔲 planned | [milestones/m43.md](milestones/m43.md) |
+| M44 | Enhanced TUI Color System | 🔲 planned | [milestones/m44.md](milestones/m44.md) |
+| M45 | Animated UI Elements | 🔲 planned | [milestones/m45.md](milestones/m45.md) |
+| M46 | Rich Widget Library | 🔲 planned | [milestones/m46.md](milestones/m46.md) |
+| M47 | Combat UI Overhaul | 🔲 planned | [milestones/m47.md](milestones/m47.md) |
+| M48 | World Map Enhancements | 🔲 planned | [milestones/m48.md](milestones/m48.md) |
+| M49 | Settings & Accessibility Panel | 🔲 planned | [milestones/m49.md](milestones/m49.md) |
+| M50 | Sound & Music System | 🔲 planned | [milestones/m50.md](milestones/m50.md) |
 
 Status: ✅ done · 🚧 in progress · 🔲 next / planned
 

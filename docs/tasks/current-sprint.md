@@ -41,7 +41,8 @@ Files modified:
 Tests at close: 136 passed, 0 failed
 
 Next for incoming agent:
-  - All 40 milestones complete!
+  - Start M41: Headless Integration Testing Framework
+  - New milestones M41-M50 focus on agent testing tools and TUI improvements
 ```
 
 ---
