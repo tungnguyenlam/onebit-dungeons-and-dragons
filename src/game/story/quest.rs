@@ -157,6 +157,21 @@ impl QuestLog {
         false
     }
 
+    pub fn tick(&mut self, world: &mut WorldState, journal: &mut Journal, turn: u64) {
+        let active_ids: Vec<String> = self.states.iter()
+            .filter_map(|(id, status)| {
+                if matches!(status, QuestStatus::Active { .. }) {
+                    Some(id.clone())
+                } else {
+                    None
+                }
+            })
+            .collect();
+        for _id in active_ids {
+            self.tick_quest(&_id, world, journal, turn);
+        }
+    }
+
     // -----------------------------------------------------------------------
     // M22: diagnostics + recovery
     // -----------------------------------------------------------------------

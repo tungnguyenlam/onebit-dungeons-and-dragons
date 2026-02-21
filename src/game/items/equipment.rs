@@ -62,6 +62,38 @@ impl EquipmentSlots {
             EquipmentSlot::Amulet => self.amulet.take(),
         }
     }
+
+    pub fn iter(&self) -> impl Iterator<Item = (EquipmentSlot, &ItemId)> {
+        let mut items = Vec::new();
+        if let Some(ref id) = self.main_hand { items.push((EquipmentSlot::MainHand, id)); }
+        if let Some(ref id) = self.off_hand { items.push((EquipmentSlot::OffHand, id)); }
+        if let Some(ref id) = self.armor { items.push((EquipmentSlot::Armor, id)); }
+        if let Some(ref id) = self.helmet { items.push((EquipmentSlot::Helmet, id)); }
+        if let Some(ref id) = self.boots { items.push((EquipmentSlot::Boots, id)); }
+        if let Some(ref id) = self.ring_1 { items.push((EquipmentSlot::Ring1, id)); }
+        if let Some(ref id) = self.ring_2 { items.push((EquipmentSlot::Ring2, id)); }
+        if let Some(ref id) = self.amulet { items.push((EquipmentSlot::Amulet, id)); }
+        items.into_iter()
+    }
+
+    pub fn toggle(&mut self, slot: EquipmentSlot, item_id: ItemId) {
+        let current = match slot {
+            EquipmentSlot::MainHand => &self.main_hand,
+            EquipmentSlot::OffHand => &self.off_hand,
+            EquipmentSlot::Armor => &self.armor,
+            EquipmentSlot::Helmet => &self.helmet,
+            EquipmentSlot::Boots => &self.boots,
+            EquipmentSlot::Ring1 => &self.ring_1,
+            EquipmentSlot::Ring2 => &self.ring_2,
+            EquipmentSlot::Amulet => &self.amulet,
+        };
+
+        if current.as_ref() == Some(&item_id) {
+            self.unequip(slot);
+        } else {
+            self.equip(slot, item_id);
+        }
+    }
 }
 
 #[cfg(test)]
