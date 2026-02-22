@@ -1,12 +1,11 @@
 format_version = 1
-turn = 0
+turn = 1
 region_slug = "valley-of-ash"
 room_id = "ash_gate"
 player_pos = [
-    4,
+    3,
     2,
 ]
-state = "WorldMap"
 
 [player]
 name = "Theron"
@@ -94,6 +93,119 @@ equipped = false
 [journal]
 entries = []
 has_unread = false
+
+[state.Combat]
+log = [
+    "A new battle begins!",
+    "Theron hits Goblin for 7 bludgeoning damage.",
+    "You failed to flee! (7 vs 21)",
+    "Theron failed to flee. Goblin is up.",
+    "Goblin misses Theron.",
+]
+seed = 926394356
+
+[state.Combat.state]
+turn_queue = [
+    "player",
+    "goblin_1",
+    "goblin_2",
+]
+active_turn = 0
+round = 2
+
+[state.Combat.state.combatants.goblin_1]
+id = "goblin_1"
+name = "Goblin"
+is_player = false
+max_hp = 7
+current_hp = 0
+armor_class = 13
+speed = 30
+initiative_mod = 2
+attack_bonus = 4
+damage_dice = "1d6+2"
+enemy_role = "Melee"
+damage_type = "slashing"
+resistances = []
+vulnerabilities = []
+immunities = []
+condition_immunities = []
+conditions = ["unconscious"]
+
+[state.Combat.state.combatants.goblin_1.condition_durations]
+
+[state.Combat.state.combatants.goblin_1.action_slots]
+action = true
+bonus_action = true
+reaction = true
+movement_remaining = 30
+base_extra_attacks = 0
+extra_attacks = 0
+attacks_made = 0
+
+[state.Combat.state.combatants.goblin_2]
+id = "goblin_2"
+name = "Goblin"
+is_player = false
+max_hp = 7
+current_hp = 7
+armor_class = 13
+speed = 30
+initiative_mod = 2
+attack_bonus = 4
+damage_dice = "1d6+2"
+enemy_role = "Melee"
+damage_type = "slashing"
+resistances = []
+vulnerabilities = []
+immunities = []
+condition_immunities = []
+conditions = []
+
+[state.Combat.state.combatants.goblin_2.condition_durations]
+
+[state.Combat.state.combatants.goblin_2.action_slots]
+action = false
+bonus_action = true
+reaction = true
+movement_remaining = 30
+base_extra_attacks = 0
+extra_attacks = 0
+attacks_made = 0
+
+[state.Combat.state.combatants.player]
+id = "player"
+name = "Theron"
+is_player = true
+max_hp = 24
+current_hp = 24
+armor_class = 12
+speed = 30
+initiative_mod = 2
+attack_bonus = 5
+damage_dice = "1d4+3"
+enemy_role = "Melee"
+damage_type = "bludgeoning"
+resistances = []
+vulnerabilities = []
+immunities = []
+condition_immunities = []
+conditions = []
+
+[state.Combat.state.combatants.player.condition_durations]
+
+[state.Combat.state.combatants.player.action_slots]
+action = true
+bonus_action = true
+reaction = true
+movement_remaining = 30
+base_extra_attacks = 0
+extra_attacks = 0
+attacks_made = 0
+
+[state.Combat.world_state.flags]
+
+[state.Combat.world_state.counters]
 
 [menu_ui]
 selected = 0

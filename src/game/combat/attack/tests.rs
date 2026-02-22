@@ -1,10 +1,8 @@
 #[cfg(test)]
 mod tests {
-use super::types::*;
-use super::engine::*;
-use crate::game::{character::conditions::Condition, combat::CombatantState, dice::DiceExpr};
-use std::collections::HashSet;
-    use super::*;
+    use crate::game::combat::attack::*;
+    use crate::game::{character::conditions::Condition, combat::CombatantState, dice::DiceExpr};
+    use std::collections::HashSet;
 
     fn attacker() -> (DiceExpr, HashSet<Condition>) {
         (DiceExpr::new(1, 8, 2), HashSet::new())
@@ -27,7 +25,7 @@ use std::collections::HashSet;
     #[test]
     fn seeded_attack_is_deterministic() {
         let (dice, atk_conds) = attacker();
-        let (def_conds, def_res, def_vuln, def_imm) = target();
+        let (def_conds, def_res, def_vuln, _def_imm) = target();
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 5,
@@ -71,7 +69,7 @@ use std::collections::HashSet;
     fn advantage_and_disadvantage_cancel() {
         let (dice, mut atk_conds) = attacker();
         atk_conds.insert(Condition::Poisoned); // attack disadvantage
-        let (def_conds, def_res, def_vuln, def_imm) = target();
+        let (def_conds, def_res, def_vuln, _def_imm) = target();
 
         let atk = AttackProfile {
             id: "a",
@@ -109,7 +107,7 @@ use std::collections::HashSet;
         let dice = DiceExpr::new(1, 6, 0);
         let mut atk_conds = HashSet::new();
         atk_conds.insert(Condition::Poisoned);
-        let (def_conds, def_res, def_vuln, def_imm) = target();
+        let (def_conds, def_res, def_vuln, _def_imm) = target();
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 4,
@@ -134,7 +132,7 @@ use std::collections::HashSet;
     fn on_hit_condition_is_reported_on_hit() {
         let dice = DiceExpr::new(1, 6, 0);
         let atk_conds = HashSet::new();
-        let (def_conds, def_res, def_vuln, def_imm) = target();
+        let (def_conds, def_res, def_vuln, _def_imm) = target();
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 100,
@@ -161,7 +159,7 @@ use std::collections::HashSet;
     fn resistance_halves_damage() {
         let dice = DiceExpr::new(1, 10, 0); // 1-10
         let atk_conds = HashSet::new();
-        let (def_conds, mut def_res, def_vuln, def_imm) = target();
+        let (def_conds, mut def_res, def_vuln, _def_imm) = target();
         def_res.insert("fire".to_string());
 
         let atk = AttackProfile {
@@ -190,7 +188,7 @@ use std::collections::HashSet;
     fn vulnerability_doubles_damage() {
         let dice = DiceExpr::new(1, 10, 0); // 1-10
         let atk_conds = HashSet::new();
-        let (def_conds, def_res, mut def_vuln, def_imm) = target();
+        let (def_conds, def_res, mut def_vuln, _def_imm) = target();
         def_vuln.insert("cold".to_string());
 
         let atk = AttackProfile {

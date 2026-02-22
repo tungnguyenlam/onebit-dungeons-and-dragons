@@ -1,12 +1,9 @@
 #[cfg(test)]
 mod tests {
-use crate::game::combat::combatant::*;
-use crate::game::combat::state::*;
-use crate::game::character::conditions::Condition;
-use crate::game::dice::DiceExpr;
-#[cfg(test)]
-mod tests {
-    use super::*;
+    use crate::game::combat::combatant::*;
+    use crate::game::combat::state::*;
+    use crate::game::character::conditions::Condition;
+    use crate::game::dice::DiceExpr;
 
     fn actor(id: &str, is_player: bool, init_mod: i32) -> CombatantState {
         CombatantState::new(

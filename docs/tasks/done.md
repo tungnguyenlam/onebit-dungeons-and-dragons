@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-02-22 — Milestone 52: Flee Mechanics & Combat AI Targeting
+
+### Combat Flow Refinements
+- Added a new `try_flee` mechanism in `src/app/combat.rs`.
+- Mapped `f` or `4` to `GameEvent::Choice(4)` in `src/main.rs` and `tui/mod.rs` to trigger fleeing.
+- Added opposed dexterity (initiative_mod) check vs max enemy initiative_mod to determine Flee success.
+- If successful, instantly transitions state to `WorldMap`.
+- Updated `select_enemy_target` to use `ctx.seed` for pseudorandom selection of targets.
+- Added visual trace scenario `combat_flee` and confirmed accurate TUI logs and state behavior.
+
 ## 2026-02-21 — Bug Fixes: Feedback System and Region Characteristics
 
 ### Fixed compilation errors in src/app/mod.rs:

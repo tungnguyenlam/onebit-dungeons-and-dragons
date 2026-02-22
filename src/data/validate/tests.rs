@@ -1,9 +1,7 @@
 #[cfg(test)]
 mod tests {
-use super::super::core::*;
-use super::super::report::*;
-mod tests {
-    use super::*;
+    use super::super::core::*;
+    use super::super::report::*;
 
     #[test]
     fn validator_passes_repo_assets() {

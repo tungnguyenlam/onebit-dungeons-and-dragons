@@ -7,6 +7,9 @@ use crate::game::dice::DiceExpr;
 use crate::game::items::equipment::EquipmentSlot;
 use crate::renderer::GameEvent;
 use std::sync::{Mutex, MutexGuard, OnceLock};
+use crate::App;
+use crate::game::combat::CombatantState;
+use crate::app::AppState;
 use super::utils::*;
 #[test]
 fn combat_attack_consumes_action() {
@@ -61,10 +64,10 @@ fn incapacitated_combatant_cannot_attack() {
 
     app.handle_event(GameEvent::Attack).unwrap();
 
-    match &app.state {
+        match &app.state {
         AppState::Combat(ctx) => {
-            assert!(ctx.log.iter().any(|line| line.contains("cannot act")));
-            assert!(ctx.log.iter().any(|line| line.contains("Stunned")));
+            assert!(ctx.log.iter().any(|line: &String| line.contains("cannot act")));
+            assert!(ctx.log.iter().any(|line: &String| line.contains("Stunned")));
         }
         _ => panic!("expected combat state"),
     }
@@ -92,7 +95,7 @@ fn enemy_turn_executes_on_tick_and_returns_to_player() {
     match &app.state {
         AppState::Combat(ctx) => {
             assert!(ctx.state.current_combatant().is_some_and(|c| c.is_player));
-            assert!(ctx.log.iter().any(|line| line.contains("Goblin")));
+            assert!(ctx.log.iter().any(|line: &String| line.contains("Goblin")));
         }
         _ => panic!("expected combat state"),
     }
@@ -118,7 +121,7 @@ fn timed_condition_expires_when_turn_ends() {
             .unwrap()
             .conditions
             .contains(&Condition::Poisoned));
-        assert!(ctx.log.iter().any(|l| l.contains("is no longer Poisoned.")));
+        assert!(ctx.log.iter().any(|l: &String| l.contains("is no longer Poisoned.")));
     } else {
         panic!("expected combat state");
     }

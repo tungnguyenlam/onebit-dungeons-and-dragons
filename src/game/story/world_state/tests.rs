@@ -1,12 +1,7 @@
 #[cfg(test)]
 mod tests {
-use super::*;
-// Tests
-// ---------------------------------------------------------------------------
-
-#[cfg(test)]
-mod tests {
     use super::*;
+    use crate::game::story::WorldState;
 
     #[test]
     fn empty_condition_is_always_true() {

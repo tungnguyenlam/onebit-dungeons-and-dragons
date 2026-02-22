@@ -1,14 +1,11 @@
 #[cfg(test)]
 mod tests {
-use super::super::types::*;
-use super::super::validate::*;
-use super::super::io::*;
-// Tests
-// ---------------------------------------------------------------------------
-
-#[cfg(test)]
-mod tests {
-    use super::*;
+    use super::super::types::*;
+    use super::super::validate::*;
+    use super::super::io::*;
+    use crate::game::character::Character;
+    use crate::game::story::{WorldState, Journal};
+    use crate::app::AppState;
     use crate::game::character::AbilityScores;
     use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -27,7 +24,7 @@ mod tests {
             AbilityScores::standard_array(),
         );
         SaveGame {
-            format_version: super::types::SAVE_FORMAT_VERSION,
+            format_version: crate::game::save::SAVE_FORMAT_VERSION,
             turn: 42,
             player,
             world_state: WorldState::new(),
@@ -53,7 +50,7 @@ mod tests {
         assert_eq!(loaded.turn, 42);
         assert_eq!(loaded.player.name, "Tester");
         assert_eq!(loaded.player_pos, (3, 4));
-        assert_eq!(loaded.format_version, super::types::SAVE_FORMAT_VERSION);
+        assert_eq!(loaded.format_version, crate::game::save::SAVE_FORMAT_VERSION);
         let _ = std::fs::remove_file(path);
     }
 
@@ -68,9 +65,9 @@ mod tests {
             .join("\n");
         let mut loaded: SaveGame = toml::from_str(&raw_legacy).unwrap();
         if loaded.format_version == 0 {
-            loaded.format_version = super::types::SAVE_FORMAT_VERSION;
+            loaded.format_version = crate::game::save::SAVE_FORMAT_VERSION;
         }
-        assert_eq!(loaded.format_version, super::types::SAVE_FORMAT_VERSION);
+        assert_eq!(loaded.format_version, crate::game::save::SAVE_FORMAT_VERSION);
         assert_eq!(loaded.turn, 42);
     }
 
@@ -130,7 +127,7 @@ mod tests {
     #[test]
     fn invariant_check_catches_future_version() {
         let mut save = base_save();
-        save.format_version = SAVE_FORMAT_MAX_VERSION + 1;
+        save.format_version = crate::game::save::SAVE_FORMAT_MAX_VERSION + 1;
         let report = check_save_invariants(&save);
         assert!(report.has_errors());
         assert!(report.errors.iter().any(|e| e.contains("exceeds maximum")));

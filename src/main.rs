@@ -293,6 +293,7 @@ fn char_to_game_event(c: char) -> Option<GameEvent> {
         'p' | 'P' => Some(GameEvent::SaveGame),
         'o' | 'O' => Some(GameEvent::LoadGame),
         'a' | 'A' => Some(GameEvent::Attack),
+        'f' | 'F' => Some(GameEvent::Choice(4)),
         '.' => Some(GameEvent::Wait),
         't' | 'T' => Some(GameEvent::Tick),
         '?' => Some(GameEvent::OpenHelp),

@@ -1,3 +1,4 @@
+use crate::App;
 use super::*;
 use crate::data::types::TriggerKind;
 use crate::data::types::{ItemBonuses, ItemDef, ItemType};

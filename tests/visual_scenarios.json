@@ -29,6 +29,11 @@
       "keys": "a",
       "reset": false,
       "description": "Execute an attack in combat"
+    },
+    "combat_flee": {
+      "keys": "af",
+      "reset": false,
+      "description": "Flee combat"
     }
   }
 }

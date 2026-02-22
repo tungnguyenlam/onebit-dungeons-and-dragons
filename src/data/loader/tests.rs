@@ -1,9 +1,8 @@
 #[cfg(test)]
 mod tests {
-use super::super::core::*;
-use super::super::region::*;
-use super::super::global::*;
-use super::super::dir::*;
+    use crate::data::loader::*;
+    use std::fs;
+    use std::time::{SystemTime, UNIX_EPOCH};
 
     fn unique_tmp_dir(tag: &str) -> std::path::PathBuf {
         let nanos = SystemTime::now()

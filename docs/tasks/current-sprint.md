@@ -9,15 +9,45 @@
 
 ## Active Task
 
-**Milestone:** Pull next from backlog
+**Milestone:** M52 - Flee Mechanics & Combat AI Targeting
 
-**Goal:** Determine next task.
+**Goal:** Provide players with an escape mechanism from unwinnable encounters and ensure enemy AI logic uses pseudo-random target selection rather than always choosing the first player entity.
 
-**Spec:** See [milestones/m52.md](milestones/m52.md) if one exists.
+**Spec:** See [milestones/m52.md](milestones/m52.md)
 
 ---
 
 ## Last Session Handoff
+
+```
+Date:          2026-02-22
+Completed:     M52 completed (Flee Mechanics & AI Targeting)
+
+Tasks completed this session:
+  1. Defined and executed Milestone 52 based on previous combat system refinements.
+  2. Implemented `try_flee` logic (contested Dexterity/initiative_mod) inside `src/app/combat.rs`.
+  3. Bound `f` and `4` to Flee Action across TUI event handlers.
+  4. Formatted UI combat footer to display `4/f flee` option.
+  5. Refactored `select_enemy_target` to use `ctx.seed` for pseudo-random targeting rather than locking onto the 0th index.
+  6. Expanded `scripts/visual_check.py` capabilities by adding `combat_flee` test scenario to `tests/visual_scenarios.json`.
+
+Files modified:
+  - docs/tasks/milestones/m52.md (created)
+  - docs/tasks/backlog.md
+  - docs/tasks/done.md
+  - docs/tasks/current-sprint.md
+  - src/main.rs
+  - src/ui/tui/mod.rs
+  - src/ui/tui/screens/combat.rs
+  - src/app/handlers.rs
+  - src/app/combat.rs
+  - tests/visual_scenarios.json
+
+Build status: cargo test passes cleanly (136 tests). 
+
+Next for incoming agent:
+  - Proceed with any remaining bug fixes or start defining and executing M53 (possibly related to Advanced Storytelling or visual scenarios).
+```
 
 ```
 Date:          2026-02-21
