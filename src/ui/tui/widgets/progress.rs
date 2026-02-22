@@ -52,7 +52,7 @@ impl ProgressBar {
             } else {
                 self.empty_style
             };
-            buf.get_mut(area.x + x, area.y)
+            buf.cell_mut((area.x + x, area.y)).unwrap()
                 .set_char(char)
                 .set_style(style);
         }
@@ -73,14 +73,14 @@ pub fn render_health_bar(buf: &mut Buffer, area: Rect, current: i32, maximum: i3
     for (i, c) in label_text.chars().enumerate() {
         let pos = area.x + i as u16;
         if pos < area.x + area.width {
-            buf.get_mut(pos, area.y).set_char(c);
+            buf.cell_mut((pos, area.y)).unwrap().set_char(c);
         }
     }
 
     for (i, c) in bar.chars().enumerate() {
         let x = area.x + label_text.len() as u16 + i as u16;
         if x < area.x + area.width {
-            buf.get_mut(x, area.y)
+            buf.cell_mut((x, area.y)).unwrap()
                 .set_char(c)
                 .set_style(Style::default().fg(color));
         }
@@ -101,14 +101,14 @@ pub fn render_mana_bar(buf: &mut Buffer, area: Rect, current: i32, maximum: i32,
     for (i, c) in label_text.chars().enumerate() {
         let pos = area.x + i as u16;
         if pos < area.x + area.width {
-            buf.get_mut(pos, area.y).set_char(c);
+            buf.cell_mut((pos, area.y)).unwrap().set_char(c);
         }
     }
 
     for (i, c) in bar.chars().enumerate() {
         let x = area.x + label_text.len() as u16 + i as u16;
         if x < area.x + area.width {
-            buf.get_mut(x, area.y)
+            buf.cell_mut((x, area.y)).unwrap()
                 .set_char(c)
                 .set_style(Style::default().fg(color));
         }
@@ -129,14 +129,14 @@ pub fn render_xp_bar(buf: &mut Buffer, area: Rect, current: u32, maximum: u32, l
     for (i, c) in label_text.chars().enumerate() {
         let pos = area.x + i as u16;
         if pos < area.x + area.width {
-            buf.get_mut(pos, area.y).set_char(c);
+            buf.cell_mut((pos, area.y)).unwrap().set_char(c);
         }
     }
 
     for (i, c) in bar.chars().enumerate() {
         let x = area.x + label_text.len() as u16 + i as u16;
         if x < area.x + area.width {
-            buf.get_mut(x, area.y)
+            buf.cell_mut((x, area.y)).unwrap()
                 .set_char(c)
                 .set_style(Style::default().fg(color));
         }

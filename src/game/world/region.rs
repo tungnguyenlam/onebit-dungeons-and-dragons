@@ -66,6 +66,11 @@ impl Region {
         self.rooms.get(id)
     }
 
+    /// Get a mutable reference to a room by id.
+    pub fn room_mut(&mut self, id: &str) -> Option<&mut Room> {
+        self.rooms.get_mut(id)
+    }
+
     /// Get the entry room.
     pub fn entry(&self) -> Option<&Room> {
         self.rooms.get(&self.entry_room)

@@ -12,7 +12,7 @@ pub fn compact_timeline(
     turn_queue: &[String],
     current_id: &str,
     state: &crate::game::combat::CombatState,
-    t: &crate::ui::tui::theme::Theme,
+    _t: &crate::ui::tui::theme::Theme,
 ) -> String {
     turn_queue
         .iter()

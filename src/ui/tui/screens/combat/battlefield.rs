@@ -23,7 +23,7 @@ pub fn render_battlefield(ctx: &crate::app::state::CombatContext) -> Paragraph<'
     )]));
     lines.push(Line::from(""));
 
-    for (idx, c) in ctx.state.turn_queue.iter().enumerate() {
+    for (_idx, c) in ctx.state.turn_queue.iter().enumerate() {
         if let Some(comb) = ctx.state.combatants.get(c) {
             let is_selected = ctx.selected_enemy_id.as_ref() == Some(c);
             let marker = if comb.is_player {

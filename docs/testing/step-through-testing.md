@@ -9,10 +9,14 @@ The step-through mode allows agents to:
 - See the game state as plain text after each input
 - Test gameplay mechanics one keypress at a time
 - No terminal/TTY required
+- **Friendly Keywords**: Supports `enter`, `esc`, `space`, and `reset` for easier automation.
+- **Persistence**: Automatically saves the full TUI screen to `test_outputs/current_screen.txt`.
 
 ## Usage
 
 ### Quick Start
+
+The `scripts/runtest.sh` script is the primary tool for headless testing.
 
 ```bash
 # View initial game state (main menu)
@@ -20,27 +24,25 @@ scripts/runtest.sh
 
 # Press a key and see the result
 scripts/runtest.sh j        # move down in menu
-scripts/runtest.sh $'\r'    # press Enter
+scripts/runtest.sh enter    # press Enter (uses friendly keyword)
 scripts/runtest.sh a        # attack
+scripts/runtest.sh reset    # Reset game state (deletes save.toml and restarts)
 ```
 
-### Command Line Options
+### Friendly Keywords for Agents
 
-```bash
-# Start game, dump state as text
-cargo run -- --text
+To simplify automation, `runtest.sh` maps the following keywords to their terminal escape sequences:
 
-# Press a key, dump state
-cargo run -- --text --step -k j
+| Keyword | Mapping |
+|---------|---------|
+| `enter` | `\r` (Return) |
+| `return`| `\r` (Return) |
+| `esc`   | `\x1B` (Escape) |
+| `escape`| `\x1B` (Escape) |
+| `space` | ` ` (Spacebar) |
+| `reset` | Deletes `save.toml` and runs the engine fresh |
 
-# Interactive TUI (requires terminal)
-cargo run -- --mode tui
-
-# Step mode with TUI (requires terminal)
-cargo run -- --step
-```
-
-### Key Mappings
+### Key Mappings (Standard)
 
 | Key | Action |
 |-----|--------|
@@ -48,9 +50,6 @@ cargo run -- --step
 | `k` | Move up / vim-style up |
 | `h` | Move left / vim-style left |
 | `l` | Move right / vim-style right |
-| `Enter` | Confirm / select |
-| `Space` | Confirm / select |
-| `Esc` | Cancel / back |
 | `i` | Open inventory |
 | `s` | Open spellbook |
 | `n` | Open journal |
@@ -64,102 +63,45 @@ cargo run -- --step
 | `q` | Quit |
 | `1-9` | Dialog choices |
 
-## Example Workflow
-
-### Test Character Creation Flow
-
-```bash
-# 1. Start at main menu
-scripts/runtest.sh
-
-# 2. Press Enter to select "New Game"
-scripts/runtest.sh $'\r'
-
-# 3. See character creation screen
-# (then use j/k to navigate, Enter to select class)
-```
-
-### Test Gameplay
-
-```bash
-# Start fresh
-scripts/runtest.sh
-
-# Create new character
-scripts/runtest.sh $'\r'       # Enter: New Game
-
-# Select class (navigate with j/k, select with Enter)
-scripts/runtest.sh j            # Move to fighter
-scripts/runtest.sh $'\r'       # Select fighter
-
-# Select race
-scripts/runtest.sh j            # Move to human
-scripts/runtest.sh $'\r'       # Select human
-
-# Now in game world - move around
-scripts/runtest.sh j            # Move down
-scripts/runtest.sh l            # Move right
-scripts/runtest.sh k            # Move up
-
-# Open menus
-scripts/runtest.sh i            # Inventory
-scripts/runtest.sh n            # Journal
-scripts/runtest.sh m            # Map
-
-# Combat (if encounter starts)
-scripts/runtest.sh a            # Attack
-scripts/runtest.sh .            # Wait
-```
-
 ## Output Format
 
-The text dump now outputs the **exact visual TUI layout** using Ratatui's `TestBackend`. This provides a character-for-character replication of what the human player sees, including all boxes, text, colors (stripped to text), and UI elements for the 88x24 terminal grid.
+The tool provides two ways to view the state:
+1. **Direct Stdout**: The full 88x24 TUI grid is printed directly to your terminal/context.
+2. **File Backup**: Every run saves the output to `test_outputs/current_screen.txt`.
 
 ```text
+✅ Action completed.
+🖼️  Full 88x24 TUI screen:
 ┌World─────────────────────────────────────────────────────────────────────────────────┐
-│ Region: Valley of Ash (valley-of-ash)            Day: 1                              │
-│ Room: ash_gate                                   Weather: Ash                        │
-│ Player: Theron at (3, 2)                         Threat: None                        │
-├Map───────────────────────────────────────────────────────────────────────────────────┤
+│ Region: Valley of Ash (valley-of-ash)            Turn: 5                             │
 ...
 ```
 
 ## Integration with Agents
 
-This mode is designed for agents to:
-1. Verify gameplay mechanics work correctly
-2. Test bug fixes
-3. Check state changes after actions
-4. Validate UI updates
+### Error Handling
+The `runtest.sh` script includes robust error detection. If the game engine crashes (e.g., panics or fails to compile), the script will:
+1. Detect the non-zero exit code.
+2. Report `❌ ERROR: Game engine crashed or failed to run.`
+3. Exit with status 1.
 
-Example agent workflow:
+This prevents agents from hallucinating a successful action when the engine has actually failed.
+
+### Workflow Example
 ```bash
-# Test that pressing 'a' in combat attacks
-scripts/runtest.sh           # Start game
-scripts/runtest.sh $'\r'    # New game
-# ... navigate to combat ...
-scripts/runtest.sh a         # Attack
-# Check output shows damage dealt
-```
+# 1. Start fresh
+scripts/runtest.sh reset
 
-## Script: runtest.sh
+# 2. Enter New Game menu
+scripts/runtest.sh enter
 
-Location: `scripts/runtest.sh`
-
-Usage:
-```bash
-./runtest.sh [KEY]
-
-# Examples
-./runtest.sh                 # Dump initial state
-./runtest.sh j               # Press 'j', dump state
-./runtest.sh $'\r'           # Press Enter, dump state
-./runtest.sh -h              # Show help
+# 3. Choose starting options
+scripts/runtest.sh j
+scripts/runtest.sh enter
 ```
 
 ## Notes
 
-- The game state persists in `save.toml` between runs
-- Use `scripts/runtest.sh -h` for full help
-- This mode does not require any terminal/TTY
-- Output is plain text directly mirroring the TUI grid, naturally parsed line-by-line.
+- The game state persists in `save.toml` between runs (unless `reset` is used).
+- This mode uses Ratatui's `TestBackend` to provide a character-for-character replication of the TUI.
+- All compiler warnings are suppressed in `runtest.sh` output to keep agent context clean.

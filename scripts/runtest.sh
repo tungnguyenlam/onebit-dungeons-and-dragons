@@ -110,10 +110,39 @@ fi
 
 KEY="${1:-}"
 
-if [[ -n "$KEY" ]]; then
+# Map friendly keywords for AI agents that struggle with terminal escapes
+if [[ "$KEY" == "enter" || "$KEY" == "return" ]]; then KEY=$'\r'; fi
+if [[ "$KEY" == "esc" || "$KEY" == "escape" ]]; then KEY=$'\x1B'; fi
+if [[ "$KEY" == "space" ]]; then KEY=$' '; fi
+
+mkdir -p test_outputs
+OUT_FILE="test_outputs/current_screen.txt"
+
+# Disable quick exit to manually capture the engine failure logic
+set +e
+
+if [[ "$KEY" == "reset" ]]; then
+    rm -f save.toml
+    echo "[runtest] Deleted save file. Game reset."
+    cargo run --quiet -- --text > "$OUT_FILE"
+    CARGO_EXIT=$?
+elif [[ -n "$KEY" ]]; then
     # Pass key as argument
-    cargo run --quiet -- --text --step -k "$KEY"
+    cargo run --quiet -- --text --step -k "$KEY" > "$OUT_FILE"
+    CARGO_EXIT=$?
 else
     # No key provided - just dump initial state
-    cargo run --quiet -- --text
+    cargo run --quiet -- --text > "$OUT_FILE"
+    CARGO_EXIT=$?
 fi
+
+set -e
+
+if [[ $CARGO_EXIT -ne 0 ]]; then
+    echo "❌ ERROR: Game engine crashed or failed to run. See the stack trace above."
+    exit 1
+fi
+
+echo "✅ Action completed."
+echo "🖼️  Full 88x24 TUI screen:"
+cat "$OUT_FILE"

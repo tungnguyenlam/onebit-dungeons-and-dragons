@@ -77,8 +77,10 @@ impl App {
                         &target_id,
                         self.settings.player_damage_multiplier,
                     );
+                    let after = Self::advance_turn(ctx);
+                    Self::push_log(ctx, format!("Turn passes to {}.", after));
                 }
-                self.finish_combat_if_over();
+                self.pass_turn()?;
             }
             GameEvent::Choice(4) => {
                 let mut fled = false;

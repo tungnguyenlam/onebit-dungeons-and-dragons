@@ -35,6 +35,26 @@ impl App {
             return;
         }
 
+        // Check for items at current position
+        if let Some(room) = self.region.room_mut(&room_id) {
+            let mut pick_idx = None;
+            for (i, item) in room.items.iter().enumerate() {
+                if item.position[0] == col && item.position[1] == row {
+                    if item.condition.is_empty() || self.world_state.evaluate(&item.condition) {
+                        pick_idx = Some(i);
+                        break;
+                    }
+                }
+            }
+            if let Some(i) = pick_idx {
+                let item = room.items.remove(i);
+                self.player.inventory.add(&item.id, item.quantity);
+                self.queue_sound(SoundEffect::HighBeep);
+                self.set_feedback(&format!("Picked up {} x{}", item.id, item.quantity));
+                return;
+            }
+        }
+
         // Check for NPCs at current position
         if let Some(room) = self.region.room(&room_id) {
             if let Some(npc_id) = room
@@ -110,10 +130,14 @@ impl App {
                         &mut self.journal,
                         self.turn,
                     );
+                    self.set_feedback(&format!("Lore discovered: {}", entry.title));
+                } else {
+                    self.set_feedback("You found some ancient writing, but cannot read it.");
                 }
             }
             TriggerKind::QuestStage => {
                 self.world_state.set_flag(trigger.target_id.clone());
+                self.set_feedback("You feel the wheels of fate turning...");
 
                 let macguffins = [
                     "has_obsidian_eye",
@@ -140,6 +164,7 @@ impl App {
                             "The Antagonist Stirs",
                             "Dark forces have detected your acquisition. The enemy grows stronger against you.",
                         );
+                        self.set_feedback("A dark chill runs down your spine. The Antagonist knows.");
                     }
                 }
             }

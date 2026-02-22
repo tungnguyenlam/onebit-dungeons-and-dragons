@@ -27,7 +27,7 @@ pub fn health_color(current: i32, maximum: i32) -> Color {
     }
 }
 
-pub fn mana_color(current: i32, maximum: i32) -> Color {
+pub fn mana_color(_current: i32, maximum: i32) -> Color {
     if maximum == 0 {
         return theme().text_muted;
     }

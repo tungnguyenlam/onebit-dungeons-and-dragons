@@ -165,7 +165,9 @@ pub fn run_text_mode(mut app: App, step: bool, key: &str) -> anyhow::Result<()> 
     if step && !key.is_empty() {
         for c in key.chars() {
             if let Some(event) = char_to_game_event(c) {
-                let _ = app.handle_event(event);
+                if let Ok(ControlFlow::Exit) = app.handle_event(event) {
+                    break;
+                }
             }
         }
     }
