@@ -64,8 +64,8 @@ impl App {
         p_combatant.immunities = immunities;
         p_combatant.condition_immunities = condition_immunities;
         if crate::game::character::progression::has_extra_attack(
-            &self.player.class_id,
-            self.player.level,
+            self.player.main_class(),
+            self.player.total_level,
         ) {
             p_combatant.action_slots.base_extra_attacks = 1;
         }

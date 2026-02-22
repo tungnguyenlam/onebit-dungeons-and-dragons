@@ -40,7 +40,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
                 crate::game::items::armor::armor_class(armor_tuple, shield_equipped, app.player.scores.dex_mod())
             })),
             ratatui::text::Span::raw("  "),
-            ratatui::text::Span::raw(format!("Level {}", app.player.level)),
+            ratatui::text::Span::raw(format!("Level {}", app.player.total_level)),
             ratatui::text::Span::raw("  "),
             ratatui::text::Span::raw("XP "),
             ratatui::text::Span::styled(format!("{}", app.player.xp), Style::default().fg(t.xp)),

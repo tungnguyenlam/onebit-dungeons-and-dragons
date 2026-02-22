@@ -49,8 +49,13 @@ pub fn check_save_invariants(save: &SaveGame) -> SaveDriftReport {
     if p.name.is_empty() {
         report.error("player name is empty");
     }
-    if p.class_id.is_empty() {
-        report.error("player class_id is empty");
+    if p.classes.is_empty() {
+        report.error("player has no classes");
+    }
+    for cl in &p.classes {
+        if cl.class_id.is_empty() {
+            report.error("player has a class with empty class_id");
+        }
     }
     if p.race_id.is_empty() {
         report.error("player race_id is empty");
@@ -64,11 +69,11 @@ pub fn check_save_invariants(save: &SaveGame) -> SaveDriftReport {
             p.current_hp, p.max_hp
         ));
     }
-    if p.level == 0 {
-        report.error("player level is 0");
+    if p.total_level == 0 {
+        report.error("player total_level is 0");
     }
-    if p.level > 20 {
-        report.error(format!("player level {} exceeds 20", p.level));
+    if p.total_level > 20 {
+        report.error(format!("player total_level {} exceeds 20", p.total_level));
     }
     for (i, (&slot, &max)) in p
         .spell_slots

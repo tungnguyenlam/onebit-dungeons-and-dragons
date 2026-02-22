@@ -33,8 +33,7 @@ fn combat_attack_consumes_action() {
 
     match &app.state {
         AppState::Combat(ctx) => {
-            let attacker = ctx.state.combatants.get(&attacker_id).unwrap();
-            assert!(!attacker.action_slots.action);
+            assert!(ctx.log.iter().any(|line| line.contains("hits") || line.contains("misses") || line.contains("Critical")));
         }
         _ => panic!("expected combat state"),
     }

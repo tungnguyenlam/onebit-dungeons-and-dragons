@@ -72,7 +72,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             Span::raw(format!("Gold:{} ", app.player.gold)),
         ]),
         Line::from(vec![
-            Span::raw(format!("Lv{} ", app.player.level)),
+            Span::raw(format!("Lv{} ", app.player.total_level)),
             Span::raw("XP "),
             Span::styled(
                 progress_bar(app.player.xp as i32, 6500, 10),

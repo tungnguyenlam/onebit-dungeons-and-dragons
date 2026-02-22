@@ -9,15 +9,51 @@
 
 ## Active Task
 
-**Milestone:** M52 - Flee Mechanics & Combat AI Targeting
+**Milestone:** M53 - Advanced Character Specialization (Feats & Multiclassing)
 
-**Goal:** Provide players with an escape mechanism from unwinnable encounters and ensure enemy AI logic uses pseudo-random target selection rather than always choosing the first player entity.
+**Goal:** Implement the data structures and core logic for multiclassing and feats, enabling complex build options for players.
 
-**Spec:** See [milestones/m52.md](milestones/m52.md)
+**Spec:** See [milestones/m53.md](milestones/m53.md)
 
 ---
 
-## Last Session Handoff
+```
+Date:          2026-02-23
+Completed:     M53 part 1 (Feats & Multiclassing Infrastructure)
+
+Tasks completed this session:
+  1. Updated `Character` struct to support multiple classes via `Vec<ClassLevel>` and feats via `Vec<String>`.
+  2. Implemented `FeatDef` struct and updated `GlobalAssets` to load feats from `assets/feats/`.
+  3. Implemented `HasId` for `FeatDef` to support automated asset loading.
+  4. Updated progression logic in `src/game/character/progression.rs` and `src/app/progression.rs` for multiclass/total_level scaling.
+  5. Refactored UI screens (Inventory, World Map, Debug) and combat setup to respect character leveling changes.
+  6. Fixed save validation and existing tests to accommodate the new structural invariants.
+  7. Added "Tough" feat as a sample data asset.
+
+Files modified/created:
+  - assets/feats/tough.toml (created)
+  - src/data/types.rs
+  - src/data/loader/global.rs
+  - src/data/loader/dir.rs
+  - src/game/character/stats/character.rs
+  - src/game/character/progression.rs
+  - src/game/save/validate.rs
+  - src/app/mod.rs
+  - src/app/progression.rs
+  - src/app/debug.rs
+  - src/app/combat/setup.rs
+  - src/app/tests/flow.rs
+  - src/app/tests/combat.rs
+  - src/ui/tui/screens/inventory.rs
+  - src/ui/tui/screens/world_map.rs
+
+Build status: cargo test passes (136 tests).
+
+Next for incoming agent:
+  - Implement the Feat selection UI (triggered at level 4, 8, etc.).
+  - Implement Multiclassing selection UI during level-up.
+  - Finalize mechanical effects of feats (like evaluating the `mechanical_effect` string or adding hardcoded handlers).
+```
 
 ```
 Date:          2026-02-22

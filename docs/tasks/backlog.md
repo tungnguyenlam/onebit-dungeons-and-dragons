@@ -63,6 +63,14 @@
 | M50 | Sound & Music System | ✅ done | [milestones/m50.md](milestones/m50.md) |
 | M51 | Step-Through Testing Tool Fix | ✅ done | [milestones/m51.md](milestones/m51.md) |
 | M52 | Flee Mechanics & Combat AI Targeting | ✅ done | [milestones/m52.md](milestones/m52.md) |
+| M53 | Advanced Character Specialization (Feats & Multiclassing) | 🔲 next | [milestones/m53.md](milestones/m53.md) |
+| M54 | Tidewatch Coast Content Pass | 🔲 planned | [milestones/m54.md](milestones/m54.md) |
+| M55 | Act 2 Main Quest: The Volcanic Curse | 🔲 planned | [milestones/m55.md](milestones/m55.md) |
+| M56 | The Underdark Shelf & Act 3 Foundation | 🔲 planned | [milestones/m56.md](milestones/m56.md) |
+| M57 | Crafting & Alchemy Systems | 🔲 planned | [milestones/m57.md](milestones/m57.md) |
+| M58 | Bestiary & Shared Lore UI | 🔲 planned | [milestones/m58.md](milestones/m58.md) |
+| M59 | Dynamic Weather & Environmental Hazards | 🔲 planned | [milestones/m59.md](milestones/m59.md) |
+| M60 | Final Boss, Ending Variations & New Game+ | 🔲 planned | [milestones/m60.md](milestones/m60.md) |
 
 Status: ✅ done · 🚧 in progress · 🔲 next / planned
 

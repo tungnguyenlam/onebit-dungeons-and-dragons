@@ -29,7 +29,7 @@ impl App {
         writeln!(
             s,
             "│Gold: {}  XP: {}  Level: {}│",
-            self.player.gold, self.player.xp, self.player.level
+            self.player.gold, self.player.xp, self.player.total_level
         )
         .unwrap();
         writeln!(s, "└{:─<66}┘", "").unwrap();

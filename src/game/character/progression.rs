@@ -61,9 +61,13 @@ pub fn level_for_xp(xp: u32) -> u8 {
 ///
 /// - Level 1: always max hit die value.
 /// - Other levels: roll or take average (floor(sides/2) + 1) + CON modifier.
-pub fn hp_on_level_up(hit_die_sides: u8, con_modifier: i32, level: u8, rolled: bool) -> i32 {
-    let base = if level == 1 || !rolled {
-        if level == 1 {
+/// Roll or take average HP for a hit die at leveling up.
+///
+/// - First character level: always max hit die value.
+/// - Subsequent levels: roll or take average (floor(sides/2) + 1) + CON modifier.
+pub fn hp_on_level_up(hit_die_sides: u8, con_modifier: i32, total_level: u8, rolled: bool) -> i32 {
+    let base = if total_level == 1 || !rolled {
+        if total_level == 1 {
             hit_die_sides as i32
         } else {
             // Average: floor(sides/2) + 1

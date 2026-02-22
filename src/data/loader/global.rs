@@ -1,5 +1,5 @@
 use crate::data::types::{
-    ClassDef, DialogTree, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, RaceDef, SpellDef,
+    ClassDef, DialogTree, FeatDef, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, RaceDef, SpellDef,
 };
 use anyhow::{Context, Result};
 use serde::de::DeserializeOwned;
@@ -15,6 +15,7 @@ pub struct GlobalAssets {
     pub spells: std::collections::HashMap<String, SpellDef>,
     pub quests: std::collections::HashMap<String, QuestDef>,
     pub lore: std::collections::HashMap<String, LoreEntry>,
+    pub feats: std::collections::HashMap<String, FeatDef>,
 }
 
 /// Load all global assets from `assets/`.
@@ -29,6 +30,7 @@ pub fn load_global_assets(base: impl AsRef<Path>) -> Result<GlobalAssets> {
         spells: load_dir(base.join("spells"))?,
         quests: load_dir_nested(base.join("quests"))?,
         lore: load_dir(base.join("lore"))?,
+        feats: load_dir(base.join("feats")).unwrap_or_default(),
     })
 }
 

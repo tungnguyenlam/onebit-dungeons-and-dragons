@@ -461,3 +461,42 @@ pub struct LoreEntry {
     #[serde(default)]
     pub tags: Vec<String>,
 }
+
+// ---------------------------------------------------------------------------
+// Feat
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct FeatDef {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    #[serde(default)]
+    pub mechanical_effect: String,
+    #[serde(default)]
+    pub prerequisites: Vec<String>,
+}
+
+// ---------------------------------------------------------------------------
+// Character Multiclassing
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+pub struct ClassLevel {
+    pub class_id: String,
+    pub level: u8,
+}
+
+// ---------------------------------------------------------------------------
+// Global Assets Bundle
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct GlobalAssets {
+    pub items: HashMap<String, ItemDef>,
+    pub spells: HashMap<String, SpellDef>,
+    pub classes: HashMap<String, ClassDef>,
+    pub races: HashMap<String, RaceDef>,
+    #[serde(default)]
+    pub feats: HashMap<String, FeatDef>,
+}

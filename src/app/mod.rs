@@ -1,6 +1,6 @@
 use crate::data::loader::{load_global_assets, load_lore, load_monsters, load_quests, load_region};
 use crate::data::types::{
-    DialogTree, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, QuestKind, QuestStageDef,
+    DialogTree, FeatDef, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, QuestKind, QuestStageDef,
     QuestTransition, SpellDef,
 };
 use crate::game::{
@@ -44,6 +44,7 @@ pub struct App {
     pub item_defs: HashMap<String, ItemDef>,
     pub spell_defs: HashMap<String, SpellDef>,
     pub monster_defs: HashMap<String, MonsterDef>,
+    pub feat_defs: HashMap<String, FeatDef>,
     pub known_spells: Vec<String>,
     pub world_state: WorldState,
     pub journal: Journal,
@@ -86,7 +87,8 @@ impl App {
             .ok()
             .filter(|m| !m.is_empty())
             .unwrap_or_else(sample_monster_defs);
-        let lore_defs = load_lore("assets").ok().unwrap_or_default();
+        let lore_defs = global_assets.as_ref().map(|ga| ga.lore.clone()).unwrap_or_default();
+        let feat_defs = global_assets.as_ref().map(|ga| ga.feats.clone()).unwrap_or_default();
 
         let mut player = Character::new(
             "Theron".into(),
@@ -170,6 +172,7 @@ impl App {
             item_defs,
             spell_defs,
             monster_defs,
+            feat_defs,
             known_spells: vec![
                 "cure_wounds".into(),
                 "fire_bolt".into(),

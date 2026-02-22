@@ -1,5 +1,5 @@
 use crate::data::types::{
-    ClassDef, DialogTree, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, RaceDef, SpellDef,
+    ClassDef, DialogTree, FeatDef, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, RaceDef, SpellDef,
 };
 use anyhow::{Context, Result};
 use serde::de::DeserializeOwned;
@@ -72,3 +72,4 @@ impl_has_id!(ItemDef);
 impl_has_id!(SpellDef);
 impl_has_id!(QuestDef);
 impl_has_id!(LoreEntry);
+impl_has_id!(FeatDef);

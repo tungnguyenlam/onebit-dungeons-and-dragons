@@ -76,11 +76,11 @@ fn casting_cure_wounds_spends_slot_and_heals() {
 #[test]
 fn leveling_up_from_xp_updates_hp_and_level() {
     let mut app = App::new();
-    app.player.class_id = "fighter".into();
-    app.player.level = 1;
+    app.player.classes = vec![crate::data::types::ClassLevel { class_id: "fighter".into(), level: 1 }];
+    app.player.update_total_level();
     app.player.xp = 0;
     let hp_before = app.player.max_hp;
     app.grant_player_xp(300); // level 2 threshold
-    assert_eq!(app.player.level, 2);
+    assert_eq!(app.player.total_level, 2);
     assert!(app.player.max_hp > hp_before);
 }

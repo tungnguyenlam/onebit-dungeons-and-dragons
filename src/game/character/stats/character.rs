@@ -13,9 +13,10 @@ use super::saving_throws::SavingThrowProficiencies;
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Character {
     pub name: String,
-    pub class_id: String,
+    pub classes: Vec<crate::data::types::ClassLevel>,
+    pub feats: Vec<String>,
     pub race_id: String,
-    pub level: u8,
+    pub total_level: u8,
     pub xp: u32,
     pub gold: u32,
     pub skill_points: u32,
@@ -43,9 +44,10 @@ impl Character {
         let max_hp = 8 + con_mod; // default d8 hit die; caller should adjust by class
         Self {
             name,
-            class_id,
+            classes: vec![crate::data::types::ClassLevel { class_id, level: 1 }],
+            feats: Vec::new(),
             race_id,
-            level: 1,
+            total_level: 1,
             xp: 0,
             gold: 10,
             skill_points: 0,
@@ -65,9 +67,17 @@ impl Character {
         }
     }
 
+    pub fn main_class(&self) -> &str {
+        self.classes.first().map(|cl| cl.class_id.as_str()).unwrap_or("none")
+    }
+
+    pub fn update_total_level(&mut self) {
+        self.total_level = self.classes.iter().map(|cl| cl.level).sum();
+    }
+
     /// Proficiency bonus based on current level.
     pub fn proficiency_bonus(&self) -> i32 {
-        proficiency_bonus(self.level)
+        proficiency_bonus(self.total_level)
     }
 
     /// Passive Perception = 10 + WIS modifier + proficiency (if proficient).
