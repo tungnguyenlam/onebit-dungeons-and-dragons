@@ -14,12 +14,12 @@ impl App {
         let Some(tree) = tree else { return };
 
         if let Some(resolved) =
-            crate::game::story::dialog::resolve(&tree, "START", &mut self.world_state)
+            crate::game::story::dialog::resolve(&tree, "root", &mut self.world_state)
         {
             self.transition(AppState::Dialog(DialogContext {
                 npc_name: npc.name.clone(),
                 tree,
-                current_node: "START".into(),
+                current_node: "root".into(),
                 resolved,
             }));
         }

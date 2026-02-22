@@ -58,6 +58,23 @@ impl App {
     pub fn tick_story_systems(&mut self) {
         self.world_events
             .tick(&mut self.world_state, &mut self.journal, self.turn);
+
+        // Auto-accept quests whose first-stage transition condition is satisfied
+        let unaccepted: Vec<String> = self.quests.defs.keys()
+            .filter(|id| !self.quests.states.contains_key(id.as_str()))
+            .cloned()
+            .collect();
+        for qid in unaccepted {
+            if let Some(def) = self.quests.defs.get(&qid) {
+                if let Some(first) = def.stages.first() {
+                    let should_accept = first.next.iter().any(|t| self.world_state.evaluate(&t.condition));
+                    if should_accept {
+                        self.quests.accept_quest(&qid, &mut self.world_state, &mut self.journal, self.turn);
+                    }
+                }
+            }
+        }
+
         self.quests
             .tick(&mut self.world_state, &mut self.journal, self.turn);
     }

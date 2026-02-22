@@ -29,7 +29,16 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             ratatui::text::Span::raw(format!(" {}/{}", app.player.current_hp, app.player.max_hp)),
         ]),
         Line::from(vec![
-            ratatui::text::Span::raw("AC 10"),
+            ratatui::text::Span::raw(format!("AC {}", {
+                let armor_id = app.player.equipment.armor.as_deref();
+                let armor_def = armor_id.and_then(|id| app.item_defs.get(id));
+                let armor_tuple = armor_def.and_then(|d| d.armor.as_ref().map(|a| (a.base_ac, &a.armor_type)));
+                let shield_equipped = app.player.equipment.off_hand.as_deref()
+                    .and_then(|id| app.item_defs.get(id))
+                    .map(|d| d.armor.as_ref().map(|a| a.armor_type == crate::data::types::ArmorType::Shield).unwrap_or(false))
+                    .unwrap_or(false);
+                crate::game::items::armor::armor_class(armor_tuple, shield_equipped, app.player.scores.dex_mod())
+            })),
             ratatui::text::Span::raw("  "),
             ratatui::text::Span::raw(format!("Level {}", app.player.level)),
             ratatui::text::Span::raw("  "),
