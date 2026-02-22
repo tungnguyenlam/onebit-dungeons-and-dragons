@@ -2,7 +2,7 @@
 ///
 /// Each enemy combatant has an `EnemyAiRole`. This module resolves which
 /// action and target the AI chooses on its turn, given the full combat state.
-use crate::game::combat::combat::{CombatState, CombatantState, EnemyAiRole};
+use crate::game::combat::{CombatState, CombatantState, EnemyAiRole};
 
 // ---------------------------------------------------------------------------
 // Targeting strategies
@@ -103,7 +103,7 @@ impl EncounterTier {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::{combat::combat::CombatantState, dice::DiceExpr};
+    use crate::game::{combat::CombatantState, dice::DiceExpr};
 
     fn make_player(id: &str, hp: i32, ac: i32) -> CombatantState {
         let mut c = CombatantState::new(id, id, true, hp, ac, 30, 2, 4, DiceExpr::new(1, 6, 2));

@@ -1,6 +1,6 @@
 /// Attack and saving-throw resolution.
 use crate::game::{
-    character::conditions::Condition, combat::combat::CombatantState, dice::DiceExpr,
+    character::conditions::Condition, combat::CombatantState, dice::DiceExpr,
     story::world_state::WorldState,
 };
 use rand::{Rng, SeedableRng};
