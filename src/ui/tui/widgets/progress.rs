@@ -64,7 +64,7 @@ pub fn render_health_bar(buf: &mut Buffer, area: Rect, current: i32, maximum: i3
         return;
     }
 
-    let t = theme();
+    let _t = theme();
     let width = area.width.saturating_sub(2);
     let bar = progress_bar(current, maximum, width as usize);
     let color = health_color(current, maximum);
@@ -92,7 +92,7 @@ pub fn render_mana_bar(buf: &mut Buffer, area: Rect, current: i32, maximum: i32,
         return;
     }
 
-    let t = theme();
+    let _t = theme();
     let width = area.width.saturating_sub(2);
     let bar = progress_bar(current, maximum, width as usize);
     let color = mana_color(current, maximum);
@@ -120,7 +120,7 @@ pub fn render_xp_bar(buf: &mut Buffer, area: Rect, current: u32, maximum: u32, l
         return;
     }
 
-    let t = theme();
+    let _t = theme();
     let width = area.width.saturating_sub(2);
     let bar = progress_bar(current as i32, maximum as i32, width as usize);
     let color = xp_color();

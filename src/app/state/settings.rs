@@ -12,7 +12,7 @@ impl Default for SettingsConfig {
         Self {
             enemy_hp_multiplier: 1.0,
             player_damage_multiplier: 1.0,
-            reduced_motion: crate::ui::tui::theme::reduced_motion(),
+            reduced_motion: false,
         }
     }
 }
