@@ -3,6 +3,7 @@
 *.swo
 .DS_Store
 .env
+save.toml
 
 Cargo.lock
 
