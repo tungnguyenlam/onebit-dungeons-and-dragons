@@ -7,7 +7,7 @@
 
 ## Primary Entry Points
 
-- Agent workflow: [AGENT.md](AGENT.md)
+- Agent workflow: [AGENT.md](../AGENT.md)
 - Architecture index: [architecture/overview.md](architecture/overview.md)
 - Gameplay index: [gameplay/overview.md](gameplay/overview.md)
 - Content index: [content/overview.md](content/overview.md)
@@ -65,7 +65,7 @@
 ### Task docs
 
 - `tasks/current-sprint.md`
-  - Related: [tasks/backlog.md](tasks/backlog.md), [tasks/done.md](tasks/done.md), [AGENT.md](AGENT.md)
+  - Related: [tasks/backlog.md](tasks/backlog.md), [tasks/done.md](tasks/done.md), [AGENT.md](../AGENT.md)
 - `tasks/backlog.md`
   - Related: [tasks/current-sprint.md](tasks/current-sprint.md), [tasks/done.md](tasks/done.md), feature docs in `gameplay/` and `content/`
 - `tasks/done.md`
@@ -74,7 +74,7 @@
 ### Testing docs
 
 - `testing/tui-agent-smoke.md`
-  - Related: [AGENT.md](AGENT.md), [README.md](../README.md), `scripts/agent_tui_smoke.sh`, `scripts/agent_verify.sh`
+  - Related: [AGENT.md](../AGENT.md), [README.md](../README.md), `scripts/agent_tui_smoke.sh`, `scripts/agent_verify.sh`
 - `testing/WRITING_TESTS.md`
   - Related: `src/app/tests.rs`, `src/game/combat/attack.rs`
 

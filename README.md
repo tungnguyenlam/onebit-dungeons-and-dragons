@@ -1,6 +1,6 @@
 # OneBit Dungeons & Dragons
 
-> **If you are an AI agent or automated tool — read [`docs/AGENT.md`](docs/AGENT.md) first.**
+> **If you are an AI agent or automated tool — read [`AGENT.md`](AGENT.md) first.**
 > It tells you exactly where work stopped, what to do next, and which docs to read. Do not touch any code before completing all five steps in that file.
 
 ---
@@ -249,8 +249,8 @@ onebit-dungeons-and-dragons/
 │       ├── types.rs        ← serde structs for every TOML asset type
 │       └── loader.rs       ← load<T>(), load_region(), load_global_assets()
 │
+├── AGENT.md            ← AI agent entry point — READ THIS FIRST
 └── docs/                   ← all design, architecture, and task docs
-    ├── AGENT.md            ← AI agent entry point — READ THIS FIRST
     ├── architecture/
     │   ├── overview.md     ← module boundary rules, full source tree
     │   ├── game-loop.md    ← tick loop, event flow
@@ -341,7 +341,7 @@ Color/visual tokens are centralized in `src/ui/tui/theme.rs`.
 
 ## Contributing / Continuing Development
 
-See [docs/AGENT.md](docs/AGENT.md) — the workflow applies equally to humans and AI agents.
+See [AGENT.md](AGENT.md) — the workflow applies equally to humans and AI agents.
 For doc synchronization rules, also see [docs/DOCS_MAP.md](docs/DOCS_MAP.md).
 For automated non-interactive TUI validation, see [docs/testing/tui-agent-smoke.md](docs/testing/tui-agent-smoke.md).
 Release notes: [docs/releases/v0.1.0-internal.md](docs/releases/v0.1.0-internal.md).
