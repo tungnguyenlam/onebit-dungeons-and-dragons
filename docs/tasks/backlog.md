@@ -77,6 +77,11 @@
 | M64 | Edge-Based Room Transitions | ✅ done | [milestones/m64.md](milestones/m64.md) |
 | M65 | Traversal Directionality & Interaction Cleanup | ✅ done | [milestones/m65.md](milestones/m65.md) |
 | M66 | Border Exits Graph for Room Traversal | ✅ done | [milestones/m66.md](milestones/m66.md) |
+| M67 | World Gen Foundation & Seeded Runtime | 🔲 next / planned | [milestones/m67.md](milestones/m67.md) |
+| M68 | Hybrid Region Router (Fixed Hubs + Generated Routes) | 🔲 next / planned | [milestones/m68.md](milestones/m68.md) |
+| M69 | Procedural Content Layer (Landmarks, Encounters, Loot, Hazards) | 🔲 next / planned | [milestones/m69.md](milestones/m69.md) |
+| M70 | Hub Services & NPC Dense Interactions | 🔲 next / planned | [milestones/m70.md](milestones/m70.md) |
+| M71 | Testing, Balancing, Migration & Rollout | 🔲 next / planned | [milestones/m71.md](milestones/m71.md) |
 
 Status: ✅ done · 🚧 in progress · 🔲 next / planned
 

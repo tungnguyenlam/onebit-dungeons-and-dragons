@@ -1,11 +1,11 @@
 # Current Sprint
 ## Active Task
 
-**Milestone:** Backlog complete (M66 done)
+**Milestone:** M67 — World Gen Foundation & Seeded Runtime
 
-**Goal:** All listed milestones through M66 are completed; next work should come from new milestone definition.
+**Goal:** Begin executing hybrid-world roadmap milestones in order (M67 → M71), starting with deterministic generation foundations.
 
-**Spec:** Define next milestone in `docs/tasks/backlog.md` and add `docs/tasks/milestones/mXX.md`
+**Spec:** `docs/tasks/milestones/m67.md`
 
 ---
 
