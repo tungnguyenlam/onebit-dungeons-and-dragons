@@ -5,6 +5,7 @@
 
 ---
 
+
 ## Primary Entry Points
 
 - Agent workflow: [AGENT.md](../AGENT.md)
@@ -14,6 +15,7 @@
 - Testing docs: [testing/tui-agent-smoke.md](testing/tui-agent-smoke.md), [testing/WRITING_TESTS.md](testing/WRITING_TESTS.md)
 - Knowledge Maps: [CODE_MAP.md](CODE_MAP.md), [ENGINE_RULES.md](ENGINE_RULES.md), [content/SCHEMAS.md](content/SCHEMAS.md)
 - Task tracking: [tasks/current-sprint.md](tasks/current-sprint.md), [tasks/backlog.md](tasks/backlog.md), [tasks/done.md](tasks/done.md)
+- Milestones: [tasks/milestones/m62.md](tasks/milestones/m62.md)
 
 ---
 

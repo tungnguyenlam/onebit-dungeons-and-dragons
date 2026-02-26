@@ -34,6 +34,13 @@ One-Bit D&D follows a simplified D&D 5e SRD ruleset.
 - **Rounding**: Unless specified otherwise, always round **down** toward zero.
 - **Turn Order**: Determined by Initiative roll (`d20 + DexMod`) at the start of combat.
 
+
 ## Limitations
 - **WorldState**: Boolean flags and integer counters only. No string variables.
 - **Inventory**: No grid-based inventory. It is a simple weight-limited list.
+
+---
+
+## Milestone Traceability
+
+- **M62**: See [tasks/milestones/m62.md](tasks/milestones/m62.md) for objectives, tasks, and acceptance criteria for Milestone 62 (Visual, balance, and performance improvements).
