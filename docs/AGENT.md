@@ -35,7 +35,7 @@ behavior work; warning cleanup is deferred.
 
 ### Option 1: Visual Step-Through Testing (Recommended)
 
-This is the **primary way for agents to test gameplay** - it uses a dedicated tool to manage scenarios and snapshots:
+This is the **primary way for agents to test gameplay** - use the `visual_check` script (`scripts/visual_check.py`) to manage scenarios and snapshots:
 
 ```bash
 # List available test scenarios
@@ -53,9 +53,23 @@ python3 scripts/visual_check.py "a" --reset --show
 
 **Why this is great for agents:**
 - **Scenarios**: Repeatable sequences defined in `tests/visual_scenarios.json`.
-- **Snapshots**: Automatically saves the TUI to `test_outputs/` for comparison.
+- **Artifacts**: Defaults to compact final-state snapshots; full per-step dumps are opt-in.
 - **Persistence**: Handles the `save.toml` state management for you.
 - **Convenience**: No TTY needed; text output is easy to review.
+
+Common calls:
+```bash
+# Compact default artifact (overwrites latest unless --name is set)
+python3 scripts/visual_check.py --scenario enter_world
+
+# Show but do not save any artifact file
+python3 scripts/visual_check.py --scenario enter_world --artifact none --show
+
+# Deep debug with step-by-step artifact history
+python3 scripts/visual_check.py --scenario enter_world --verbose-steps --artifact full --history
+```
+
+Important: `visual_check` is a runner over the real game (`cargo run -- --text --step ...`), so results are coupled to actual game logic and renderer behavior.
 
 Guide: [testing/step-through-testing.md](testing/step-through-testing.md)
 
@@ -245,4 +259,3 @@ find ~/.cargo/registry/src -name "*.rs" -path "*/ratatui*" | \
 - **ADRs**: Settled architecture decisions are in `docs/decisions/`. Do not re-litigate them.
 - **Updating tasks**: When you finish a task, move it from `current-sprint.md` to `done.md` and pull the next item from `backlog.md`.
 - **Sample Syncing**: ⚠️ `src/app/samples.rs` contains hardcoded fallback data used by unit tests. If you change a core data structure (e.g. adding a field to `ItemDef`), you MUST update the samples in this file or unit tests will fail or become unreliable.
-

@@ -52,6 +52,8 @@ scripts/validate_assets.sh
 
 This is the **recommended way for agents to test the game** without needing a terminal/TTY. Each keypress is processed one at a time, and the game state is dumped as text after each action.
 
+Preferred tool name: `visual_check` script (`scripts/visual_check.py`).
+
 ### Quick Start
 
 ```bash
@@ -141,6 +143,26 @@ Gold: 10
 ```
 
 For more details, see [`docs/testing/step-through-testing.md`](docs/testing/step-through-testing.md).
+
+### Visual Check CLI (`scripts/visual_check.py`)
+
+Use this name when referring to the scenario-based headless snapshot runner.
+
+```bash
+# List scenarios
+python3 scripts/visual_check.py -l
+
+# Run a scenario, save compact final artifact (default)
+python3 scripts/visual_check.py --scenario enter_world
+
+# Show output without writing artifact files
+python3 scripts/visual_check.py --scenario enter_world --artifact none --show
+
+# Capture full step-by-step artifact history
+python3 scripts/visual_check.py --scenario enter_world --verbose-steps --artifact full --history
+```
+
+Note: this CLI is not independent from game logic. It drives the actual game binary in text mode, so output changes whenever gameplay or rendering logic changes.
 
 ---
 

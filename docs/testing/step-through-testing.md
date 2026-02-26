@@ -12,6 +12,9 @@ The step-through mode allows agents to:
 - **Friendly Keywords**: Supports `enter`, `esc`, `space`, and `reset` for easier automation.
 - **Persistence**: Automatically saves the full TUI screen to `test_outputs/current_screen.txt`.
 
+For scenario-based runs and managed artifacts, use the `visual_check` script: `scripts/visual_check.py`.
+This script is a runner around the real game binary, so it is coupled to gameplay and rendering logic.
+
 ## Usage
 
 ### Quick Start
@@ -27,6 +30,24 @@ scripts/runtest.sh j        # move down in menu
 scripts/runtest.sh enter    # press Enter (uses friendly keyword)
 scripts/runtest.sh a        # attack
 scripts/runtest.sh reset    # Reset game state (deletes save.toml and restarts)
+```
+
+### Visual Check CLI (Scenario Runner)
+
+Use this when you want named scenarios and cleaner artifact management.
+
+```bash
+# List available scenarios
+python3 scripts/visual_check.py -l
+
+# Compact final-state artifact (default)
+python3 scripts/visual_check.py --scenario enter_world
+
+# Full per-step artifact (verbose/debug)
+python3 scripts/visual_check.py --scenario enter_world --verbose-steps --artifact full --history
+
+# No artifact files, stdout only
+python3 scripts/visual_check.py --scenario enter_world --artifact none --show
 ```
 
 ### Friendly Keywords for Agents
