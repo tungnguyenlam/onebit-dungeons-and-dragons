@@ -33,3 +33,6 @@ position = [5, 2]
 [[items]]
 id = "sylvan_glitch_key"
 position = [8, 3]
+
+[exits]
+west = "sunken_glade"

@@ -25,3 +25,6 @@ position = [10, 4]
 type = "encounter"
 target_id = "orc_warrior"
 once = false
+
+[exits]
+west = "overgrown_path"

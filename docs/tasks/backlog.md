@@ -76,6 +76,7 @@
 | M63 | Map Scale, Connectivity, and Landmarks | ✅ done | [milestones/m63.md](milestones/m63.md) |
 | M64 | Edge-Based Room Transitions | ✅ done | [milestones/m64.md](milestones/m64.md) |
 | M65 | Traversal Directionality & Interaction Cleanup | ✅ done | [milestones/m65.md](milestones/m65.md) |
+| M66 | Border Exits Graph for Room Traversal | ✅ done | [milestones/m66.md](milestones/m66.md) |
 
 Status: ✅ done · 🚧 in progress · 🔲 next / planned
 

@@ -39,3 +39,7 @@ once = false
 id = "obsidian_heart"
 position = [9, 2]
 condition = "flag:ritual_completed"
+
+[exits]
+east = "flooded_pit"
+west = "mine_entrance"

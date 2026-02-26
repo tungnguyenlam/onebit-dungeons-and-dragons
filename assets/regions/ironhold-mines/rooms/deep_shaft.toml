@@ -57,3 +57,6 @@ once = true
 id = "cursed_volcanic_artifact"
 position = [7, 3]
 condition = "flag:read_ember_rune"
+
+[exits]
+west = "mine_entrance"

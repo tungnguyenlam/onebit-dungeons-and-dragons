@@ -100,6 +100,12 @@ type      = "dialog"  # dialog | encounter | lore | quest_stage
 target_id = "kael_encounter_1"
 condition = "not flag:met_kael"
 
+[exits]
+north = ""
+east  = "ember_square"
+south = ""
+west  = ""
+
 ---
 
 ## Weather & Visibility
@@ -119,6 +125,5 @@ The TUI world screen now combines:
 
 ### Room-to-Room Movement
 
-- Intra-region movement is now edge-driven: pushing against a room boundary can transition to a connected room.
-- Stepping directly onto a `travel` trigger also transitions immediately.
-- `travel` triggers remain the mechanism for special transitions (stairs/portals/region hops) and for conditioned/locked routes.
+- Intra-region movement is edge-driven through `[exits]`: pushing against a map boundary transitions in that direction when configured.
+- `travel` triggers are for special transitions (stairs, portals, region hops, conditioned routes), not normal adjacent-room walking.

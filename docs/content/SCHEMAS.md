@@ -80,4 +80,7 @@ position = [3, 2]
 position = [6, 2]
 type = "dialog"
 target_id = "captain_kael"
+
+[exits]
+west = "ember_square"
 ```

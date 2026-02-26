@@ -6,6 +6,34 @@
 
 ---
 
+## 2026-02-26 — Milestone 66: Border Exits Graph for Room Traversal
+
+- [x] Added room-level directional exits model (`[exits]`) and runtime loading.
+- [x] Switched edge transitions to `[exits]` graph (independent from trigger placement).
+- [x] Kept trigger travel for non-local/special transitions; in-region trigger stepping no longer drives normal room traversal.
+- [x] Backfilled exits across room assets and updated traversal tests/docs.
+
+Files modified (major):
+  - src/data/types.rs
+  - src/game/world/room.rs
+  - src/app/navigation/movement.rs
+  - src/app/navigation/world_map_util.rs
+  - src/app/tests/flow.rs
+  - assets/regions/*/rooms/*.toml
+  - docs/content/SCHEMAS.md
+  - docs/content/map-format.md
+  - docs/gameplay/world.md
+  - docs/tasks/milestones/m66.md
+  - docs/tasks/backlog.md
+  - docs/tasks/current-sprint.md
+  - docs/tasks/done.md
+
+Validation:
+  - cargo test: pass (151 tests)
+  - visual_check scenarios: pass
+
+---
+
 ## 2026-02-26 — Milestone 65: Traversal Directionality & Interaction Cleanup
 
 - [x] Fixed edge-transition directionality in movement handling.

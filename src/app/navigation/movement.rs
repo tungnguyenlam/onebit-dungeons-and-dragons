@@ -51,6 +51,10 @@ impl App {
             .and_then(|r| r.trigger_at(col, row).cloned())
         {
             if matches!(trigger.kind, TriggerKind::Travel) {
+                // Intra-region room links are now edge-driven via explicit exits.
+                if self.region.room(&trigger.target_id).is_some() {
+                    return Ok(false);
+                }
                 self.execute_trigger(&trigger);
                 // Travel should always spend a world turn.
                 if matches!(self.state, AppState::WorldMap) {
@@ -68,30 +72,16 @@ impl App {
             return Ok(false);
         };
 
-        let width = room.width();
-        let height = room.height();
-        let desired_dir = edge_direction(dx, dy);
-        let candidate = room
-            .triggers
-            .iter()
-            .filter(|t| matches!(t.kind, TriggerKind::Travel))
-            .filter(|t| self.region.room(&t.target_id).is_some())
-            .filter(|t| trigger_direction(t.position[0], t.position[1], width, height) == desired_dir)
-            .min_by_key(|t| {
-                let x = t.position[0];
-                let y = t.position[1];
-                match (dx, dy) {
-                    (-1, 0) => x,
-                    (1, 0) => width.saturating_sub(1).saturating_sub(x),
-                    (0, -1) => y,
-                    (0, 1) => height.saturating_sub(1).saturating_sub(y),
-                    _ => u32::MAX,
-                }
-            })
-            .cloned();
+        let target = match edge_direction(dx, dy) {
+            (-1, 0) => room.exits.west.clone(),
+            (1, 0) => room.exits.east.clone(),
+            (0, -1) => room.exits.north.clone(),
+            (0, 1) => room.exits.south.clone(),
+            _ => String::new(),
+        };
 
-        if let Some(trigger) = candidate {
-            self.execute_trigger(&trigger);
+        if !target.is_empty() {
+            self.handle_travel(&target);
             if matches!(self.state, AppState::WorldMap) {
                 self.pass_turn()?;
             }
@@ -150,24 +140,5 @@ fn edge_direction(dx: i32, dy: i32) -> (i32, i32) {
         (0, -1) => (0, -1),
         (0, 1) => (0, 1),
         _ => (0, 0),
-    }
-}
-
-fn trigger_direction(x: u32, y: u32, width: u32, height: u32) -> (i32, i32) {
-    let cx = (width as f32 - 1.0) / 2.0;
-    let cy = (height as f32 - 1.0) / 2.0;
-    let dx = x as f32 - cx;
-    let dy = y as f32 - cy;
-
-    if dx.abs() >= dy.abs() {
-        if dx < 0.0 {
-            (-1, 0)
-        } else {
-            (1, 0)
-        }
-    } else if dy < 0.0 {
-        (0, -1)
-    } else {
-        (0, 1)
     }
 }

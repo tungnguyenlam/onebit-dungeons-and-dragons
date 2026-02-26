@@ -86,6 +86,12 @@ type      = "dialog"         # dialog | encounter | lore | quest_stage | travel
 target_id = "kael-first-meet"
 condition = "not flag:met_kael"
 once      = true             # fire only the first time player steps on tile
+
+[exits]
+north = "room_north"
+east  = "room_east"
+south = "room_south"
+west  = "room_west"
 ```
 
 ---
@@ -117,8 +123,8 @@ hp = 18
 | `quest_stage` | `<quest-id>:<stage-id>` | Force advance quest stage |
 | `travel` | `<region-slug>:<room-id>` or `<room-id>` | Travel to another region or another room in the same region |
 
-In runtime movement, intra-region `travel` links can be reached by stepping onto the
-trigger tile directly or by pushing through the corresponding map boundary direction.
+In runtime movement, normal intra-region traversal uses `[exits]` and border pushes.
+`travel` triggers are reserved for special transitions (portals/stairs/conditioned jumps).
 
 ---
 

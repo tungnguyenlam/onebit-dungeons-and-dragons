@@ -125,6 +125,7 @@ mod tests {
                 npcs: vec![],
                 items: vec![],
                 triggers: vec![],
+                exits: crate::data::types::RoomExits::default(),
             },
         );
 

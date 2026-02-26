@@ -30,3 +30,6 @@ type = "dialog"
 target_id = "spore_herder"
 once = false
 condition = "flag:ritual_completed"
+
+[exits]
+north = "fungal_groves"

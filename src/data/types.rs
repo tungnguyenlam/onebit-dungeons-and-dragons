@@ -70,6 +70,20 @@ pub struct RoomDef {
     pub items: Vec<RoomItem>,
     #[serde(default)]
     pub triggers: Vec<TriggerDef>,
+    #[serde(default)]
+    pub exits: RoomExits,
+}
+
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+pub struct RoomExits {
+    #[serde(default)]
+    pub north: String,
+    #[serde(default)]
+    pub east: String,
+    #[serde(default)]
+    pub south: String,
+    #[serde(default)]
+    pub west: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]

@@ -41,3 +41,7 @@ type = "travel"
 target_id = "emberpeak-summit"
 condition = "quest_valley_contract_completed"
 once = false
+
+[exits]
+east = "ash_hollow"
+west = "ember_square"

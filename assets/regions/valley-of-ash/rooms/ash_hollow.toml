@@ -47,3 +47,7 @@ position = [1, 5]
 type = "travel"
 target_id = "whispering-woods"
 once = false
+
+[exits]
+east = "soot_shrine"
+west = "cinder_ridge"

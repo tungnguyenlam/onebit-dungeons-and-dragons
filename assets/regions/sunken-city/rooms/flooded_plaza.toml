@@ -32,3 +32,6 @@ once = true
 [[npcs]]
 position = [6, 1]
 id = "water_weird"
+
+[exits]
+north = "submerged_aqueduct"

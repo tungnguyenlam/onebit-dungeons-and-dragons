@@ -43,13 +43,10 @@ pub fn build_region_overview(region: &Region, current_room: &str, world: &WorldS
     let mut connected_rooms = region
         .room(current_room)
         .map(|r| {
-            r.triggers
+            [&r.exits.north, &r.exits.east, &r.exits.south, &r.exits.west]
                 .iter()
-                .filter(|t| {
-                    t.kind == crate::data::types::TriggerKind::Travel
-                        && region.rooms.contains_key(&t.target_id)
-                })
-                .map(|t| t.target_id.clone())
+                .filter(|id| !id.is_empty() && region.rooms.contains_key(id.as_str()))
+                .map(|id| (*id).clone())
                 .collect::<Vec<_>>()
         })
         .unwrap_or_default();
@@ -116,6 +113,10 @@ mod tests {
                     condition: String::new(),
                     once: false,
                 }],
+                exits: crate::data::types::RoomExits {
+                    east: "b".into(),
+                    ..Default::default()
+                },
             },
         );
         rooms.insert(
@@ -130,6 +131,7 @@ mod tests {
                 npcs: vec![],
                 items: vec![],
                 triggers: vec![],
+                exits: crate::data::types::RoomExits::default(),
             },
         );
         let loaded = crate::data::loader::LoadedRegion {

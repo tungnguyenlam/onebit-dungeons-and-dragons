@@ -40,3 +40,7 @@ position = [1, 4]
 type = "travel"
 target_id = "valley-of-ash"
 once = false
+
+[exits]
+east = "lava_shelf"
+west = "obsidian_bridge"

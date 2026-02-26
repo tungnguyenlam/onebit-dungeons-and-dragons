@@ -41,3 +41,7 @@ once = true
 id = "null_scepter"
 position = [5, 2]
 condition = "flag:defeated_malphas"
+
+[exits]
+east = "woods_edge"
+west = "elder_canopy"

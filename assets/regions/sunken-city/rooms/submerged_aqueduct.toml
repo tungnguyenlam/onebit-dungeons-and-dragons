@@ -34,3 +34,6 @@ position = [2, 1]
 type = "lore"
 target_id = "lore_sunkencity_aqueduct"
 once = true
+
+[exits]
+north = "drowned_temple"

@@ -31,3 +31,6 @@ type = "dialog"
 target_id = "crystal_seer"
 once = false
 condition = "flag:ritual_completed"
+
+[exits]
+east = "drow_outpost"

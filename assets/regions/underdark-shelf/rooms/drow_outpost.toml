@@ -29,3 +29,6 @@ once = false
 id = "rope_of_climbing"
 position = [9, 4]
 condition = "flag:drow_allied"
+
+[exits]
+east = "abyss_entry"

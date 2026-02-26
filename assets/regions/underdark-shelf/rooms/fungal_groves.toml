@@ -35,3 +35,7 @@ once = false
 id = "glowing_spores"
 position = [5, 3]
 condition = "quest:silence_below_started"
+
+[exits]
+east = "crystal_lake"
+west = "cavern_entrance"

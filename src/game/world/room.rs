@@ -7,7 +7,7 @@
 ///
 /// Conversion: `Room::from_def(&RoomDef)` — cheap clone, done once at
 /// region-load time.
-use crate::data::types::{RoomDef, RoomItem, RoomNpc, TriggerDef};
+use crate::data::types::{RoomDef, RoomExits, RoomItem, RoomNpc, TriggerDef};
 use crate::game::world::map::TileGrid;
 
 // ---------------------------------------------------------------------------
@@ -28,6 +28,7 @@ pub struct Room {
     pub items: Vec<RoomItem>,
     /// Trigger zones (dialog, encounter, lore, quest_stage, travel).
     pub triggers: Vec<TriggerDef>,
+    pub exits: RoomExits,
     /// When true this is a deliberate dead-end; no outbound travel trigger required.
     pub terminal: bool,
 }
@@ -47,6 +48,7 @@ impl Room {
             npcs: def.npcs.clone(),
             items: def.items.clone(),
             triggers: def.triggers.clone(),
+            exits: def.exits.clone(),
             terminal: def.terminal,
         }
     }
@@ -105,6 +107,7 @@ mod tests {
                 condition: String::new(),
                 once: true,
             }],
+            exits: RoomExits::default(),
         }
     }
 

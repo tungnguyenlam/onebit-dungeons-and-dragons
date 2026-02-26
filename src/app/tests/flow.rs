@@ -89,7 +89,7 @@ fn leveling_up_from_xp_updates_hp_and_level() {
 }
 
 #[test]
-fn stepping_on_travel_trigger_moves_to_target_room() {
+fn stepping_on_intra_region_travel_trigger_does_not_transition() {
     let mut app = App::new();
     app.handle_event(GameEvent::Confirm).unwrap();
     app.handle_event(GameEvent::MoveDown).unwrap();
@@ -102,7 +102,7 @@ fn stepping_on_travel_trigger_moves_to_target_room() {
     app.handle_event(GameEvent::MoveRight).unwrap();
     app.handle_event(GameEvent::MoveDown).unwrap();
 
-    assert_eq!(app.current_room_id, "ember_square");
+    assert_eq!(app.current_room_id, "ash_gate");
 }
 
 #[test]

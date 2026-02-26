@@ -34,3 +34,7 @@ position = [12, 4]
 type = "travel"
 target_id = "ore_chamber"
 once = false
+
+[exits]
+east = "ore_chamber"
+west = "deep_shaft"

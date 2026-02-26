@@ -34,3 +34,6 @@ position = [5, 3]
 type = "travel"
 target_id = "south_slope"
 once = false
+
+[exits]
+west = "south_slope"

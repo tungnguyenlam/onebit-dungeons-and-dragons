@@ -49,6 +49,7 @@ pub fn sample_region_bundle() -> (Region, HashMap<String, NpcDef>, HashMap<Strin
                     npcs: vec![],
                     items: vec![],
                     triggers: vec![],
+                    exits: crate::data::types::RoomExits::default(),
                 },
             );
             map

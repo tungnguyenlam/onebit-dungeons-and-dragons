@@ -24,3 +24,7 @@ position = [12, 1]
 type = "travel"
 target_id = "cave_entrance"
 once = false
+
+[exits]
+east = "cave_entrance"
+west = "sunken_glade"

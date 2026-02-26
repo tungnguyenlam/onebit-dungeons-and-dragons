@@ -30,3 +30,6 @@ position = [5, 3]
 type = "travel"
 target_id = "ember_square"
 once = false
+
+[exits]
+west = "ember_square"

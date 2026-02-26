@@ -50,3 +50,7 @@ position = [5, 1]
 type = "quest_stage"
 target_id = "met_obsidian_survivor"
 once = true
+
+[exits]
+east = "cinder_ridge"
+west = "ash_gate"

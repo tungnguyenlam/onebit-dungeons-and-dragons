@@ -42,3 +42,6 @@ position = [8, 4]
 type = "quest_stage"
 target_id = "has_obsidian_claw"
 once = true
+
+[exits]
+west = "peak_crater"

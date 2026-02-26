@@ -40,3 +40,6 @@ position = [5, 4]
 type = "quest_stage"
 target_id = "has_obsidian_heart"
 once = true
+
+[exits]
+west = "mine_entrance"
