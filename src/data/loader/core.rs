@@ -3,8 +3,8 @@ use crate::data::types::{
 };
 use anyhow::{Context, Result};
 use serde::de::DeserializeOwned;
-use std::path::{Path, PathBuf};
 use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 /// Read and deserialize a single TOML file.
 pub fn load<T: DeserializeOwned>(path: impl AsRef<Path>) -> Result<T> {
     let path = path.as_ref();

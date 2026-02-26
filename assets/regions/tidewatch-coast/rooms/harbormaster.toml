@@ -1,0 +1,19 @@
+id = "harbormaster"
+name = "Harbormaster's Office"
+description = "The official office of the Tidewatch Coast harbormaster. Maps and charts of the coastline adorn the walls, and a large desk dominates the room."
+grid = """
+##################
+#...............##
+#...............##
+#...............##
+##+##############
+#...............##
+#...............##
+##################
+"""
+npcs = [
+    { id = "harbormaster", position = [8, 4] }
+]
+triggers = [
+    { position = [2, 3], type = "travel", target_id = "market-square", label = "Return to Market" }
+]

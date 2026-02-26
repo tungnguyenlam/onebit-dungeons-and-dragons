@@ -32,3 +32,8 @@ position = [12, 4]
 type = "travel"
 target_id = "flooded_pit"
 once = false
+
+[[items]]
+id = "obsidian_heart"
+position = [9, 2]
+condition = "flag:ritual_completed"

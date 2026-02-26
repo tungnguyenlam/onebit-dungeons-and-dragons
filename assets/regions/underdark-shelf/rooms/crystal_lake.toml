@@ -1,0 +1,31 @@
+id = "crystal_lake"
+name = "Crystal Lake"
+description = "An underground lake reflects countless crystal formations protruding from the walls. The water glows with an ethereal purple light."
+grid = """
+################
+#..............#
+#..............#
+#...~~~~~~~~~..#
+#...~~~~~~~~~..#
+#...~~@..~~~~~..#
+#...........!..#
+#..............#
+################
+"""
+
+[[npcs]]
+id = "crystal_seer"
+position = [5, 5]
+
+[[triggers]]
+position = [12, 6]
+type = "travel"
+target_id = "drow_outpost"
+once = false
+
+[[triggers]]
+position = [3, 5]
+type = "dialog"
+target_id = "crystal_seer"
+once = false
+condition = "flag:ritual_completed"

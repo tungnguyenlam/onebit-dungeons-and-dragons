@@ -1,9 +1,9 @@
-use ratatui::style::{Color, Modifier, Style};
-use std::sync::OnceLock;
-use super::types::*;
-use super::tier::*;
 use super::core::*;
 use super::icons::*;
+use super::tier::*;
+use super::types::*;
+use ratatui::style::{Color, Modifier, Style};
+use std::sync::OnceLock;
 pub fn reduced_motion() -> bool {
     let value = std::env::var("DND_REDUCED_MOTION")
         .or_else(|_| std::env::var("REDUCED_MOTION"))

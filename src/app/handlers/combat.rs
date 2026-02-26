@@ -1,5 +1,5 @@
-use crate::app::App;
 use crate::app::state::{AppState, FocusedPane, JournalUiState};
+use crate::app::App;
 use crate::game::{
     items::equipment::EquipmentSlot,
     story::{
@@ -9,7 +9,6 @@ use crate::game::{
 };
 use crate::renderer::{ControlFlow, GameEvent};
 use anyhow::Result;
-
 
 impl App {
     pub fn handle_combat(&mut self, event: GameEvent) -> Result<()> {

@@ -1,0 +1,4 @@
+id = "abyss_runes"
+title = "Runes of the Binding"
+text = "Ancient dwarven runes pulse with dark energy. They speak of a binding—pacts sealed with blood and starlight, sealing an entity known as the Silence beneath the world. The runes warn that the binding weakens as volcanic activity increases."
+tags = ["underdark", "dwarf", "ancient", "silence"]

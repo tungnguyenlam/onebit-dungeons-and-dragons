@@ -1,9 +1,9 @@
+use super::helpers::*;
+use super::icons::*;
+use super::tier::*;
+use super::types::*;
 use ratatui::style::{Color, Modifier, Style};
 use std::sync::OnceLock;
-use super::types::*;
-use super::tier::*;
-use super::icons::*;
-use super::helpers::*;
 pub fn theme() -> Theme {
     let color_theme = ColorTheme::from_env();
     match (terminal_tier(), color_theme) {

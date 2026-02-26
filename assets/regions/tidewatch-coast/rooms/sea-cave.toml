@@ -1,0 +1,21 @@
+id = "sea-cave"
+name = "Sea Cave"
+description = "A dark, damp cave carved into the cliffs below Tidewatch Coast. The sound of waves echoes through the passages, and the air is thick with the smell of brine."
+grid = """
+##################
+#.....!..........##
+#...............##
+#...............##
+###+#############
+#...............##
+#...............##
+##################
+"""
+npcs = [
+    { id = "giant_crab", position = [7, 4] },
+    { id = "sahuagin", position = [10, 6] }
+]
+triggers = [
+    { position = [3, 3], type = "travel", target_id = "dockside", label = "Return to Docks" },
+    { position = [6, 1], type = "encounter", target_id = "crab_encounter" }
+]

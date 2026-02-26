@@ -1,0 +1,5 @@
+id = "ritual_altar"
+name = "Ritual Altar"
+monster_ref = ""
+faction = ""
+dialog_ref = "ritual_altar"

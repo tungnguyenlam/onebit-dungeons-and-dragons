@@ -1,0 +1,5 @@
+id = "great_weapon_master"
+name = "Great Weapon Master"
+description = "You've learned to hit harder at the cost of accuracy. When you score a critical hit with a melee weapon or reduce a creature to 0 hit points with one, you can make one melee weapon attack as a bonus action on your turn. Also, before you make a melee attack with a heavy weapon that you are proficient with, you can choose to take a -5 penalty to the attack roll. If the attack hits, you add +10 to the attack's damage."
+mechanical_effect = "great_weapon_master"
+prerequisites = []

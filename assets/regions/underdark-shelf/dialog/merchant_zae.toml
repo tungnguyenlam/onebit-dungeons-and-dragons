@@ -1,0 +1,201 @@
+npc_id = "merchant_zae"
+
+[[nodes]]
+id = "root"
+text = "A drow merchant emerges from the shadows, eyes glinting with cold intelligence. Her scales trade in rare goods from the depths."
+
+[[nodes.choices]]
+text = "I seek passage to the abyss."
+condition = "quest:silence_below_started"
+next = "abyss_passage"
+
+[[nodes.choices]]
+text = "What do you trade?"
+condition = ""
+next = "trade_goods"
+
+[[nodes.choices]]
+text = "I wish to improve relations with your people."
+condition = "counter:faction_drow-merchant-coven_rep_lt:0"
+next = "improve_relations"
+
+[[nodes.choices]]
+text = "Leave."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "trade_goods"
+text = "We deal in rare substances: glowing spores, crystallized shadow, and items of power. But outsiders are not welcome here unless they prove themselves."
+
+[[nodes.choices]]
+text = "How can I prove myself?"
+condition = "counter:faction_drow-merchant-coven_rep_lt:0"
+next = "prove_self"
+
+[[nodes.choices]]
+text = "I have something to trade."
+condition = "item:obsidian_heart"
+next = "trade_obsidian"
+
+[[nodes.choices]]
+text = "Perhaps another time."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "prove_self"
+text = "Bring us proof of your worth. An obsidian heart from the deep mines would demonstrate your courage. Or, bring news of the surface world—our spies tell us the volcano stirs."
+
+[[nodes.choices]]
+text = "I will bring the obsidian heart."
+condition = ""
+next = "accept_proof"
+effect = [{ set_flag = "drow_proof_quest" }]
+
+[[nodes.choices]]
+text = "The volcano has been dealt with."
+condition = "flag:ritual_completed"
+next = "volcano_dealt"
+
+[[nodes.choices]]
+text = "Goodbye."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "accept_proof"
+text = "Return when you have the obsidian heart. Then we shall speak as allies."
+
+[[nodes.choices]]
+text = "Understood."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "trade_obsidian"
+text = "Ah, the obsidian heart! You have done well. This earns you our favor. We shall remember this, and our merchants will treat you as a friend."
+effect = [{ set_flag = "drow_allied" }, { delta_counter = { key = "faction_drow-merchant-coven_rep", delta = 10 } }]
+
+[[nodes.choices]]
+text = "What can you offer me now?"
+condition = ""
+next = "allied_trade"
+
+[[nodes.choices]]
+text = "Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "volcano_dealt"
+text = "We have heard whispers of the ritual. The earth trembles less now. Perhaps you are not all surface-dweller fools. We shall remember this."
+effect = [{ delta_counter = { key = "faction_drow-merchant-coven_rep", delta = 5 } }]
+
+[[nodes.choices]]
+text = "I seek to improve our relations further."
+condition = ""
+next = "improve_relations"
+
+[[nodes.choices]]
+text = "Farewell."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "improve_relations"
+text = "Our coven is wary of outsiders. But if you bring gifts or complete tasks for us, our opinion may change."
+
+[[nodes.choices]]
+text = "What tasks?"
+condition = ""
+next = "drow_tasks"
+
+[[nodes.choices]]
+text = "Goodbye."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "drow_tasks"
+text = "Bring us rare items from the depths. The obsidian heart is highly valued. Or, help us with our trade—the surface world fears the dark, but coin speaks to all."
+
+[[nodes.choices]]
+text = "I will help."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "allied_trade"
+text = "As an ally, you may purchase our finest goods. We even have a rope of climbing—useful for the chasm ahead."
+
+[[nodes.choices]]
+text = "Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "abyss_passage"
+text = "The abyss calls to you? Few surface-walkers dare tread the path below. The chasm is treacherous—rifts that demand dexterity or proper equipment."
+
+[[nodes.choices]]
+text = "I have rope."
+condition = "item:rope_of_climbing"
+next = "abyss_roped"
+
+[[nodes.choices]]
+text = "I will attempt to cross."
+condition = ""
+next = "abyss_attempt"
+
+[[nodes.choices]]
+text = "Not yet."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "abyss_roped"
+text = "The rope will aid you. But know this: beyond the rift lies the final confrontation. The Silence waits—an ancient entity that has slumbered for eons. Are you prepared?"
+effect = [{ set_flag = "abyss_ready" }]
+
+[[nodes.choices]]
+text = "I am ready."
+condition = ""
+next = "END"
+
+[[nodes.choices]]
+text = "Tell me more about the Silence."
+condition = ""
+next = "lore_silence"
+
+[[nodes]]
+id = "abyss_attempt"
+text = "Bold. Or foolish. The rifts will test your agility. May your gods favor you."
+
+[[nodes.choices]]
+text = "I understand."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "lore_silence"
+text = "The Silence is an ancient entity that slumbers beneath the world. It wakes slowly, and when it does, all sound fades. Some say it was the drow who first disturbed its sleep, deep in the mines. Others say it was always awake, waiting."
+
+[[nodes.choices]]
+text = "How do I stop it?"
+condition = ""
+next = "stop_silence"
+
+[[nodes.choices]]
+text = "Fascinating. I must go."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "stop_silence"
+text = "That, we do not know. Perhaps the crystal seer near our outpost knows more. Or perhaps you must face it and discover its weakness yourself."
+
+[[nodes.choices]]
+text = "Thank you."
+condition = ""
+next = "END"

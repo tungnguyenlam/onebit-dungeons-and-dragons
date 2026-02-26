@@ -1,9 +1,6 @@
 use crate::app::{App, AppState};
 use crate::data::types::{NpcDef, TriggerDef, TriggerKind};
-use crate::game::{
-    story::journal::Category as JournalCategory,
-    world::region::Region,
-};
+use crate::game::{story::journal::Category as JournalCategory, world::region::Region};
 use crate::renderer::SoundEffect;
 use anyhow::Result;
 impl App {

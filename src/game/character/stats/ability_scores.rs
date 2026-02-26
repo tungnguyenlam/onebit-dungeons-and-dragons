@@ -1,7 +1,5 @@
 use crate::game::character::{
-    conditions::Condition,
-    progression::proficiency_bonus,
-    skills::Skill,
+    conditions::Condition, progression::proficiency_bonus, skills::Skill,
 };
 use crate::game::items::equipment::EquipmentSlot;
 use serde::{Deserialize, Serialize};

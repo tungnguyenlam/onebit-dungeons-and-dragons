@@ -61,6 +61,8 @@ impl App {
                         Tile::Chest => '$',
                         Tile::NpcSpawn => '.',
                         Tile::Trigger => '!',
+                        Tile::Pit => 'O',
+                        Tile::Rift => 'R',
                         Tile::Unknown(_) => '?',
                     };
                     if (x as u32, y as u32) == self.player_pos {

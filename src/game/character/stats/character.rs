@@ -1,14 +1,14 @@
+use super::ability_scores::AbilityScores;
+use super::saving_throws::SavingThrowProficiencies;
 use crate::game::character::{
     conditions::Condition,
     progression::proficiency_bonus,
-    skills::{Skill, SkillSet, Perk},
+    skills::{Perk, Skill, SkillSet},
 };
-use crate::game::items::inventory::Inventory;
 use crate::game::items::equipment::{EquipmentSlot, EquipmentSlots};
+use crate::game::items::inventory::Inventory;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
-use super::ability_scores::AbilityScores;
-use super::saving_throws::SavingThrowProficiencies;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Character {
@@ -68,7 +68,10 @@ impl Character {
     }
 
     pub fn main_class(&self) -> &str {
-        self.classes.first().map(|cl| cl.class_id.as_str()).unwrap_or("none")
+        self.classes
+            .first()
+            .map(|cl| cl.class_id.as_str())
+            .unwrap_or("none")
     }
 
     pub fn update_total_level(&mut self) {

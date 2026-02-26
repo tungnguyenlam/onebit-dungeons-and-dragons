@@ -1,4 +1,3 @@
-use crate::App;
 use super::*;
 use crate::data::types::TriggerKind;
 use crate::data::types::{ItemBonuses, ItemDef, ItemType};
@@ -7,6 +6,7 @@ use crate::game::combat::{roll_attack, roll_attack_with_seed, AttackProfile, Def
 use crate::game::dice::DiceExpr;
 use crate::game::items::equipment::EquipmentSlot;
 use crate::renderer::GameEvent;
+use crate::App;
 use std::sync::{Mutex, MutexGuard, OnceLock};
 fn save_lock() -> MutexGuard<'static, ()> {
     static LOCK: OnceLock<Mutex<()>> = OnceLock::new();

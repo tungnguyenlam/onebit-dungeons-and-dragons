@@ -2,7 +2,12 @@ npc_id = "warden_brom"
 
 [[nodes]]
 id = "root"
-text = "The summit shakes at night. If you can read the rune on the bridge, we may hold this pass."
+text = "The summit shakes at night. The volcano stirs with an ancient anger. If you can read the rune on the bridge, we may hold this pass and uncover the source of the eruptions."
+
+[[nodes.choices]]
+text = "Tell me about the volcano and the runes."
+condition = ""
+next = "lore_volcano"
 
 [[nodes.choices]]
 text = "I will inspect the bridge rune."
@@ -16,8 +21,43 @@ condition = ""
 next = "END"
 
 [[nodes]]
+id = "lore_volcano"
+text = "Emberpeak has been dormant for centuries. The ancient dwarves built runes to contain its power. But the drow have been digging deep into the Ironhold Mines, and I fear they've disturbed something they shouldn't have."
+
+[[nodes.choices]]
+text = "What's the history between dwarves and drow here?"
+condition = ""
+next = "lore_conflict"
+
+[[nodes.choices]]
+text = "I'll inspect the rune."
+condition = ""
+next = "accept"
+effect = [{ set_flag = "accept_emberpeak_rune_task" }]
+
+[[nodes.choices]]
+text = "Farewell."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "lore_conflict"
+text = "The Ironhold Mines were once a prosperous dwarven stronghold. But the drow coveted the rare obsidian and volcanic minerals. A great conflict ensued, and the dwarves were driven out. Now the drow use the mines for their dark rituals, and the volcano begins to wake."
+
+[[nodes.choices]]
+text = "That's tragic. I'll help stop the eruptions."
+condition = ""
+next = "accept"
+effect = [{ set_flag = "accept_emberpeak_rune_task" }]
+
+[[nodes.choices]]
+text = "Farewell."
+condition = ""
+next = "END"
+
+[[nodes]]
 id = "accept"
-text = "Return once you have seen the rune's script."
+text = "Return once you have seen the rune's script. It will guide you to the source of the curse."
 
 [[nodes.choices]]
 text = "Understood."

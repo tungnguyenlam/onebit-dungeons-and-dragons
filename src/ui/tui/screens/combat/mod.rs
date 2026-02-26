@@ -1,8 +1,8 @@
-pub mod core;
 pub mod battlefield;
-pub mod timeline;
-pub mod utils;
+pub mod core;
 #[cfg(test)]
 mod tests;
+pub mod timeline;
+pub mod utils;
 
 pub use core::render;

@@ -34,6 +34,8 @@ pub fn sample_item_defs() -> HashMap<String, ItemDef> {
             }),
             armor: None,
             bonuses: ItemBonuses::default(),
+            is_ingredient: false,
+            crafting_tags: vec![],
         },
     );
     map.insert(
@@ -52,6 +54,8 @@ pub fn sample_item_defs() -> HashMap<String, ItemDef> {
                 stealth_disadvantage: false,
             }),
             bonuses: ItemBonuses::default(),
+            is_ingredient: false,
+            crafting_tags: vec![],
         },
     );
     map.insert(
@@ -73,6 +77,8 @@ pub fn sample_item_defs() -> HashMap<String, ItemDef> {
                 armor_class_bonus: 0,
                 ..ItemBonuses::default()
             },
+            is_ingredient: false,
+            crafting_tags: vec![],
         },
     );
     map.insert(
@@ -87,6 +93,8 @@ pub fn sample_item_defs() -> HashMap<String, ItemDef> {
             weapon: None,
             armor: None,
             bonuses: ItemBonuses::default(),
+            is_ingredient: false,
+            crafting_tags: vec![],
         },
     );
     map

@@ -16,6 +16,8 @@
 ///   `X`  Chest / interactable object
 ///   `@`  NPC spawn point (treated as floor at runtime)
 ///   `!`  Trigger zone (dialog / encounter / lore)
+///   `O`  Pit (requires Dexterity save or item to cross safely)
+///   `R`  Rift (requires Dexterity save or rope to cross safely)
 use std::fmt;
 
 // ---------------------------------------------------------------------------
@@ -35,6 +37,8 @@ pub enum Tile {
     Chest,
     NpcSpawn,
     Trigger,
+    Pit,
+    Rift,
     /// Any character not in the legend — treated as impassable for safety.
     Unknown(char),
 }
@@ -52,6 +56,8 @@ impl Tile {
                 | Tile::Chest
                 | Tile::NpcSpawn
                 | Tile::Trigger
+                | Tile::Pit
+                | Tile::Rift
         )
     }
 
@@ -74,6 +80,8 @@ impl Tile {
             Tile::Chest => 'X',
             Tile::NpcSpawn => '@',
             Tile::Trigger => '!',
+            Tile::Pit => 'O',
+            Tile::Rift => 'R',
             Tile::Unknown(c) => c,
         }
     }
@@ -93,6 +101,8 @@ impl From<char> for Tile {
             'X' => Tile::Chest,
             '@' => Tile::NpcSpawn,
             '!' => Tile::Trigger,
+            'O' => Tile::Pit,
+            'R' => Tile::Rift,
             c => Tile::Unknown(c),
         }
     }

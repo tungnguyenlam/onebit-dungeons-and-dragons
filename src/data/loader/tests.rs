@@ -115,7 +115,7 @@ xp = 25
             assert!(!loaded.rooms.is_empty());
             count += 1;
         }
-        assert!(count >= 3);
+        assert!(count >= 7); // Should include tidewatch-coast now
     }
 
     #[test]

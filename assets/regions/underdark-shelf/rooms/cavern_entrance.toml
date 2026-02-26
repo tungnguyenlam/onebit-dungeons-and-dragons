@@ -1,0 +1,30 @@
+id = "cavern_entrance"
+name = "Cavern Entrance"
+description = "A massive chasm opens before you, filled with softly glowing blue mushrooms. The air is thick with spores."
+grid = """
+################
+#..............#
+#..@.......R...#
+#...........O..#
+#.......!......#
+#..............#
+#..............#
+################
+"""
+
+[[npcs]]
+id = "spore_herder"
+position = [3, 2]
+
+[[triggers]]
+position = [7, 2]
+type = "travel"
+target_id = "fungal_groves"
+once = false
+
+[[triggers]]
+position = [7, 4]
+type = "dialog"
+target_id = "spore_herder"
+once = false
+condition = "flag:ritual_completed"

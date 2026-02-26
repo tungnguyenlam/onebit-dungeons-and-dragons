@@ -1,0 +1,4 @@
+id = "crystal_seer"
+name = "Crystal Seer"
+faction = "crystal-cult"
+dialog_ref = "crystal_seer"

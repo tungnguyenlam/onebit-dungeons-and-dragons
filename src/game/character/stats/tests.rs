@@ -1,10 +1,10 @@
 #[cfg(test)]
 mod tests {
-    use crate::game::character::AbilityScores;
-    use crate::game::character::stats::SavingThrowProficiencies;
-    use crate::game::character::Character;
-    use crate::game::character::skills::Skill;
     use crate::game::character::conditions::Condition;
+    use crate::game::character::skills::Skill;
+    use crate::game::character::stats::SavingThrowProficiencies;
+    use crate::game::character::AbilityScores;
+    use crate::game::character::Character;
     fn test_char() -> Character {
         Character::new(
             "Theron".into(),

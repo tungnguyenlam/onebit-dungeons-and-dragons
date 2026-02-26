@@ -1,0 +1,41 @@
+npc_id = "ritual_altar"
+
+[[nodes]]
+id = "root"
+text = "A massive stone altar dominates the chamber, covered in dwarven runes that glow with a faint red light. The air around it shimmers with heat."
+condition = "flag:obtained_cursed_artifact"
+
+[[nodes.choices]]
+text = "Perform the ritual to contain the artifact's power."
+condition = ""
+next = "perform_ritual"
+
+[[nodes.choices]]
+text = "Destroy the artifact completely."
+condition = ""
+next = "destroy_artifact"
+
+[[nodes.choices]]
+text = "Leave the altar for now."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "perform_ritual"
+text = "You place the cursed artifact on the altar and begin the ancient dwarven ritual. The runes blaze with light as the artifact's power flows into the mountain itself. The volcanic energy is contained, but the artifact remains dangerous."
+effect = [{ set_flag = "performed_ritual" }]
+
+[[nodes.choices]]
+text = "The volcano is safe. (Quest Complete)"
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "destroy_artifact"
+text = "You raise your weapon and strike the artifact. It shatters with a deafening roar, releasing a torrent of flame that fills the chamber. When the fire clears, the artifact is gone - but the volcano rumbles ominously."
+effect = [{ set_flag = "destroyed_artifact" }]
+
+[[nodes.choices]]
+text = "The artifact is destroyed. (Quest Complete)"
+condition = ""
+next = "END"

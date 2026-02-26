@@ -1,0 +1,7 @@
+id = "rope_of_climbing"
+name = "Rope of Climbing"
+type = "misc"
+weight = 5.0
+value_gp = 100
+description = "A enchanted rope that can extend to great lengths. Essential for crossing dangerous rifts and chasms."
+tags = ["utility", "climbing"]

@@ -1,12 +1,12 @@
 #[cfg(test)]
 mod tests {
+    use super::super::io::*;
     use super::super::types::*;
     use super::super::validate::*;
-    use super::super::io::*;
-    use crate::game::character::Character;
-    use crate::game::story::{WorldState, Journal};
     use crate::app::AppState;
     use crate::game::character::AbilityScores;
+    use crate::game::character::Character;
+    use crate::game::story::{Journal, WorldState};
     use std::time::{SystemTime, UNIX_EPOCH};
 
     fn ts() -> u128 {
@@ -50,7 +50,10 @@ mod tests {
         assert_eq!(loaded.turn, 42);
         assert_eq!(loaded.player.name, "Tester");
         assert_eq!(loaded.player_pos, (3, 4));
-        assert_eq!(loaded.format_version, crate::game::save::SAVE_FORMAT_VERSION);
+        assert_eq!(
+            loaded.format_version,
+            crate::game::save::SAVE_FORMAT_VERSION
+        );
         let _ = std::fs::remove_file(path);
     }
 
@@ -67,7 +70,10 @@ mod tests {
         if loaded.format_version == 0 {
             loaded.format_version = crate::game::save::SAVE_FORMAT_VERSION;
         }
-        assert_eq!(loaded.format_version, crate::game::save::SAVE_FORMAT_VERSION);
+        assert_eq!(
+            loaded.format_version,
+            crate::game::save::SAVE_FORMAT_VERSION
+        );
         assert_eq!(loaded.turn, 42);
     }
 

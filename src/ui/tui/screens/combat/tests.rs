@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::utils::*;
+    use super::*;
 
     #[test]
     fn summary_prefers_high_signal_events() {

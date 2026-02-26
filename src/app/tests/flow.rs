@@ -1,6 +1,6 @@
-use crate::App;
-use crate::app::AppState;
+use super::utils::*;
 use super::*;
+use crate::app::AppState;
 use crate::data::types::TriggerKind;
 use crate::data::types::{ItemBonuses, ItemDef, ItemType};
 use crate::game::character::conditions::Condition;
@@ -8,8 +8,8 @@ use crate::game::combat::{roll_attack, roll_attack_with_seed, AttackProfile, Def
 use crate::game::dice::DiceExpr;
 use crate::game::items::equipment::EquipmentSlot;
 use crate::renderer::GameEvent;
+use crate::App;
 use std::sync::{Mutex, MutexGuard, OnceLock};
-use super::utils::*;
 #[test]
 fn tick_transitions_to_world_map_on_player_victory() {
     let mut app = App::new();
@@ -76,7 +76,10 @@ fn casting_cure_wounds_spends_slot_and_heals() {
 #[test]
 fn leveling_up_from_xp_updates_hp_and_level() {
     let mut app = App::new();
-    app.player.classes = vec![crate::data::types::ClassLevel { class_id: "fighter".into(), level: 1 }];
+    app.player.classes = vec![crate::data::types::ClassLevel {
+        class_id: "fighter".into(),
+        level: 1,
+    }];
     app.player.update_total_level();
     app.player.xp = 0;
     let hp_before = app.player.max_hp;

@@ -1,0 +1,27 @@
+id = "tidewatch-smugglers"
+name = "Smuggler's Ledger"
+type = "side"
+
+[[stages]]
+id = "start"
+label = "Speak with Merchant Lyr at the docks"
+condition = ""
+journal_entry = "I arrived at Tidewatch Coast and noticed Merchant Lyr, a suspicious-looking individual at the docks. He seems to be involved in something secretive."
+on_enter = []
+next = [{ condition = "flag:speak_to_lyr", stage = "investigate" }]
+
+[[stages]]
+id = "investigate"
+label = "Find the smuggler's cave entrance"
+condition = "flag:speak_to_lyr"
+journal_entry = "Merchant Lyr told me about a hidden sea cave used by smugglers to store contraband. The entrance is located at the eastern end of the docks, but it's locked. I need to find a way to open it."
+on_enter = [{ set_flag = "cave_accessible" }]
+next = [{ condition = "flag:entered_cave", stage = "confront" }]
+
+[[stages]]
+id = "confront"
+label = "Confront the smugglers in the cave"
+condition = "flag:entered_cave"
+journal_entry = "I found the hidden entrance to the sea cave. Inside, I encountered several smugglers and their aquatic allies. I need to defeat them and retrieve the contraband."
+on_enter = []
+next = [{ condition = "flag:defeated_smugglers", stage = "DONE" }]

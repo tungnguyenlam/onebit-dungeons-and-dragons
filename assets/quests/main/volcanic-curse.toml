@@ -4,14 +4,38 @@ type = "main"
 
 [[stages]]
 id = "start"
-label = "Secure Emberpeak routes"
-condition = ""
-journal_entry = "Warden Brom asked you to inspect summit runes and stabilize mountain routes."
-next = [{ condition = "flag:read_ember_rune", stage = "into_mines" }]
+label = "Investigate the volcanic eruptions"
+condition = "quest_valley_contract_completed"
+journal_entry = "Warden Brom believes the recent volcanic eruptions at Emberpeak Summit are caused by a curse. He asks you to investigate the ancient runes."
+next = [{ condition = "flag:read_ember_rune", stage = "retrieve_artifact" }]
 
 [[stages]]
-id = "into_mines"
-label = "Follow the route into Ironhold"
+id = "retrieve_artifact"
+label = "Retrieve the cursed artifact"
 condition = "flag:read_ember_rune"
-journal_entry = "The rune markings point toward the Ironhold tunnels."
-next = [{ condition = "flag:learned_ironhold_route", stage = "DONE" }]
+journal_entry = "The runes point to a cursed artifact hidden deep within the Ironhold Mines. You must find and retrieve it before the volcano erupts."
+next = [{ condition = "flag:obtained_cursed_artifact", stage = "ritual_choice" }]
+
+[[stages]]
+id = "ritual_choice"
+label = "Choose the artifact's fate"
+condition = "flag:obtained_cursed_artifact"
+journal_entry = "You have found the cursed artifact. Now you must decide whether to perform the ritual to contain it or destroy it outright."
+next = [
+    { condition = "flag:performed_ritual", stage = "ritual_success" },
+    { condition = "flag:destroyed_artifact", stage = "artifact_destroyed" }
+]
+
+[[stages]]
+id = "ritual_success"
+label = "Ritual performed successfully"
+condition = "flag:performed_ritual"
+journal_entry = "You performed the ancient ritual to contain the cursed artifact. The volcanic eruptions have stopped, but the artifact remains a powerful and dangerous object."
+next = [{ condition = "flag:ritual_completed", stage = "DONE" }]
+
+[[stages]]
+id = "artifact_destroyed"
+label = "Artifact destroyed"
+condition = "flag:destroyed_artifact"
+journal_entry = "You destroyed the cursed artifact. The volcanic eruptions have stopped, but you sense that this may have unforeseen consequences for the region."
+next = [{ condition = "flag:artifact_destroyed", stage = "DONE" }]

@@ -26,17 +26,23 @@
 
 ---
 
-### Act 2 — The Volcanic Curse *(planned)*
+### Act 2 — The Volcanic Curse *(completed)*
 
 **Start region:** Emberpeak Summit  
 **Quest file:** `assets/quests/main/volcanic-curse.toml`
 
-| Stage | Summary |
-|---|---|
-| `start` | Discover source of the eruptions |
-| `mines` | Find the cursed artefact in Ironhold |
-| `ritual` | Perform or destroy the ritual |
-| `done` | Curse lifted or harnessed |
+| Stage | Trigger condition | Summary |
+|---|---|---|
+| `start` | `quest_valley_contract_completed` | Investigate the volcanic eruptions |
+| `retrieve_artifact` | `flag:read_ember_rune` | Retrieve the cursed artifact from Ironhold Mines |
+| `ritual_choice` | `flag:obtained_cursed_artifact` | Choose to perform or destroy the ritual |
+| `ritual_success` | `flag:performed_ritual` | Ritual performed successfully - volcano stabilized |
+| `artifact_destroyed` | `flag:destroyed_artifact` | Artifact destroyed - volcano stabilized but with consequences |
+
+**Key WorldState flags set by this quest:**
+- `flag:volcanic_curse_active` (when artifact is equipped)
+- `flag:obtained_cursed_artifact` (when artifact is found)
+- `flag:performed_ritual` or `flag:destroyed_artifact` (based on player choice)
 
 ---
 

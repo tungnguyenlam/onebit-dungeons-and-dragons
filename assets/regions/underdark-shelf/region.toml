@@ -1,0 +1,34 @@
+slug = "underdark-shelf"
+name = "The Underdark Shelf"
+description = "Bioluminescent caverns where alien fungi glow in eternal darkness."
+entry_room = "cavern_entrance"
+ambient = "underdark_drift"
+region_type = "underground"
+weather = "none"
+
+[[rooms]]
+id = "cavern_entrance"
+file = "rooms/cavern_entrance.toml"
+
+[[rooms]]
+id = "fungal_groves"
+file = "rooms/fungal_groves.toml"
+
+[[rooms]]
+id = "crystal_lake"
+file = "rooms/crystal_lake.toml"
+
+[[rooms]]
+id = "drow_outpost"
+file = "rooms/drow_outpost.toml"
+
+[[rooms]]
+id = "abyss_entry"
+file = "rooms/abyss_entry.toml"
+
+[[connections]]
+from_room = "cavern_entrance"
+to_region = "ironhold-mines"
+to_room = "deep_shaft"
+label = "Return to the Ironhold Mines"
+condition = "flag:ritual_completed"

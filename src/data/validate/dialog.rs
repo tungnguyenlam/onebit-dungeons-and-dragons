@@ -1,10 +1,10 @@
+use super::report::*;
 use crate::data::loader::{load_quests, load_region};
 use crate::data::types::{DialogTree, QuestDef, TriggerKind};
 use anyhow::Result;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::fs;
 use std::path::Path;
-use super::report::*;
 pub fn validate_dialog(slug: &str, npc_id: &str, tree: &DialogTree, report: &mut ValidationReport) {
     let mut ids = HashSet::new();
     for node in &tree.nodes {

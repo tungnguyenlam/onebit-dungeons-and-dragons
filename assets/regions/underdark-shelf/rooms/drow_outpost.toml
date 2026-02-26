@@ -1,0 +1,29 @@
+id = "drow_outpost"
+name = "Drow Outpost"
+description = "A fortified settlement built into the cavern wall. Drow merchants barter in the shadows, their eyes reflecting your torchlight."
+grid = """
+################
+#..............#
+#.####.#######.#
+#.#..#.#.....#.#
+#.#..#.#..@..#.#
+#.#..#.#.....#.#
+#.#..#.#.....#.#
+#...........!..#
+################
+"""
+
+[[npcs]]
+id = "merchant_zae"
+position = [7, 4]
+
+[[triggers]]
+position = [12, 7]
+type = "travel"
+target_id = "abyss_entry"
+once = false
+
+[[items]]
+id = "rope_of_climbing"
+position = [9, 4]
+condition = "flag:drow_allied"

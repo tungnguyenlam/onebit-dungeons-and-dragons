@@ -1,0 +1,94 @@
+npc_id = "spore_herder"
+
+[[nodes]]
+id = "root"
+text = "The figure shifts through the spores, tendrils of bioluminescent fungi wrapping around its form. It speaks in a language of clicks and pulses."
+
+[[nodes.choices]]
+text = "What are you?"
+condition = ""
+next = "identity"
+
+[[nodes.choices]]
+text = "I seek the path to the abyss."
+condition = ""
+next = "abyss_path"
+
+[[nodes.choices]]
+text = "Leave."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "identity"
+text = "We are the Spore Herders, tenders of the eternal garden. We tend the fungi that give this place light. Long have we watched the surface-world creatures stumble in darkness."
+
+[[nodes.choices]]
+text = "How long have you been here?"
+condition = ""
+next = "history"
+
+[[nodes.choices]]
+text = "I must continue my journey."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "history"
+text = "Since before your kind carved mines into the world. The drow came later, seeking minerals. We watch. We wait. The abyss stirs, and we feel it."
+
+[[nodes.choices]]
+text = "The abyss? What is it?"
+condition = ""
+next = "abyss_explain"
+
+[[nodes.choices]]
+text = "I must go."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "abyss_explain"
+text = "A great silence grows beneath. It consumes sound, consumes light, consumes thought. The crystal seers warn of its waking. If it wakes fully, all the world will fall into eternal quiet."
+
+[[nodes.choices]]
+text = "How can I stop it?"
+condition = ""
+next = "stop_abyss"
+
+[[nodes.choices]]
+text = "Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "stop_abyss"
+text = "We do not know. Perhaps the seers have visions. Perhaps the drow know secrets. Perhaps you must find the source and end it yourself."
+
+[[nodes.choices]]
+text = "I will seek the seers."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "abyss_path"
+text = "The path leads through the fungal grovest, past the crystal lake, to the drow outpost. Beyond that lies the rift—dangerous without proper equipment."
+
+[[nodes.choices]]
+text = "What kind of equipment?"
+condition = ""
+next = "equipment_info"
+
+[[nodes.choices]]
+text = "Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "equipment_info"
+text = "A rope to span the rifts, or sure feet and quick hands. The drow may have rope for trade, if you have earned their favor."
+
+[[nodes.choices]]
+text = "I understand."
+condition = ""
+next = "END"

@@ -1,0 +1,55 @@
+id = "silence_below"
+name = "Silence Below"
+type = "main"
+
+[[stages]]
+id = "start"
+label = "Descend into the Underdark"
+condition = "quest:volcanic_curse_completed"
+journal_entry = "The volcanic curse has been contained. But a deeper threat awaits—a presence known as the Silence stirs beneath the world. You must descend into the Underdark Shelf to investigate."
+next = [{ condition = "region:underdark-shelf", stage = "explore_underdark" }]
+
+[[stages]]
+id = "explore_underdark"
+label = "Explore the Underdark"
+condition = "region:underdark-shelf"
+journal_entry = "You have entered the Underdark Shelf. Strange bioluminescent fungi light your way. You must find the path to the abyss and confront the source of the Silence."
+next = [{ condition = "flag:drow_allied", stage = "allied_approach" }, { condition = "flag:ritual_completed", stage = "direct_approach" }]
+
+[[stages]]
+id = "allied_approach"
+label = "Approach with drow allies"
+condition = "flag:drow_allied"
+journal_entry = "The drow merchant coven has allied with you. They have provided a rope of climbing to help cross the dangerous rifts ahead."
+next = [{ condition = "flag:abyss_ready", stage = "face_silence" }]
+
+[[stages]]
+id = "direct_approach"
+label = "Face the abyss directly"
+condition = "flag:ritual_completed"
+journal_entry = "Without drow allies, you must face the rifts alone. Your skills and courage are your only guides."
+next = [{ condition = "flag:crossed_rift", stage = "face_silence" }]
+
+[[stages]]
+id = "face_silence"
+label = "Confront the Silence"
+condition = "flag:abyss_ready"
+journal_entry = "You stand at the threshold of the abyss. The Silence awaits within. This is the final confrontation—your choice will determine the fate of the world."
+next = [
+    { condition = "flag:silence_silenced", stage = "silence_ending" },
+    { condition = "flag:silence_heard", stage = "speak_ending" }
+]
+
+[[stages]]
+id = "silence_ending"
+label = "Silence Forever"
+condition = "flag:silence_silenced"
+journal_entry = "You have silenced the ancient entity. The world is saved, but at what cost? The absence you created may be felt for generations. The volcano remains dormant, the rifts slowly heal. You are a hero, but a haunted one."
+next = [{ condition = "flag:silence_silenced", stage = "DONE" }]
+
+[[stages]]
+id = "speak_ending"
+label = "Hear the Silence"
+condition = "flag:silence_heard"
+journal_entry = "You chose to listen to the Silence. It spoke of truths older than the gods, of a world that could be. You return to the surface changed, carrying forbidden knowledge that will shape the future of the realm."
+next = [{ condition = "flag:silence_heard", stage = "DONE" }]

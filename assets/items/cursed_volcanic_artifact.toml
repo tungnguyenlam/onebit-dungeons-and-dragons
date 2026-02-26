@@ -1,0 +1,19 @@
+id = "cursed_volcanic_artifact"
+name = "Cursed Volcanic Artifact"
+description = "A glowing red crystal pulsing with volcanic energy. It emits waves of heat and seems to whisper dark promises."
+type = "quest"
+rarity = "legendary"
+weight = 2.0
+value_gp = 0
+
+# Volcanic Curse effect
+on_equip = [
+    { set_flag = "volcanic_curse_active" }
+]
+
+on_unequip = [
+    { clear_flag = "volcanic_curse_active" }
+]
+
+# The artifact cannot be removed once equipped until the quest is completed
+can_remove = false

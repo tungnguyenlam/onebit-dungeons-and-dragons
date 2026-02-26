@@ -52,7 +52,8 @@ impl ProgressBar {
             } else {
                 self.empty_style
             };
-            buf.cell_mut((area.x + x, area.y)).unwrap()
+            buf.cell_mut((area.x + x, area.y))
+                .unwrap()
                 .set_char(char)
                 .set_style(style);
         }
@@ -80,7 +81,8 @@ pub fn render_health_bar(buf: &mut Buffer, area: Rect, current: i32, maximum: i3
     for (i, c) in bar.chars().enumerate() {
         let x = area.x + label_text.len() as u16 + i as u16;
         if x < area.x + area.width {
-            buf.cell_mut((x, area.y)).unwrap()
+            buf.cell_mut((x, area.y))
+                .unwrap()
                 .set_char(c)
                 .set_style(Style::default().fg(color));
         }
@@ -108,7 +110,8 @@ pub fn render_mana_bar(buf: &mut Buffer, area: Rect, current: i32, maximum: i32,
     for (i, c) in bar.chars().enumerate() {
         let x = area.x + label_text.len() as u16 + i as u16;
         if x < area.x + area.width {
-            buf.cell_mut((x, area.y)).unwrap()
+            buf.cell_mut((x, area.y))
+                .unwrap()
                 .set_char(c)
                 .set_style(Style::default().fg(color));
         }
@@ -136,7 +139,8 @@ pub fn render_xp_bar(buf: &mut Buffer, area: Rect, current: u32, maximum: u32, l
     for (i, c) in bar.chars().enumerate() {
         let x = area.x + label_text.len() as u16 + i as u16;
         if x < area.x + area.width {
-            buf.cell_mut((x, area.y)).unwrap()
+            buf.cell_mut((x, area.y))
+                .unwrap()
                 .set_char(c)
                 .set_style(Style::default().fg(color));
         }

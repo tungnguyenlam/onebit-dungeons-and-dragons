@@ -6,13 +6,13 @@ player_pos = [
     3,
     2,
 ]
-state = "MainMenu"
+state = "WorldMap"
 
 [player]
 name = "Theron"
-class_id = "fighter"
+feats = []
 race_id = "human"
-level = 1
+total_level = 1
 xp = 0
 gold = 10
 skill_points = 0
@@ -44,6 +44,10 @@ spell_slots_max = [
     0,
     0,
 ]
+
+[[player.classes]]
+class_id = "fighter"
+level = 1
 
 [player.scores]
 strength = 16
@@ -87,6 +91,10 @@ equipped = false
 
 [player.equipment]
 
+[world_state]
+discovered_monsters = []
+discovered_lore = []
+
 [world_state.flags]
 
 [world_state.counters]
@@ -99,7 +107,7 @@ has_unread = false
 selected = 0
 
 [char_creation_ui]
-selected = 0
+selected = 3
 name = "Theron"
 class_options = [
     "fighter",

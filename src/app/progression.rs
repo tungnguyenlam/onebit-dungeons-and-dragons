@@ -1,5 +1,6 @@
 use crate::app::App;
-use crate::game::character::progression::level_for_xp;
+use crate::game::character::feats::apply_feat_effect;
+use crate::game::character::progression::{is_asi_level, level_for_xp};
 
 impl App {
     pub fn apply_character_creation(&mut self) {
@@ -24,10 +25,18 @@ impl App {
                 cl.level += levels_gained;
             }
             self.player.update_total_level();
-            
+
             self.player.max_hp += 8 * levels_gained as i32;
             self.player.current_hp = self.player.max_hp;
             self.player.skill_points += (levels_gained * 2) as u32;
+
+            // Apply any level-based feat effects (e.g., Tough feat)
+            let feats_to_apply: Vec<String> = self.player.feats.clone();
+            for feat_id in feats_to_apply {
+                if let Some(feat_def) = self.feat_defs.get(&feat_id) {
+                    apply_feat_effect(&mut self.player, feat_def);
+                }
+            }
 
             self.set_feedback(&format!(
                 "Leveled up to {}! +{} HP, +{} skill points",
@@ -40,6 +49,16 @@ impl App {
         let gold_found = gained_xp / 10;
         if gold_found > 0 {
             self.player.gold += gold_found;
+        }
+    }
+
+    pub fn grant_feat(&mut self, feat_id: &str) {
+        if !self.player.feats.contains(&feat_id.to_string()) {
+            self.player.feats.push(feat_id.to_string());
+            if let Some(feat_def) = self.feat_defs.get(feat_id) {
+                apply_feat_effect(&mut self.player, feat_def);
+                self.set_feedback(&format!("Learned feat: {}", feat_def.name));
+            }
         }
     }
 }

@@ -1,9 +1,9 @@
+use super::core::*;
+use super::helpers::*;
+use super::icons::*;
+use super::types::*;
 use ratatui::style::{Color, Modifier, Style};
 use std::sync::OnceLock;
-use super::types::*;
-use super::core::*;
-use super::icons::*;
-use super::helpers::*;
 static TIER: OnceLock<TerminalTier> = OnceLock::new();
 
 pub fn init_terminal_tier() -> TerminalTier {

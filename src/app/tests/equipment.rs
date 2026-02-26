@@ -1,15 +1,16 @@
-use crate::App;
-use crate::app::AppState;
+use super::utils::*;
 use super::*;
+use crate::app::AppState;
 use crate::data::types::TriggerKind;
 use crate::data::types::{ItemBonuses, ItemDef, ItemType};
 use crate::game::character::conditions::Condition;
 use crate::game::combat::{roll_attack, roll_attack_with_seed, AttackProfile, DefenseProfile};
 use crate::game::dice::DiceExpr;
 use crate::game::items::equipment::EquipmentSlot;
+use crate::game::story::world_state::WorldState;
 use crate::renderer::GameEvent;
+use crate::App;
 use std::sync::{Mutex, MutexGuard, OnceLock};
-use super::utils::*;
 #[test]
 fn inventory_toggle_equips_weapon_for_combat() {
     let mut app = App::new();
@@ -67,6 +68,8 @@ fn equipment_resistance_halves_elemental_damage() {
                 resistances: vec!["fire".into()],
                 ..ItemBonuses::default()
             },
+            is_ingredient: false,
+            crafting_tags: vec![],
         },
     );
     app.player.inventory.add("fire_ring", 1);
@@ -87,6 +90,7 @@ fn equipment_resistance_halves_elemental_damage() {
         let atk_profile = AttackProfile {
             id: "dragon",
             attack_bonus: 100,                      // always hit
+            is_ranged: false,
             damage_dice: &DiceExpr::new(1, 10, 10), // 11-20
             damage_type: "fire",
             conditions: &std::collections::HashSet::new(),
@@ -102,7 +106,8 @@ fn equipment_resistance_halves_elemental_damage() {
             immunities: &p.immunities,
         };
 
-        let out = roll_attack_with_seed(&atk_profile, &def_profile, 42);
+        let ws = WorldState::new();
+        let out = roll_attack_with_seed(&atk_profile, &def_profile, &ws, 42);
         assert!(
             out.damage >= 5 && out.damage <= 10,
             "Damage {} should be halved (orig 11-20)",

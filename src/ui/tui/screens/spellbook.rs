@@ -2,6 +2,7 @@ use crate::app::App;
 use crate::ui::tui::theme;
 use ratatui::{
     layout::{Constraint, Layout},
+    style::Style,
     text::Line,
     widgets::{Block, Borders, Paragraph, Wrap},
     Frame,
@@ -9,7 +10,12 @@ use ratatui::{
 
 pub fn render(frame: &mut Frame<'_>, app: &App) {
     let area = frame.area();
-    let chunks = Layout::vertical([Constraint::Length(5), Constraint::Min(8)]).split(area);
+    let chunks = Layout::vertical([
+        Constraint::Length(5),
+        Constraint::Min(8),
+        Constraint::Length(3),
+    ])
+    .split(area);
 
     let slots_line = format!(
         "{} Slots L1: {}/{}",
@@ -54,4 +60,11 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             .style(theme::panel_style()),
     );
     frame.render_widget(body, chunks[1]);
+
+    // Feedback footer
+    if let Some(feedback) = app.get_feedback() {
+        let feedback_block = Paragraph::new(Line::from(feedback))
+            .style(Style::default().fg(ratatui::style::Color::Yellow));
+        frame.render_widget(feedback_block, chunks[2]);
+    }
 }

@@ -1,3 +1,4 @@
+use super::combatant::*;
 use crate::game::{
     character::conditions::Condition,
     combat::{
@@ -8,7 +9,6 @@ use crate::game::{
 };
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
-use super::combatant::*;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CombatState {
     pub combatants: HashMap<String, CombatantState>,

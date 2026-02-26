@@ -1,3 +1,5 @@
+use super::timeline::*;
+use super::utils::*;
 use crate::app::{App, AppState};
 use crate::game::combat::EnemyAiRole;
 use crate::ui::tui::theme::{self, progress_bar, theme};
@@ -8,8 +10,6 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph, Wrap},
     Frame,
 };
-use super::timeline::*;
-use super::utils::*;
 pub fn render_battlefield(ctx: &crate::app::state::CombatContext) -> Paragraph<'static> {
     let t = theme();
 

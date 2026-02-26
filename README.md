@@ -262,35 +262,10 @@ For the detailed design see [docs/architecture/overview.md](docs/architecture/ov
 
 ## Development Status
 
-| Milestone | Status |
-|---|---|
-| M0 — Crate bootstrap & renderer abstraction | ✅ Done |
-| M1 — Core systems (dice, character, data layer) | ✅ Done |
-| M2 — Combat | ✅ Done |
-| M3 — Story & Dialog | ✅ Done |
-| M4 — Items & Spells | ✅ Done |
-| M5 — NPC & Factions | ✅ Done |
-| M6 — First Region (Valley of Ash) | ✅ Done |
-| M7 — Polish & Save/Load | ✅ Done |
-| M8 — Stability & Engineering Debt | ✅ Done |
-| M9 — Core RPG Depth | ✅ Done |
-| M10 — Content Production Pipeline | ✅ Done |
-| M11 — NPC/Faction Simulation 2.0 | ✅ Done |
-| M12 — UX & Presentation Polish 2.0 | ✅ Done |
-| M13 — Release Readiness | ✅ Done |
-| M14 — Playtest UX & Ash Gate Flow | ✅ Done |
-| M15 — Interactive Playtest Harness | ✅ Done |
-| M16 — Room/Traversal Reliability Sweep | ✅ Done |
-| M17 — Combat UX Readability | ✅ Done |
-| M18 — Quest/Dialog Consistency | ✅ Done |
-| M19 — Long-Session Automation & CI Soak | ✅ Done |
-| M20 — Save/State Drift Hardening | ✅ Done |
-| M21 — Region Navigation Depth | ✅ Done |
-| M22 — Quest Runtime Robustness | ✅ Done |
-| M23 — Combat Depth Pass | ✅ Done |
-| M24 — Release Candidate Pipeline | ✅ Done |
-| M25 — Faction Simulation Expansion | ✅ Done |
-| M26 — Second Region Content Pass | ✅ Done |
+Milestone tracking is maintained in:
+- [docs/tasks/current-sprint.md](docs/tasks/current-sprint.md) for active/in-progress work
+- [docs/tasks/backlog.md](docs/tasks/backlog.md) for the milestone index and upcoming work
+- [docs/tasks/done.md](docs/tasks/done.md) for completion records
 
 ---
 

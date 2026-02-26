@@ -34,6 +34,21 @@
       "keys": "af",
       "reset": false,
       "description": "Flee combat"
+    },
+    "tidewatch_start": {
+      "keys": "\r",
+      "reset": true,
+      "description": "Start game and enter Tidewatch Coast region"
+    },
+    "volcanic_curse_quest": {
+      "keys": "\rjjj\r",
+      "reset": true,
+      "description": "Start game, complete Valley Contract, and start Volcanic Curse quest"
+    },
+    "underdark_shelf": {
+      "keys": "\rjjj\r",
+      "reset": true,
+      "description": "Start game and explore Underdark Shelf region (requires completing Volcanic Curse first)"
     }
   }
 }

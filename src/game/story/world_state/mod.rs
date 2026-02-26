@@ -1,9 +1,9 @@
-pub mod types;
-pub mod flags;
 pub mod counters;
-pub mod factions;
 pub mod evaluator;
+pub mod factions;
+pub mod flags;
 #[cfg(test)]
 mod tests;
+pub mod types;
 
 pub use types::*;

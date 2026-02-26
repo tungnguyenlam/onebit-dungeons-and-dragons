@@ -1,0 +1,4 @@
+id = "merchant_zae"
+name = "Merchant Zae"
+faction = "drow-merchant-coven"
+dialog_ref = "merchant_zae"

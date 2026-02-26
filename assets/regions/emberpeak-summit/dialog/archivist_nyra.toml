@@ -2,7 +2,12 @@ npc_id = "archivist_nyra"
 
 [[nodes]]
 id = "root"
-text = "These glyphs map old mine routes. We can reopen Ironhold if the path is stable."
+text = "These glyphs map old mine routes. We can reopen Ironhold if the path is stable. But there's something else in these markings - references to a 'volcanic curse' that plagued the dwarves centuries ago."
+
+[[nodes.choices]]
+text = "Tell me about the volcanic curse."
+condition = ""
+next = "lore_curse"
 
 [[nodes.choices]]
 text = "Show me the route markings."
@@ -15,8 +20,41 @@ condition = ""
 next = "END"
 
 [[nodes]]
+id = "lore_curse"
+text = "The ancient texts speak of a powerful artifact that could control the volcano. The dwarves sealed it away to prevent catastrophe. But if the drow have found it..."
+
+[[nodes.choices]]
+text = "That sounds dangerous. I must find this artifact."
+condition = "flag:read_ember_rune"
+next = "artifact_hint"
+
+[[nodes.choices]]
+text = "Show me the route markings."
+condition = ""
+next = "route"
+
+[[nodes.choices]]
+text = "Farewell."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "artifact_hint"
+text = "The artifact is likely hidden in the deepest chamber of the Ironhold Mines. Look for a door with glowing red runes - that's where the seal is. But be warned, the drow will guard it fiercely."
+
+[[nodes.choices]]
+text = "I'll find it."
+condition = ""
+next = "END"
+
+[[nodes.choices]]
+text = "Show me the route markings."
+condition = ""
+next = "route"
+
+[[nodes]]
 id = "route"
-text = "Follow the lower tunnel and avoid the collapsed shafts."
+text = "Follow the lower tunnel and avoid the collapsed shafts. The deepest chamber is marked by the red runes."
 
 [[nodes.choices]]
 text = "Thanks."

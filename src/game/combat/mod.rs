@@ -3,7 +3,6 @@ pub mod action;
 pub mod ai;
 pub mod attack;
 #[allow(clippy::module_inception)]
-
 pub mod initiative;
 pub mod spells;
 

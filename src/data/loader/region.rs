@@ -1,12 +1,13 @@
+use super::core::*;
+use super::dir::*;
 use crate::data::types::{
-    ClassDef, DialogTree, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, RaceDef, SpellDef, RegionManifest, RoomDef
+    ClassDef, DialogTree, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, RaceDef,
+    RegionManifest, RoomDef, SpellDef,
 };
 use anyhow::{Context, Result};
 use serde::de::DeserializeOwned;
-use std::path::{Path, PathBuf};
 use std::collections::HashMap;
-use super::dir::*;
-use super::core::*;
+use std::path::{Path, PathBuf};
 pub struct LoadedRegion {
     pub manifest: RegionManifest,
     /// Rooms keyed by room id.

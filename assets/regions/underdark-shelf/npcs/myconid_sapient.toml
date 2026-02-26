@@ -1,0 +1,4 @@
+id = "myconid_sapient"
+name = "Myconid Elder"
+faction = "myconid-colony"
+dialog_ref = "myconid_sapient"

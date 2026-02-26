@@ -27,3 +27,10 @@ from_room = "mine_entrance"
 to_region = "emberpeak-summit"
 to_room = "obsidian_bridge"
 label = "Climb back toward Emberpeak"
+
+[[connections]]
+from_room = "deep_shaft"
+to_region = "underdark-shelf"
+to_room = "cavern_entrance"
+label = "Descend into the Underdark"
+condition = "flag:ritual_completed"

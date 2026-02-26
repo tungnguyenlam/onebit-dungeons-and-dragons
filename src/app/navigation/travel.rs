@@ -1,9 +1,6 @@
 use crate::app::{App, AppState};
 use crate::data::types::{NpcDef, TriggerDef, TriggerKind};
-use crate::game::{
-    story::journal::Category as JournalCategory,
-    world::region::Region,
-};
+use crate::game::{story::journal::Category as JournalCategory, world::region::Region};
 use crate::renderer::SoundEffect;
 use anyhow::Result;
 impl App {
@@ -109,9 +106,11 @@ impl App {
         from_room_id: &str,
     ) -> (u32, u32) {
         // Try to find a travel trigger in the new room that leads back to the old room
-        if let Some(back_trigger) = room.triggers.iter().find(|t| {
-            matches!(t.kind, TriggerKind::Travel) && t.target_id == from_room_id
-        }) {
+        if let Some(back_trigger) = room
+            .triggers
+            .iter()
+            .find(|t| matches!(t.kind, TriggerKind::Travel) && t.target_id == from_room_id)
+        {
             // Spawn next to the back trigger instead of on top of it, if possible
             let tx = back_trigger.position[0];
             let ty = back_trigger.position[1];

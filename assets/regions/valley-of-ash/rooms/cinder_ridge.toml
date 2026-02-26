@@ -37,4 +37,5 @@ once = false
 position = [12, 1]
 type = "travel"
 target_id = "emberpeak-summit"
+condition = "quest_valley_contract_completed"
 once = false

@@ -1,10 +1,10 @@
-pub mod report;
-pub mod utils;
+pub mod core;
 pub mod dialog;
 pub mod quests;
-pub mod core;
+pub mod report;
 #[cfg(test)]
 mod tests;
+pub mod utils;
 
-pub use report::*;
 pub use core::*;
+pub use report::*;

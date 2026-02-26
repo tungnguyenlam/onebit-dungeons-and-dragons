@@ -1,16 +1,16 @@
+use super::utils::*;
 use super::*;
+use crate::app::AppState;
 use crate::data::types::TriggerKind;
 use crate::data::types::{ItemBonuses, ItemDef, ItemType};
 use crate::game::character::conditions::Condition;
+use crate::game::combat::CombatantState;
 use crate::game::combat::{roll_attack, roll_attack_with_seed, AttackProfile, DefenseProfile};
 use crate::game::dice::DiceExpr;
 use crate::game::items::equipment::EquipmentSlot;
 use crate::renderer::GameEvent;
-use std::sync::{Mutex, MutexGuard, OnceLock};
 use crate::App;
-use crate::game::combat::CombatantState;
-use crate::app::AppState;
-use super::utils::*;
+use std::sync::{Mutex, MutexGuard, OnceLock};
 #[test]
 fn combat_attack_consumes_action() {
     let mut app = App::new();
@@ -33,7 +33,9 @@ fn combat_attack_consumes_action() {
 
     match &app.state {
         AppState::Combat(ctx) => {
-            assert!(ctx.log.iter().any(|line| line.contains("hits") || line.contains("misses") || line.contains("Critical")));
+            assert!(ctx.log.iter().any(|line| line.contains("hits")
+                || line.contains("misses")
+                || line.contains("Critical")));
         }
         _ => panic!("expected combat state"),
     }
@@ -63,9 +65,12 @@ fn incapacitated_combatant_cannot_attack() {
 
     app.handle_event(GameEvent::Attack).unwrap();
 
-        match &app.state {
+    match &app.state {
         AppState::Combat(ctx) => {
-            assert!(ctx.log.iter().any(|line: &String| line.contains("cannot act")));
+            assert!(ctx
+                .log
+                .iter()
+                .any(|line: &String| line.contains("cannot act")));
             assert!(ctx.log.iter().any(|line: &String| line.contains("Stunned")));
         }
         _ => panic!("expected combat state"),
@@ -120,7 +125,10 @@ fn timed_condition_expires_when_turn_ends() {
             .unwrap()
             .conditions
             .contains(&Condition::Poisoned));
-        assert!(ctx.log.iter().any(|l: &String| l.contains("is no longer Poisoned.")));
+        assert!(ctx
+            .log
+            .iter()
+            .any(|l: &String| l.contains("is no longer Poisoned.")));
     } else {
         panic!("expected combat state");
     }

@@ -1,0 +1,155 @@
+npc_id = "myconid_sapient"
+
+[[nodes]]
+id = "root"
+text = "A massive fungal creature towers before you, its cap emitting a soft blue glow. Spores swirl around it like living thoughts."
+
+[[nodes.choices]]
+text = "Greetings."
+condition = ""
+next = "greeting"
+
+[[nodes.choices]]
+text = "What is this place?"
+condition = ""
+next = "place_info"
+
+[[nodes.choices]]
+text = "Leave."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "greeting"
+text = "Welcome, surface-walker. Few of your kind venture this deep. The darkness does not welcome you, but we do not forbid."
+
+[[nodes.choices]]
+text = "Why are you friendly?"
+condition = ""
+next = "friendly_reason"
+
+[[nodes.choices]]
+text = "I seek the abyss."
+condition = ""
+next = "abyss_info"
+
+[[nodes.choices]]
+text = "Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "friendly_reason"
+text = "We are the myconid—we grow where life can find a way. The drow mine, the dwarves dig, but we simply... are. We have no quarrel with the surface, only with those who would uproot our garden."
+
+[[nodes.choices]]
+text = "Your garden is beautiful."
+condition = ""
+next = "beauty"
+
+[[nodes.choices]]
+text = "I must continue."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "beauty"
+text = "Yes. The bioluminescence takes centuries to develop. Each spore is a memory, a moment of light in the eternal dark. You carry a light within you too—a flame from above."
+
+[[nodes.choices]]
+text = "I carry the volcanic curse."
+condition = "flag:volcanic_curse_active"
+next = "curse_knowledge"
+
+[[nodes.choices]]
+text = "Thank you for the kind words."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "curse_knowledge"
+text = "We feel it. The curse pulses in you like a second heart. It is fire and fury, bound but not contained. The abyss senses it too—that is why the rifts grow more dangerous."
+
+[[nodes.choices]]
+text = "How do I remove the curse?"
+condition = ""
+next = "remove_curse"
+
+[[nodes.choices]]
+text = "Interesting. Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "remove_curse"
+text = "The ritual in the Ironhold Mines was only the beginning. To truly unbind the curse, you must face its source—the Silence itself. There, perhaps, you may find peace."
+
+[[nodes.choices]]
+text = "I understand."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "place_info"
+text = "This is the Fungal Groves, heart of the myconid colony. We have tended these caverns since the world was young. The crystal lake lies to the east, the drow outpost to the south."
+
+[[nodes.choices]]
+text = "Tell me about the drow."
+condition = ""
+next = "drow_info"
+
+[[nodes.choices]]
+text = "And the abyss?"
+condition = ""
+next = "abyss_info"
+
+[[nodes.choices]]
+text = "Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "drow_info"
+text = "The drow-merchant-coven came seeking minerals and secrets. They are traders, not warriors, but they hold power in this depth. They fear the abyss as we do."
+
+[[nodes.choices]]
+text = "They fear it? Why?"
+condition = ""
+next = "drow_fear"
+
+[[nodes.choices]]
+text = "Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "drow_fear"
+text = "The Silence whispers to them in dreams. They say it offers knowledge—dark knowledge—for servitude. Some have accepted. Those are the ones who venture deepest."
+
+[[nodes.choices]]
+text = "That is disturbing. Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "abyss_info"
+text = "The abyss lies beyond the drow outpost. A great chasm that swallows all sound. Those who enter rarely return, and those who do... are changed."
+
+[[nodes.choices]]
+text = "Changed how?"
+condition = ""
+next = "changed"
+
+[[nodes.choices]]
+text = "I must go there anyway."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "changed"
+text = "They hear whispers others cannot. They see in darkness as we see in light. Some say they become part of the Silence, its eyes and ears in the world above."
+
+[[nodes.choices]]
+text = "Thank you for the warning."
+condition = ""
+next = "END"

@@ -1,0 +1,35 @@
+id = "fungal_groves"
+name = "Fungal Groves"
+description = "Towering mushroom stalks emit an eerie cyan glow. Bioluminescent moss carpets the floor."
+grid = """
+################
+#..............#
+#..@...........#
+#...............#
+#....OOOO.......#
+#....OOOO.......#
+#...........!..#
+#..............#
+################
+"""
+
+[[npcs]]
+id = "myconid_sapient"
+position = [3, 2]
+
+[[triggers]]
+position = [12, 6]
+type = "travel"
+target_id = "crystal_lake"
+once = false
+
+[[triggers]]
+position = [2, 2]
+type = "travel"
+target_id = "cavern_entrance"
+once = false
+
+[[items]]
+id = "glowing_spores"
+position = [5, 3]
+condition = "quest:silence_below_started"

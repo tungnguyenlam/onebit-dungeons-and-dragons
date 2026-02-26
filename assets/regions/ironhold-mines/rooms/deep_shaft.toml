@@ -15,6 +15,18 @@ grid = """
 id = "scout_pip"
 position = [3, 2]
 
+[[npcs]]
+id = "ritual_altar"
+position = [10, 3]
+dialog_ref = "ritual_altar"
+
+[[triggers]]
+position = [10, 3]
+type = "dialog"
+target_id = "ritual_altar"
+once = false
+condition = "flag:obtained_cursed_artifact"
+
 [[triggers]]
 position = [3, 1]
 type = "lore"
@@ -38,3 +50,8 @@ position = [5, 4]
 type = "quest_stage"
 target_id = "has_obsidian_heart"
 once = true
+
+[[items]]
+id = "cursed_volcanic_artifact"
+position = [7, 3]
+condition = "flag:read_ember_rune"

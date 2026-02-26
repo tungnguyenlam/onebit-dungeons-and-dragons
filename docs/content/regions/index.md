@@ -16,7 +16,7 @@
 | 5 | `ruined-ironhold-mines` | Ruined Ironhold Mines | ✅ complete | underground | none | ← emberpeak-summit (epic) |
 | 6 | `sunken-city` | The Sunken City | ✅ complete | underwater | rain | ← whispering-woods |
 | 7 | `underdark-shelf` | The Underdark Shelf | 🔲 planned | underground | none | ← ironhold-mines |
-| 8 | `tidewatch-coast` | Tidewatch Coast | 🔲 planned | coastal | none | standalone starter alt |
+| 8 | `tidewatch-coast` | Tidewatch Coast | ✅ complete | coastal | clear | standalone starter alt |
 
 Status keys: 🔲 planned · 🚧 in progress · ✅ complete
 

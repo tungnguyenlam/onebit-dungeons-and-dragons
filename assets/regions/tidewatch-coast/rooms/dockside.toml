@@ -1,0 +1,20 @@
+id = "dockside"
+name = "Tidewatch Docks"
+description = "The busy docks of Tidewatch Coast. Ships from distant lands are moored here, unloading their cargo. Fishermen mend their nets, and sailors share stories of the sea."
+grid = """
+##################
+#..!.............##
+#...............##
+#...............##
+##+###########+##
+#...............##
+#...............##
+##################
+"""
+npcs = [
+    { id = "merchant_lyr", position = [5, 4] }
+]
+triggers = [
+    { position = [2, 3], type = "travel", target_id = "market-square", label = "Go to Market Square" },
+    { position = [13, 3], type = "travel", target_id = "sea-cave", label = "Enter Sea Cave", condition = "flag:speak_to_lyr" }
+]

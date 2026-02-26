@@ -1,0 +1,4 @@
+id = "harbormaster"
+name = "Harbormaster Jorvik"
+faction = "tidewatch-merchants"
+dialog_ref = "harbormaster"

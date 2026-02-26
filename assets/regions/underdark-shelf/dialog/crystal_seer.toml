@@ -1,0 +1,164 @@
+npc_id = "crystal_seer"
+
+[[nodes]]
+id = "root"
+text = "A robed figure stands before the crystal formations, hands pressed against the glowing stones. Their eyes are milky white, seeing beyond the physical world."
+
+[[nodes.choices]]
+text = "What do you see?"
+condition = ""
+next = "visions"
+
+[[nodes.choices]]
+text = "I seek the path to the abyss."
+condition = ""
+next = "abyss_guidance"
+
+[[nodes.choices]]
+text = "Leave."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "visions"
+text = "I see... a silence that spans the ages. Ancient eyes opening in the dark. A hero who stands against the void. The crystals whisper of a choice that must be made."
+
+[[nodes.choices]]
+text = "What choice?"
+condition = ""
+next = "the_choice"
+
+[[nodes.choices]]
+text = "Tell me about the Silence."
+condition = ""
+next = "silence_lore"
+
+[[nodes.choices]]
+text = "I must go."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "the_choice"
+text = "When you face the Silence, you must decide: silence it forever, or let it speak. Neither path is without consequence. The drow know this. The dwarves knew this. Now you must know."
+
+[[nodes.choices]]
+text = "How do I silence it?"
+condition = ""
+next = "silence_method"
+
+[[nodes.choices]]
+text = "How do I let it speak?"
+condition = ""
+next = "speak_method"
+
+[[nodes.choices]]
+text = "Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "silence_method"
+text = "To silence the Silence requires an artifact of great power—or great sacrifice. The obsidian heart may serve, if wielded with conviction. Or perhaps... the cursed artifact you carry from above."
+
+[[nodes.choices]]
+text = "The volcanic artifact?"
+condition = "item:cursed_volcanic_artifact"
+next = "artifact_use"
+
+[[nodes.choices]]
+text = "I understand."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "speak_method"
+text = "To let the Silence speak is to listen to what it would say. It is not evil, perhaps—it is simply the absence. To hear it may reveal truths about this world that have been forgotten."
+
+[[nodes.choices]]
+text = "What truths?"
+condition = ""
+next = "forgotten_truths"
+
+[[nodes.choices]]
+text = "I must consider this."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "forgotten_truths"
+text = "That the world was not always as it is. That the gods who banished the Silence feared it for a reason. That perhaps... the Silence was the first voice, and all others are echoes."
+
+[[nodes.choices]]
+text = "This is disturbing. Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "silence_lore"
+text = "The Silence is older than the mountains. It was here before the drow, before the dwarves, before the world had a name. It sleeps because something put it to sleep. It wakes because that binding weakens."
+
+[[nodes.choices]]
+text = "What binds it?"
+condition = ""
+next = "binding"
+
+[[nodes.choices]]
+text = "I must go."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "binding"
+text = "Ancient pacts. Sealed with blood and starlight. The dwarves knew them. The drow seek to break them. And now you—surface-walker—hold a fragment of that power."
+
+[[nodes.choices]]
+text = "The obsidian heart?"
+condition = ""
+next = "obsidian_knowledge"
+
+[[nodes.choices]]
+text = "Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "obsidian_knowledge"
+text = "The obsidian heart was carved from the very stone that binds the Silence. It is a key—or a lock. The drow want it for this reason."
+
+[[nodes.choices]]
+text = "I understand. Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "abyss_guidance"
+text = "The path to the abyss is treacherous. Rifts that tear at the unwary. The drow outpost lies beyond—you must earn their trust or their enmity. Beyond that... the final threshold."
+
+[[nodes.choices]]
+text = "How do I earn drow trust?"
+condition = ""
+next = "drow_trust"
+
+[[nodes.choices]]
+text = "Thank you."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "drow_trust"
+text = "Bring them what they value: rare goods, proof of worth, or news of the surface world. They are merchants above all. But beware—their favor is fickle."
+
+[[nodes.choices]]
+text = "I will remember this."
+condition = ""
+next = "END"
+
+[[nodes]]
+id = "artifact_use"
+text = "Yes. The cursed artifact contains volcanic fury—the same force that binds the Silence. Used correctly, it could amplify that binding. Used poorly... it could break everything."
+
+[[nodes.choices]]
+text = "I will be careful."
+condition = ""
+next = "END"

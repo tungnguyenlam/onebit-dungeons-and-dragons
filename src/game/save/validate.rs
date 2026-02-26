@@ -1,3 +1,4 @@
+use super::types::*;
 use crate::{
     app::AppState,
     game::{
@@ -8,7 +9,6 @@ use crate::{
 use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
-use super::types::*;
 #[derive(Debug, Default)]
 pub struct SaveDriftReport {
     pub errors: Vec<String>,

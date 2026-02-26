@@ -1,0 +1,4 @@
+id = "merchant_lyr"
+name = "Merchant Lyr"
+faction = "tidewatch-merchants"
+dialog_ref = "merchant_lyr"

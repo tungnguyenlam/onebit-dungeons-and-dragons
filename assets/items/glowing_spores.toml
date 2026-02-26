@@ -1,0 +1,7 @@
+id = "glowing_spores"
+name = "Glowing Spores"
+type = "misc"
+weight = 0.1
+value_gp = 25
+description = "Bioluminescent fungal spores that emit a soft blue light. Useful for navigating dark caverns."
+tags = ["alchemical", "light"]

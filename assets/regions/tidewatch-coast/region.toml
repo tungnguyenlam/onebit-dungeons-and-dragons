@@ -1,0 +1,22 @@
+slug = "tidewatch-coast"
+name = "Tidewatch Coast"
+description = "A bustling coastal town known for its thriving trade and smuggling operations. The salty air fills your lungs as you arrive at the docks, ready to make your mark."
+entry_room = "dockside"
+ambient = "The sound of waves crashing against the pier mixes with the chatter of merchants and sailors."
+region_type = "coastal"
+weather = "clear"
+
+rooms = [
+    { id = "dockside", file = "rooms/dockside.toml" },
+    { id = "market-square", file = "rooms/market-square.toml" },
+    { id = "harbormaster", file = "rooms/harbormaster.toml" },
+    { id = "sea-cave", file = "rooms/sea-cave.toml" }
+]
+
+connections = [
+    { from_room = "dockside", to_region = "tidewatch-coast", to_room = "market-square", label = "Go to Market Square" },
+    { from_room = "market-square", to_region = "tidewatch-coast", to_room = "dockside", label = "Return to Docks" },
+    { from_room = "market-square", to_region = "tidewatch-coast", to_room = "harbormaster", label = "Visit Harbormaster" },
+    { from_room = "harbormaster", to_region = "tidewatch-coast", to_room = "market-square", label = "Return to Market" },
+    { from_room = "dockside", to_region = "tidewatch-coast", to_room = "sea-cave", label = "Enter Sea Cave", condition = "flag:speak_to_lyr" }
+]

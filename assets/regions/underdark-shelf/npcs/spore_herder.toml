@@ -1,0 +1,4 @@
+id = "spore_herder"
+name = "Spore Herder"
+faction = "myconid-colony"
+dialog_ref = "spore_herder"

@@ -1,9 +1,6 @@
 use crate::app::{App, AppState};
 use crate::data::types::{NpcDef, TriggerDef, TriggerKind};
-use crate::game::{
-    story::journal::Category as JournalCategory,
-    world::region::Region,
-};
+use crate::game::{story::journal::Category as JournalCategory, world::region::Region};
 use crate::renderer::SoundEffect;
 use anyhow::Result;
 impl App {
@@ -51,6 +48,18 @@ impl App {
                 self.player.inventory.add(&item.id, item.quantity);
                 self.queue_sound(SoundEffect::HighBeep);
                 self.set_feedback(&format!("Picked up {} x{}", item.id, item.quantity));
+
+                if item.id == "cursed_volcanic_artifact" {
+                    self.world_state.set_flag("obtained_cursed_artifact");
+                    self.journal.append(
+                        format!("artifact-acquired-{}", self.turn),
+                        self.turn,
+                        crate::game::story::journal::Category::Quest,
+                        Some("The Volcanic Curse".to_string()),
+                        "Artifact Acquired",
+                        "You have obtained the cursed volcanic artifact. It pulses with dangerous power. You should find a way to contain or destroy it.",
+                    );
+                }
                 return;
             }
         }
@@ -68,6 +77,7 @@ impl App {
             }
         }
 
+        // Only check adjacent tiles for travel triggers if nothing at current position
         // Check adjacent for doors/chests/travel
         let mut interactable_found = false;
         for dy in -1..=1 {
@@ -111,6 +121,12 @@ impl App {
     }
 
     pub fn execute_trigger(&mut self, trigger: &TriggerDef) {
+        // Check if trigger condition is met before executing
+        if !trigger.condition.is_empty() && !self.world_state.evaluate(&trigger.condition) {
+            self.set_feedback("This path is blocked.");
+            return;
+        }
+
         match trigger.kind {
             TriggerKind::Dialog => {
                 self.start_dialog_with_npc(&trigger.target_id);
@@ -164,7 +180,9 @@ impl App {
                             "The Antagonist Stirs",
                             "Dark forces have detected your acquisition. The enemy grows stronger against you.",
                         );
-                        self.set_feedback("A dark chill runs down your spine. The Antagonist knows.");
+                        self.set_feedback(
+                            "A dark chill runs down your spine. The Antagonist knows.",
+                        );
                     }
                 }
             }

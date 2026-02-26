@@ -1,3 +1,6 @@
+use super::battlefield::render_battlefield;
+use super::timeline::compact_timeline;
+use super::utils::style_for_log_line;
 use crate::app::{App, AppState};
 use crate::game::combat::EnemyAiRole;
 use crate::ui::tui::theme::{self, progress_bar, theme};
@@ -8,9 +11,6 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph, Wrap},
     Frame,
 };
-use super::battlefield::render_battlefield;
-use super::utils::style_for_log_line;
-use super::timeline::compact_timeline;
 pub fn render(frame: &mut Frame<'_>, app: &App) {
     let area = frame.area();
     let chunks = Layout::vertical([

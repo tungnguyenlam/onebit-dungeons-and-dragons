@@ -1,3 +1,5 @@
+use super::types::*;
+use super::validate::*;
 use crate::{
     app::AppState,
     game::{
@@ -8,8 +10,6 @@ use crate::{
 use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
-use super::types::*;
-use super::validate::*;
 pub fn save_to_path(path: impl AsRef<Path>, save: &SaveGame) -> Result<()> {
     let path = path.as_ref();
     if let Some(parent) = path.parent() {
