@@ -1,15 +1,17 @@
 id = "dockside"
 name = "Tidewatch Docks"
 description = "The busy docks of Tidewatch Coast. Ships from distant lands are moored here, unloading their cargo. Fishermen mend their nets, and sailors share stories of the sea."
+landmark = "Dockside Landmark"
 grid = """
-##################
-#..!.............##
-#...............##
-#...............##
-##+###########+##
-#...............##
-#...............##
-##################
+###################
+#..!.............#.#
+#...............#.#
+#...............#.#
+##+###########+#.#
+#...............#.#
+#...............#.#
+#.................#
+###################
 """
 npcs = [
     { id = "merchant_lyr", position = [5, 4] }

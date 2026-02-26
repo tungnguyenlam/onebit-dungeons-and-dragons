@@ -1,15 +1,17 @@
 id = "cave_entrance"
 name = "Cave Entrance"
 description = "A gaping maw in the earth, breathing cool, damp air."
+landmark = "Cave Entrance Landmark"
 terminal = true
 grid = """
-##############
-#,...~.......#
-#........~...#
-#...~........#
-#........~...#
-#..~.........#
-##############
+###############
+#,...~........#
+#........~....#
+#...~.........#
+#........~....#
+#..~..........#
+#.............#
+###############
 """
 
 [[triggers]]

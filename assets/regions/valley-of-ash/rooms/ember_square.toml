@@ -1,14 +1,16 @@
 id = "ember_square"
 name = "Ember Square"
 description = "A quiet plaza of blackened tiles and old braziers."
+landmark = "Ember Square Landmark"
 grid = """
-##############
-#..!...!.....#
-#..@.........#
-#....v.......#
-#...........-#
-#............#
-##############
+###############
+#..!...!......#
+#..@..........#
+#....v........#
+#...........-.#
+#.............#
+#.............#
+###############
 """
 
 [[npcs]]

@@ -1,16 +1,18 @@
 id = "crystal_lake"
 name = "Crystal Lake"
 description = "An underground lake reflects countless crystal formations protruding from the walls. The water glows with an ethereal purple light."
+landmark = "Crystal Lake Landmark"
 grid = """
-################
-#..............#
-#..............#
-#...~~~~~~~~~..#
-#...~~~~~~~~~..#
-#...~~@..~~~~~..#
-#...........!..#
-#..............#
-################
+#################
+#...............#
+#...............#
+#...~~~~~~~~~...#
+#...~~~~~~~~~...#
+#...~~@..~~~~~...#
+#...........!...#
+#...............#
+#...............#
+#################
 """
 
 [[npcs]]

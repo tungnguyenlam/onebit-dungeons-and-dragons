@@ -1,15 +1,17 @@
 id = "submerged_aqueduct"
 name = "Submerged Aqueduct"
 grid = """
-#..#..#..#
-,,.,,,.,,.
-~,,~~~~,,~
-~~~~~~~~~~
-~,,~~~~,,~
-,,.,,,.,,.
-#..#..#..#
+#..#..#..##
+,,.,,,.,,..
+~,,~~~~,,~.
+~~~~~~~~~~.
+~,,~~~~,,~.
+,,.,,,.,,..
+#.........#
+#..#..#..##
 """
 description = "Water flows sluggishly through this grand aqueduct. Archways stretch endlessly into the gloom."
+landmark = "Submerged Aqueduct Landmark"
 
 [[triggers]]
 position = [5, 1]

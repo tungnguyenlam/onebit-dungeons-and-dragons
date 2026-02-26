@@ -1,13 +1,15 @@
 id = "drowned_temple"
 name = "Drowned Temple"
 grid = """
-##########
-#.,,@X.,.#
-#,~~~~~,.#
-#.,,@.,,.#
-##########
+###########
+#.,,@X.,..#
+#,~~~~~,..#
+#.,,@.,,..#
+#.........#
+###########
 """
 description = "The sacred space is desecrated by sea growth. At the far end, an altar hints at a lost artifact."
+landmark = "Drowned Temple Landmark"
 
 [[triggers]]
 position = [5, 1]

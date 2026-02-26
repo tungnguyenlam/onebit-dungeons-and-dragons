@@ -57,6 +57,8 @@ pub struct RoomDef {
     pub id: String,
     pub name: String,
     pub description: String,
+    #[serde(default)]
+    pub landmark: String,
     pub grid: String,
     /// If true, this room is an intentional dead-end and the validator will not
     /// flag it for lacking an outbound travel trigger.

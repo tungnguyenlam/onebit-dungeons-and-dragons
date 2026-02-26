@@ -1,15 +1,17 @@
 id = "elder_canopy"
 name = "Elder Canopy"
 description = "Roots as thick as houses form natural bridges over a plunging ravine."
+landmark = "Elder Canopy Landmark"
 terminal = true
 grid = """
-##############
-#,...~.......#
-#........~...#
-#...~........#
-#........~...#
-#..~.........#
-##############
+###############
+#,...~........#
+#........~....#
+#...~.........#
+#........~....#
+#..~..........#
+#.............#
+###############
 """
 
 [[triggers]]

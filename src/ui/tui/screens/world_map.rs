@@ -3,7 +3,7 @@ use crate::app::navigation::world_map_util::build_region_overview;
 use crate::game::world::map::Tile;
 use crate::game::world::{fov, weather::WeatherType};
 use crate::ui::tui::theme::{self, progress_bar, theme};
-use crate::ui::tui::widgets::{exit_lines, room_list_lines};
+use crate::ui::tui::widgets::{connected_room_lines, exit_lines, room_list_lines};
 use ratatui::{
     layout::{Constraint, Layout},
     style::{Modifier, Style},
@@ -50,7 +50,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     };
     let footer_height = (footer_lines.len() + 2) as u16;
     let chunks = Layout::vertical([
-        Constraint::Length(4),
+        Constraint::Length(5),
         Constraint::Length(4),
         Constraint::Min(7),
         Constraint::Length(footer_height),
@@ -62,6 +62,10 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         .current_room()
         .map(|r| r.name.clone())
         .unwrap_or_else(|| app.current_room_id.clone());
+    let room_landmark = app
+        .current_room()
+        .map(|r| r.landmark.clone())
+        .unwrap_or_default();
     let region_weather = if app.region.weather.is_empty() || app.region.weather == "none" {
         String::new()
     } else {
@@ -84,6 +88,12 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             "Room: {} ({}) | Turn: {}",
             room_name, app.current_room_id, app.turn
         ))
+        .style(Style::default().fg(t.text_muted)),
+        Line::from(if room_landmark.is_empty() {
+            "Landmark: (none)".to_string()
+        } else {
+            format!("Landmark: {room_landmark}")
+        })
         .style(Style::default().fg(t.text_muted)),
     ])
     .block(
@@ -193,6 +203,8 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     let overview = build_region_overview(&app.region, &app.current_room_id, &app.world_state);
     let right_lines = room_list_lines(&overview)
         .into_iter()
+        .chain(std::iter::once(Line::from("")))
+        .chain(connected_room_lines(&overview))
         .chain(std::iter::once(Line::from("")))
         .chain(exit_lines(&overview))
         .collect::<Vec<_>>();

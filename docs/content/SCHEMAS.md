@@ -64,6 +64,7 @@ next = [{ condition = "flag:has_eye", stage = "boss_1" }]
 id = "ash_gate"
 name = "Ash Gate"
 description = "A broken stone gate."
+landmark = "Ash Gate Landmark"
 grid = """
 ##############
 #............#

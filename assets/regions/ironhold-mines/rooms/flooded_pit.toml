@@ -1,15 +1,17 @@
 id = "flooded_pit"
 name = "Flooded Pit"
 description = "Knee-deep water reflects distant torch-light. Something moves below."
+landmark = "Flooded Pit Landmark"
 terminal = true
 grid = """
-##############
-#.....!.....!#
-#..@.........#
-#........v...#
-#.....~......#
-#............#
-##############
+###############
+#.....!.....!.#
+#..@..........#
+#........v....#
+#.....~.......#
+#.............#
+#.............#
+###############
 """
 
 [[npcs]]

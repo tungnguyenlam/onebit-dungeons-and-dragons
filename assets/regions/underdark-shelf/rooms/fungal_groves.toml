@@ -1,16 +1,18 @@
 id = "fungal_groves"
 name = "Fungal Groves"
 description = "Towering mushroom stalks emit an eerie cyan glow. Bioluminescent moss carpets the floor."
+landmark = "Fungal Groves Landmark"
 grid = """
-################
-#..............#
-#..@...........#
+#################
 #...............#
-#....OOOO.......#
-#....OOOO.......#
-#...........!..#
-#..............#
-################
+#..@............#
+#................#
+#....OOOO........#
+#....OOOO........#
+#...........!...#
+#...............#
+#...............#
+#################
 """
 
 [[npcs]]

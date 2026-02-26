@@ -14,6 +14,8 @@ pub struct RegionOverview {
     pub region_slug: String,
     pub current_room: String,
     pub room_ids: Vec<String>,
+    pub current_landmark: String,
+    pub connected_rooms: Vec<String>,
     pub exits: Vec<ExitView>,
 }
 
@@ -33,11 +35,34 @@ pub fn build_region_overview(region: &Region, current_room: &str, world: &WorldS
         })
         .collect::<Vec<_>>();
 
+    let current_landmark = region
+        .room(current_room)
+        .map(|r| r.landmark.clone())
+        .unwrap_or_default();
+
+    let mut connected_rooms = region
+        .room(current_room)
+        .map(|r| {
+            r.triggers
+                .iter()
+                .filter(|t| {
+                    t.kind == crate::data::types::TriggerKind::Travel
+                        && region.rooms.contains_key(&t.target_id)
+                })
+                .map(|t| t.target_id.clone())
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+    connected_rooms.sort();
+    connected_rooms.dedup();
+
     RegionOverview {
         region_name: region.name.clone(),
         region_slug: region.slug.clone(),
         current_room: current_room.to_string(),
         room_ids,
+        current_landmark,
+        connected_rooms,
         exits,
     }
 }
@@ -79,11 +104,18 @@ mod tests {
                 id: "a".into(),
                 name: "A".into(),
                 description: "A".into(),
+                landmark: "A-Landmark".into(),
                 grid: "###\n#.#\n###\n".into(),
                 terminal: false,
                 npcs: vec![],
                 items: vec![],
-                triggers: vec![],
+                triggers: vec![crate::data::types::TriggerDef {
+                    position: [1, 1],
+                    kind: crate::data::types::TriggerKind::Travel,
+                    target_id: "b".into(),
+                    condition: String::new(),
+                    once: false,
+                }],
             },
         );
         rooms.insert(
@@ -92,6 +124,7 @@ mod tests {
                 id: "b".into(),
                 name: "B".into(),
                 description: "B".into(),
+                landmark: "B-Landmark".into(),
                 grid: "###\n#.#\n###\n".into(),
                 terminal: false,
                 npcs: vec![],
@@ -114,6 +147,8 @@ mod tests {
         let mut ws = WorldState::new();
         let out = build_region_overview(&region, "a", &ws);
         assert_eq!(out.room_ids.len(), 2);
+        assert_eq!(out.current_landmark, "A-Landmark");
+        assert_eq!(out.connected_rooms, vec!["b".to_string()]);
         assert_eq!(out.exits.len(), 1);
         assert!(!out.exits[0].available);
 

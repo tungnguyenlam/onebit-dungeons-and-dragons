@@ -11,11 +11,25 @@ pub fn room_list_lines(overview: &RegionOverview) -> Vec<Line<'static>> {
         overview.region_name, overview.region_slug
     ))];
     lines.push(Line::from(format!("Current: {}", overview.current_room)));
+    if !overview.current_landmark.is_empty() {
+        lines.push(Line::from(format!("Landmark: {}", overview.current_landmark)));
+    }
     lines.push(Line::from(""));
     lines.push(Line::from("Rooms:"));
     for room in &overview.room_ids {
         let marker = if room == &overview.current_room { ">" } else { " " };
         lines.push(Line::from(format!("{marker} {room}")));
+    }
+    lines
+}
+
+pub fn connected_room_lines(overview: &RegionOverview) -> Vec<Line<'static>> {
+    if overview.connected_rooms.is_empty() {
+        return vec![Line::from("Paths: none")];
+    }
+    let mut lines = vec![Line::from("Paths:")];
+    for room_id in &overview.connected_rooms {
+        lines.push(Line::from(format!("- {room_id}")));
     }
     lines
 }
@@ -54,6 +68,8 @@ mod tests {
             region_slug: "r".into(),
             current_room: "b".into(),
             room_ids: vec!["a".into(), "b".into()],
+            current_landmark: "Beacon".into(),
+            connected_rooms: vec!["a".into()],
             exits: vec![],
         };
         let lines = room_list_lines(&overview)
@@ -61,6 +77,7 @@ mod tests {
             .map(|l| l.to_string())
             .collect::<Vec<_>>();
         assert!(lines.iter().any(|l| l.contains("> b")));
+        assert!(lines.iter().any(|l| l.contains("Landmark: Beacon")));
     }
 
     #[test]
@@ -70,6 +87,8 @@ mod tests {
             region_slug: "r".into(),
             current_room: "b".into(),
             room_ids: vec!["a".into(), "b".into()],
+            current_landmark: String::new(),
+            connected_rooms: vec![],
             exits: vec![ExitView {
                 to_region: "x".into(),
                 to_room: "y".into(),

@@ -80,6 +80,7 @@ Tile legend is defined per-project:
 id          = "gate"
 name        = "The Ash Gate"
 description = "Crumbling stone archway, ash drifting through the gap."
+landmark    = "Ash Gate Landmark"
 
 grid = """
 ##########
@@ -114,4 +115,4 @@ room visibility.
 
 The TUI world screen now combines:
 - **Local Map** (tile-level room view)
-- **World Map Widget** (room list + available/locked regional exits)
+- **World Map Widget** (room list + current room landmark + intra-region path links + available/locked regional exits)

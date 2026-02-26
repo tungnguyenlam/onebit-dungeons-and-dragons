@@ -1,15 +1,17 @@
 id = "summit_crater"
 name = "Summit Crater"
 description = "The highest point of the mountain, where the air is thick with ash and the ground pulses with heat."
+landmark = "Summit Crater Landmark"
 terminal = true
 grid = """
-##############
-#.......!....#
-#..@.........#
-#.......-....#
-#............#
-#.....v......#
-##############
+###############
+#.......!.....#
+#..@..........#
+#.......-.....#
+#.............#
+#.....v.......#
+#.............#
+###############
 """
 
 [[triggers]]

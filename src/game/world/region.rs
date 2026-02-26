@@ -119,6 +119,7 @@ mod tests {
                 id: "start".into(),
                 name: "Start Room".into(),
                 description: "The beginning.".into(),
+                landmark: "The Cracked Waystone".into(),
                 grid: "#####\n#...#\n#####\n".into(),
                 terminal: false,
                 npcs: vec![],

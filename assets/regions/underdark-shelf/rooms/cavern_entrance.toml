@@ -1,15 +1,17 @@
 id = "cavern_entrance"
 name = "Cavern Entrance"
 description = "A massive chasm opens before you, filled with softly glowing blue mushrooms. The air is thick with spores."
+landmark = "Cavern Entrance Landmark"
 grid = """
-################
-#..............#
-#..@.......R...#
-#...........O..#
-#.......!......#
-#..............#
-#..............#
-################
+#################
+#...............#
+#..@.......R....#
+#...........O...#
+#.......!.......#
+#...............#
+#...............#
+#...............#
+#################
 """
 
 [[npcs]]

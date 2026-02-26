@@ -43,6 +43,7 @@ pub fn sample_region_bundle() -> (Region, HashMap<String, NpcDef>, HashMap<Strin
                     id: "start".into(),
                     name: "Start".into(),
                     description: "Fallback room".into(),
+                    landmark: "Fallback Campfire".into(),
                     grid: "#####\n#...#\n#.@.#\n#####\n".into(),
                     terminal: false,
                     npcs: vec![],

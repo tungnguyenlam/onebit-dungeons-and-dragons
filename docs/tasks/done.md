@@ -6,6 +6,36 @@
 
 ---
 
+## 2026-02-26 — Milestone 63: Map Scale, Connectivity, and Landmarks
+
+- [x] Added room landmark support in runtime/data models.
+- [x] Expanded all region room maps for larger playable spaces (35 room files).
+- [x] Added world map widget support for current landmark + connected local room paths.
+- [x] Updated schema/gameplay docs for landmark metadata and widget behavior.
+
+Files modified (major):
+  - src/data/types.rs
+  - src/game/world/room.rs
+  - src/game/world/region.rs
+  - src/app/navigation/world_map_util.rs
+  - src/ui/tui/widgets/map.rs
+  - src/ui/tui/screens/world_map.rs
+  - src/app/samples/region.rs
+  - assets/regions/*/rooms/*.toml
+  - docs/content/SCHEMAS.md
+  - docs/content/map-format.md
+  - docs/gameplay/world.md
+  - docs/tasks/milestones/m63.md
+  - docs/tasks/backlog.md
+  - docs/tasks/current-sprint.md
+  - docs/tasks/done.md
+
+Validation:
+  - cargo check: pass
+  - visual_check scenarios: pass (all scenarios in `tests/visual_scenarios.json`)
+
+---
+
 ## 2026-02-26 — Milestone 62: Visual Playtest Bug Sweep
 
 - [x] Removed duplicated HP label rendering in world/inventory UI.

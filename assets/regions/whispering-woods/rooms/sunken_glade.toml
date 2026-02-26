@@ -1,14 +1,16 @@
 id = "sunken_glade"
 name = "Sunken Glade"
 description = "Sunlight struggles through the canopy, illuminating a damp, fungal hollow."
+landmark = "Sunken Glade Landmark"
 grid = """
-##############
-#~...~.......#
-#..~.....~...#
-#......~.....#
-#...~........#
-#..~..~......#
-##############
+###############
+#~...~........#
+#..~.....~....#
+#......~......#
+#...~.........#
+#..~..~.......#
+#.............#
+###############
 """
 
 [[triggers]]

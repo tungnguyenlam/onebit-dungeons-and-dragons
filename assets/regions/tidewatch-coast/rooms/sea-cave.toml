@@ -1,15 +1,17 @@
 id = "sea-cave"
 name = "Sea Cave"
 description = "A dark, damp cave carved into the cliffs below Tidewatch Coast. The sound of waves echoes through the passages, and the air is thick with the smell of brine."
+landmark = "Sea Cave Landmark"
 grid = """
-##################
-#.....!..........##
-#...............##
-#...............##
-###+#############
-#...............##
-#...............##
-##################
+###################
+#.....!..........#.#
+#...............#.#
+#...............#.#
+###+############.#
+#...............#.#
+#...............#.#
+#.................#
+###################
 """
 npcs = [
     { id = "giant_crab", position = [7, 4] },

@@ -1,13 +1,15 @@
 id = "flooded_plaza"
 name = "Flooded Plaza"
 grid = """
-##########
-#~~~..@..#
-#~~~,,!,,#
-#~~~~....#
-##########
+###########
+#~~~..@...#
+#~~~,,!,,.#
+#~~~~.....#
+#.........#
+###########
 """
 description = "The central plaza, now a basin for cold ocean currents. Ruined pillars stand like skeletal fingers."
+landmark = "Flooded Plaza Landmark"
 
 [[triggers]]
 position = [5, 1]

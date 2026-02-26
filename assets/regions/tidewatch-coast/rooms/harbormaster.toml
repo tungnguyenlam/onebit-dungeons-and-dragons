@@ -1,15 +1,17 @@
 id = "harbormaster"
 name = "Harbormaster's Office"
 description = "The official office of the Tidewatch Coast harbormaster. Maps and charts of the coastline adorn the walls, and a large desk dominates the room."
+landmark = "Harbormaster Landmark"
 grid = """
-##################
-#...............##
-#...............##
-#...............##
-##+##############
-#...............##
-#...............##
-##################
+###################
+#...............#.#
+#...............#.#
+#...............#.#
+##+#############.#
+#...............#.#
+#...............#.#
+#.................#
+###################
 """
 npcs = [
     { id = "harbormaster", position = [8, 4] }

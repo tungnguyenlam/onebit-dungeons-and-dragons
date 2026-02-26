@@ -19,6 +19,7 @@ pub struct Room {
     pub id: String,
     pub name: String,
     pub description: String,
+    pub landmark: String,
     /// The parsed tile grid for this room.
     pub grid: TileGrid,
     /// NPC spawn points declared in the TOML, in load order.
@@ -41,6 +42,7 @@ impl Room {
             id: def.id.clone(),
             name: def.name.clone(),
             description: def.description.clone(),
+            landmark: def.landmark.clone(),
             grid: TileGrid::from_str(&def.grid),
             npcs: def.npcs.clone(),
             items: def.items.clone(),
@@ -88,6 +90,7 @@ mod tests {
             id: "test-room".into(),
             name: "Test Room".into(),
             description: "A room for testing.".into(),
+            landmark: "Ancient Test Obelisk".into(),
             grid: "##########\n#........#\n#..@..!..#\n#........#\n##########\n".into(),
             terminal: false,
             npcs: vec![RoomNpc {

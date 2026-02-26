@@ -1,14 +1,16 @@
 id = "lava_shelf"
 name = "Lava Shelf"
 description = "A cooled ledge of black rock with a stunning view of the magma below."
+landmark = "Lava Shelf Landmark"
 grid = """
-##############
-#..@..!......#
-#............#
-#....v.......#
-#...........-#
-#............#
-##############
+###############
+#..@..!.......#
+#.............#
+#....v........#
+#...........-.#
+#.............#
+#.............#
+###############
 """
 
 [[npcs]]

@@ -1,17 +1,19 @@
 id = "abyss_entry"
 name = "The Abyss Awakens"
 description = "A massive chasm yawns before you, radiating cold. Ancient runes pulse with dark energy, marking this as the threshold to the final confrontation."
+landmark = "Abyss Entry Landmark"
 terminal = true
 grid = """
-################
-#..............#
-#..............#
-#....RRRRRR....#
-#....RRRRRR....#
-#......!.......#
-#..............#
-#..............#
-################
+#################
+#...............#
+#...............#
+#....RRRRRR.....#
+#....RRRRRR.....#
+#......!........#
+#...............#
+#...............#
+#...............#
+#################
 """
 
 [[triggers]]

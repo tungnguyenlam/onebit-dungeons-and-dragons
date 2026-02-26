@@ -1,14 +1,16 @@
 id = "cinder_ridge"
 name = "Cinder Ridge"
 description = "A brittle escarpment overlooking the valley floor."
+landmark = "Cinder Ridge Landmark"
 grid = """
-##############
-#..@..!......#
-#............#
-#....v.......#
-#....-......-#
-#...........-#
-##############
+###############
+#..@..!.......#
+#.............#
+#....v........#
+#....-......-.#
+#...........-.#
+#.............#
+###############
 """
 
 [[npcs]]

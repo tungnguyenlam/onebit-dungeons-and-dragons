@@ -1,14 +1,16 @@
 id = "peak_crater"
 name = "Peak Crater"
 description = "A collapsed caldera still belching thin sulfur wisps."
+landmark = "Peak Crater Landmark"
 grid = """
-##############
-#.....!......#
-#..@.........#
-#........v...#
-#...........-#
-#............#
-##############
+###############
+#.....!.......#
+#..@..........#
+#........v....#
+#...........-.#
+#.............#
+#.............#
+###############
 """
 
 [[npcs]]

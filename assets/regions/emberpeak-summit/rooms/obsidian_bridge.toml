@@ -1,14 +1,16 @@
 id = "obsidian_bridge"
 name = "Obsidian Bridge"
 description = "A black glass span crossing a magma fissure."
+landmark = "Obsidian Bridge Landmark"
 grid = """
-##############
-#..!...!.....#
-#..@.........#
-#....v.......#
-#............#
-#............#
-##############
+###############
+#..!...!......#
+#..@..........#
+#....v........#
+#.............#
+#.............#
+#.............#
+###############
 """
 
 [[npcs]]

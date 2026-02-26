@@ -1,14 +1,16 @@
 id = "woods_edge"
 name = "Woods Edge"
 description = "A wall of dense timber stands defiantly against the encroaching ash. The trees murmur softly."
+landmark = "Woods Edge Landmark"
 grid = """
-##############
-#~...~...!...#
-#........@...#
-#...~........#
-#........v...#
-#..~.........#
-##############
+###############
+#~...~...!....#
+#........@....#
+#...~.........#
+#........v....#
+#..~..........#
+#.............#
+###############
 """
 
 [[triggers]]

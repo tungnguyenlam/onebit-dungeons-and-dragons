@@ -57,6 +57,7 @@ condition  = "flag:act1_complete"        # empty string = always open
 id          = "gate"
 name        = "The Ash Gate"
 description = "Crumbling stone archway, ash drifting through the gap."
+landmark    = "Ash Gate Landmark"
 
 # Tile grid: exactly as rendered.
 # Max 40 cols × 20 rows. Pad with spaces if needed.
@@ -114,7 +115,7 @@ hp = 18
 | `encounter` | encounter id in `assets/encounters/` | Start combat |
 | `lore` | lore entry id in `assets/lore/` | Show lore popup + add journal entry |
 | `quest_stage` | `<quest-id>:<stage-id>` | Force advance quest stage |
-| `travel` | `<region-slug>:<room-id>` | Travel to another region |
+| `travel` | `<region-slug>:<room-id>` or `<room-id>` | Travel to another region or another room in the same region |
 
 ---
 

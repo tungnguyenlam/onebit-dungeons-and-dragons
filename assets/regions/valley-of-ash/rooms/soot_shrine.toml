@@ -1,15 +1,17 @@
 id = "soot_shrine"
 name = "Soot Shrine"
 description = "A forgotten altar buried under decades of volcanic ash."
+landmark = "Soot Shrine Landmark"
 terminal = true
 grid = """
-##############
-#.....!......#
-#..@.........#
-#........v...#
-#............#
-#............#
-##############
+###############
+#.....!.......#
+#..@..........#
+#........v....#
+#.............#
+#.............#
+#.............#
+###############
 """
 
 [[npcs]]

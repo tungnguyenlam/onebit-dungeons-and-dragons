@@ -1,16 +1,18 @@
 id = "drow_outpost"
 name = "Drow Outpost"
 description = "A fortified settlement built into the cavern wall. Drow merchants barter in the shadows, their eyes reflecting your torchlight."
+landmark = "Drow Outpost Landmark"
 grid = """
-################
-#..............#
-#.####.#######.#
-#.#..#.#.....#.#
-#.#..#.#..@..#.#
-#.#..#.#.....#.#
-#.#..#.#.....#.#
-#...........!..#
-################
+#################
+#...............#
+#.####.#######..#
+#.#..#.#.....#..#
+#.#..#.#..@..#..#
+#.#..#.#.....#..#
+#.#..#.#.....#..#
+#...........!...#
+#...............#
+#################
 """
 
 [[npcs]]

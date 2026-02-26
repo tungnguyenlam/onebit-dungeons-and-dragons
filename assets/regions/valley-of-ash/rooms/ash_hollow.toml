@@ -1,15 +1,17 @@
 id = "ash_hollow"
 name = "Ash Hollow"
 description = "A sunken bowl clogged with still-warm cinders and old bones."
+landmark = "Ash Hollow Landmark"
 terminal = false
 grid = """
-##############
-#..@..!.....!#
-#............#
-#....v.......#
-#...........-#
-#...........-#
-##############
+###############
+#..@..!.....!.#
+#.............#
+#....v........#
+#...........-.#
+#...........-.#
+#.............#
+###############
 """
 
 [[npcs]]

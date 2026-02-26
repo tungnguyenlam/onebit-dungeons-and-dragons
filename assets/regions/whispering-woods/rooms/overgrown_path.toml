@@ -1,14 +1,16 @@
 id = "overgrown_path"
 name = "Overgrown Path"
 description = "Vines obscure the dirt trail leading toward a rocky outcropping."
+landmark = "Overgrown Path Landmark"
 grid = """
-##############
-#,...~.......#
-#........~...#
-#...~........#
-#........~...#
-#..~.........#
-##############
+###############
+#,...~........#
+#........~....#
+#...~.........#
+#........~....#
+#..~..........#
+#.............#
+###############
 """
 
 [[triggers]]

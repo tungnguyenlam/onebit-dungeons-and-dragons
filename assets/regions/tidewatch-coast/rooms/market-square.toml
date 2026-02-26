@@ -1,15 +1,17 @@
 id = "market-square"
 name = "Tidewatch Market"
 description = "The central market square of Tidewatch Coast. Vendors sell fresh fish, spices, and exotic goods from distant lands. The smell of cooking fills the air."
+landmark = "Market Square Landmark"
 grid = """
-##################
-#...............##
-#...............##
-#...............##
-##+###########+##
-#...............##
-#...............##
-##################
+###################
+#...............#.#
+#...............#.#
+#...............#.#
+##+###########+#.#
+#...............#.#
+#...............#.#
+#.................#
+###################
 """
 triggers = [
     { position = [2, 3], type = "travel", target_id = "dockside", label = "Return to Docks" },
