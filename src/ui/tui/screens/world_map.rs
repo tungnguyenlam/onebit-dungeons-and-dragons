@@ -14,15 +14,48 @@ use ratatui::{
 
 pub fn render(frame: &mut Frame<'_>, app: &App) {
     let area = frame.area();
+    let t = theme();
+    let feedback = app.get_feedback();
+    let weather_effect = match WeatherType::from_region_tag(&app.region.weather) {
+        WeatherType::Rain => "Weather: Rain (-2 ranged accuracy, fire attacks disadvantaged)",
+        WeatherType::Fog => "Weather: Fog (reduced FOV, ranged attacks disadvantaged)",
+        WeatherType::Ash => "Weather: Ash (periodic coughing/poisoned pressure)",
+        WeatherType::Snow => "Weather: Snow (slippery footing)",
+        WeatherType::Clear => "Weather: Clear",
+    };
+    let footer_lines = if app.show_help {
+        vec![
+            Line::from("LEGEND: @=player  n=NPC  !=trigger  /=door  >=stairs down  <=stairs up"),
+            Line::from("       c=chest  +=door closed  ~=deep water  ,=shallow water"),
+            Line::from("       HP=health  MP=mana  XP=experience  $[=gold"),
+            Line::from("Press ? to close help. Move: arrows/hjkl Interact: Enter"),
+        ]
+    } else if let Some(msg) = feedback {
+        vec![
+            Line::from(msg).style(Style::default().fg(t.warning)),
+            Line::from(weather_effect),
+            Line::from("Move: arrows/hjkl  Interact: Enter  ?: help"),
+            Line::from("a combat  i inventory  c crafting  s spellbook"),
+            Line::from("n journal  v bestiary  y lore"),
+            Line::from("p save  o load  b toggle sound  q quit"),
+        ]
+    } else {
+        vec![
+            Line::from(weather_effect),
+            Line::from("Move: arrows/hjkl  Interact: Enter  ?: help"),
+            Line::from("a combat  i inventory  c crafting  s spellbook"),
+            Line::from("n journal  v bestiary  y lore"),
+            Line::from("p save  o load  b toggle sound  q quit"),
+        ]
+    };
+    let footer_height = (footer_lines.len() + 2) as u16;
     let chunks = Layout::vertical([
         Constraint::Length(4),
         Constraint::Length(4),
         Constraint::Min(7),
-        Constraint::Length(6),
+        Constraint::Length(footer_height),
     ])
     .split(area);
-
-    let t = theme();
 
     // Header with region info
     let room_name = app
@@ -66,7 +99,6 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         Line::from(vec![
             Span::raw(format!("{} ", theme::icon("health"))),
             Span::raw(format!("{} ", app.player.name)),
-            Span::raw(format!("HP ")),
             Span::styled(
                 progress_bar(app.player.current_hp, app.player.max_hp, 10),
                 Style::default().fg(theme::health_color(
@@ -176,40 +208,6 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         map_chunks[1],
     );
 
-    // Controls footer
-    let feedback = app.get_feedback();
-    let weather_effect = match WeatherType::from_region_tag(&app.region.weather) {
-        WeatherType::Rain => "Weather: Rain (-2 ranged accuracy, fire attacks disadvantaged)",
-        WeatherType::Fog => "Weather: Fog (reduced FOV, ranged attacks disadvantaged)",
-        WeatherType::Ash => "Weather: Ash (periodic coughing/poisoned pressure)",
-        WeatherType::Snow => "Weather: Snow (slippery footing)",
-        WeatherType::Clear => "Weather: Clear",
-    };
-    let footer_lines = if app.show_help {
-        vec![
-            Line::from("LEGEND: @=player  n=NPC  !=trigger  /=door  >=stairs down  <=stairs up"),
-            Line::from("       c=chest  +=door closed  ~=deep water  ,=shallow water"),
-            Line::from("       HP=health  MP=mana  XP=experience  $[=gold"),
-            Line::from("Press ? to close help. Move: arrows/hjkl Interact: Enter"),
-        ]
-    } else if let Some(msg) = feedback {
-        vec![
-            Line::from(msg).style(Style::default().fg(t.warning)),
-            Line::from(weather_effect),
-            Line::from("Move: arrows/hjkl  Interact: Enter  ?: help"),
-            Line::from("a combat  i inventory  c crafting  s spellbook"),
-            Line::from("n journal  v bestiary  y lore"),
-            Line::from("p save  o load  b toggle sound  q quit"),
-        ]
-    } else {
-        vec![
-            Line::from(weather_effect),
-            Line::from("Move: arrows/hjkl  Interact: Enter  ?: help"),
-            Line::from("a combat  i inventory  c crafting  s spellbook"),
-            Line::from("n journal  v bestiary  y lore"),
-            Line::from("p save  o load  b toggle sound  q quit"),
-        ]
-    };
     frame.render_widget(
         Paragraph::new(footer_lines)
             .style(Style::default().fg(t.text_muted))

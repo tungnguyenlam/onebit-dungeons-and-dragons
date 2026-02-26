@@ -3,52 +3,61 @@
     "start_game": {
       "keys": "\r",
       "reset": true,
-      "description": "Start a new game and land in character creation"
+      "description": "Start a new game and land in character creation",
+      "expected_contains": ["Character Creation", "Start Adventure"]
     },
     "enter_world": {
       "keys": "\rjjj\r",
       "reset": true,
-      "description": "Start game, select default character and enter world"
+      "description": "Start game, select default character and enter world",
+      "expected_contains": ["Region: Valley of Ash", "Room: Ash Gate", "Local Map"]
     },
     "move_around": {
-      "keys": "llllkk",
-      "reset": false,
-      "description": "Move the player character in the world"
+      "keys": "\rjjj\rllllkk",
+      "reset": true,
+      "description": "Move the player character in the world",
+      "expected_contains": ["Region: Valley of Ash", "Local Map", "Turn: 5"]
     },
     "open_inventory": {
-      "keys": "i",
-      "reset": false,
-      "description": "Open the inventory screen"
+      "keys": "\rjjj\ri",
+      "reset": true,
+      "description": "Open the inventory screen",
+      "expected_contains": ["Inventory [Q]", "Equipment:", "Actions:"]
     },
     "combat_init": {
-      "keys": "a",
-      "reset": false,
-      "description": "Enter combat"
+      "keys": "\rjjj\ra",
+      "reset": true,
+      "description": "Enter combat",
+      "expected_contains": ["Battlefield", "Combat Log", "A new battle begins!"]
     },
     "combat_attack": {
-      "keys": "a",
-      "reset": false,
-      "description": "Execute an attack in combat"
+      "keys": "\rjjj\raa",
+      "reset": true,
+      "description": "Execute an attack in combat",
+      "expected_contains": ["Battlefield", "Combatants HP", "Combat Log"]
     },
     "combat_flee": {
-      "keys": "af",
-      "reset": false,
-      "description": "Flee combat"
+      "keys": "\rjjj\raf",
+      "reset": true,
+      "description": "Attempt to flee combat"
     },
     "tidewatch_start": {
       "keys": "\r",
       "reset": true,
-      "description": "Start game and enter Tidewatch Coast region"
+      "description": "Start game and stop at character creation setup",
+      "expected_contains": ["Character Creation", "Start Adventure"]
     },
     "volcanic_curse_quest": {
       "keys": "\rjjj\r",
       "reset": true,
-      "description": "Start game, complete Valley Contract, and start Volcanic Curse quest"
+      "description": "Start game and enter Valley of Ash world state",
+      "expected_contains": ["Region: Valley of Ash", "Room: Ash Gate", "World Map Widget"]
     },
     "underdark_shelf": {
       "keys": "\rjjj\r",
       "reset": true,
-      "description": "Start game and explore Underdark Shelf region (requires completing Volcanic Curse first)"
+      "description": "Start game and enter initial world map state",
+      "expected_contains": ["Region: Valley of Ash", "Room: Ash Gate", "Local Map"]
     }
   }
 }

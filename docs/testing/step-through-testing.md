@@ -35,6 +35,8 @@ scripts/runtest.sh reset    # Reset game state (deletes save.toml and restarts)
 ### Visual Check CLI (Scenario Runner)
 
 Use this when you want named scenarios and cleaner artifact management.
+Scenarios can include optional assertions (`expected_contains`, `expected_not_contains`)
+in `tests/visual_scenarios.json`; failed assertions exit non-zero.
 
 ```bash
 # List available scenarios

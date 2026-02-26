@@ -72,6 +72,7 @@
 | M59 | Dynamic Weather & Environmental Hazards | ✅ done | [milestones/m59.md](milestones/m59.md) |
 | M60 | Final Boss, Ending Variations & New Game+ | ✅ done | [milestones/m60.md](milestones/m60.md) |
 | M61 | Map Widgets & World Map Utility | ✅ done | [milestones/m61.md](milestones/m61.md) |
+| M62 | Visual Playtest Bug Sweep | ✅ done | [milestones/m62.md](milestones/m62.md) |
 
 Status: ✅ done · 🚧 in progress · 🔲 next / planned
 

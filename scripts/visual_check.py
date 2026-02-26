@@ -25,6 +25,20 @@ def load_scenarios(path):
             return json.load(f).get("scenarios", {})
     return {}
 
+
+def validate_expectations(output, scenario_data):
+    missing = []
+    for token in scenario_data.get("expected_contains", []):
+        if token not in output:
+            missing.append(token)
+
+    forbidden = []
+    for token in scenario_data.get("expected_not_contains", []):
+        if token in output:
+            forbidden.append(token)
+
+    return missing, forbidden
+
 def main():
     parser = argparse.ArgumentParser(description="OneBit D&D Visual Check Tool")
     parser.add_argument("keys", nargs="?", help="Sequence of keys to input")
@@ -62,10 +76,12 @@ def main():
     keys = args.keys
     reset = args.reset
     scenario_name = args.name
+    scenario_data = None
 
     if args.scenario:
         if args.scenario in scenarios:
             s = scenarios[args.scenario]
+            scenario_data = s
             scenario_keys = s.get("keys", "")
             keys = scenario_keys + (keys if keys else "")
             reset = reset or s.get("reset", False)
@@ -101,6 +117,16 @@ def main():
         final_output = full_output
     
     if full_output:
+        if scenario_data:
+            missing, forbidden = validate_expectations(final_output, scenario_data)
+            if missing or forbidden:
+                print(f"Scenario expectation failed: {args.scenario}")
+                for token in missing:
+                    print(f"  missing: {token}")
+                for token in forbidden:
+                    print(f"  unexpected: {token}")
+                sys.exit(2)
+
         name = scenario_name if scenario_name else "latest"
         if args.history:
             stamp = datetime.now().strftime("%Y%m%d-%H%M%S")

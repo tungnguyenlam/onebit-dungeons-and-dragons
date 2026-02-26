@@ -18,7 +18,6 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     let stats = Paragraph::new(vec![
         Line::from(vec![
             ratatui::text::Span::raw(format!("{} ", theme::icon("health"))),
-            ratatui::text::Span::raw(format!("HP ")),
             ratatui::text::Span::styled(
                 progress_bar(app.player.current_hp, app.player.max_hp, 8),
                 Style::default().fg(theme::health_color(

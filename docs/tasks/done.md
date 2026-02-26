@@ -6,6 +6,31 @@
 
 ---
 
+## 2026-02-26 — Milestone 62: Visual Playtest Bug Sweep
+
+- [x] Removed duplicated HP label rendering in world/inventory UI.
+- [x] Made world-map footer height dynamic so feedback lines no longer clip control hints.
+- [x] Added scenario assertion support to `scripts/visual_check.py` (`expected_contains` / `expected_not_contains`).
+- [x] Updated `tests/visual_scenarios.json` with deterministic key sequences and expectations.
+- [x] Updated visual testing docs for scenario assertions.
+
+Files modified:
+  - src/ui/tui/screens/world_map.rs
+  - src/ui/tui/screens/inventory.rs
+  - scripts/visual_check.py
+  - tests/visual_scenarios.json
+  - docs/testing/step-through-testing.md
+  - docs/tasks/milestones/m62.md
+  - docs/tasks/backlog.md
+  - docs/tasks/current-sprint.md
+  - docs/tasks/done.md
+
+Validation:
+  - cargo check: pass
+  - visual_check scenarios: pass (`start_game`, `enter_world`, `move_around`, `open_inventory`, `combat_init`, `combat_attack`, `combat_flee`, `tidewatch_start`, `volcanic_curse_quest`, `underdark_shelf`)
+
+---
+
 ## 2026-02-26 — M61 follow-up bugfix (world map visibility regression)
 
 Issue:
