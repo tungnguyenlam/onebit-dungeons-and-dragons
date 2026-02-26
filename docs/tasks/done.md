@@ -1,7 +1,183 @@
+
 # Done
 
 > Completed tasks, newest first. Keep milestone/docs status synced using [../DOCS_MAP.md](../DOCS_MAP.md).
 > Older records (M0–M13): [archive/done-m00-m13.md](archive/done-m00-m13.md)
+
+---
+
+## 2026-02-26 — M61 follow-up bugfix (world map visibility regression)
+
+Issue:
+  - Non-fog weather was incorrectly using FOV masking, causing parts of larger rooms to disappear from map view.
+
+Fix:
+  - Apply FOV masking only when weather is `fog`.
+  - Keep full-room visibility for clear/rain/ash/snow.
+
+Files modified:
+  - src/ui/tui/screens/world_map.rs
+  - docs/gameplay/world.md
+
+Validation:
+  - cargo check: pass
+  - Headless visual dump: `test_outputs/m61_visibility_fix.txt`
+
+---
+
+## 2026-02-26 — Milestone 61: Map Widgets & World Map Utility
+
+- [x] Added world-map utility in `src/app/navigation/world_map_util.rs` to build region overview data.
+- [x] Added reusable map widgets in `src/ui/tui/widgets/map.rs` (room list + exits).
+- [x] Integrated widget panel into `src/ui/tui/screens/world_map.rs`.
+- [x] Added utility/widget tests and verified world map rendering path.
+
+**Validation:** `cargo check` pass, `cargo test` pass, headless visual dump snapshot saved.
+
+---
+
+## 2026-02-26 — Milestone 59 + 60: Weather, Hazards, Final Boss, Ending, New Game+
+
+M59:
+- [x] Weather/hazard systems
+- [x] Weather-aware combat/FOV
+
+M60:
+- [x] Final boss encounter trigger/content
+- [x] Ending calculation + credits screen
+- [x] New Game+ option
+- [x] Docs + backlog + done updates
+- [x] Validation + headless visual dumps
+
+Files modified/created (major):
+- src/game/world/weather.rs (new)
+- src/app/navigation/movement.rs
+- src/app/systems.rs
+- src/ui/tui/screens/world_map.rs
+- src/game/combat/attack/types.rs
+- src/game/combat/attack/engine.rs
+- src/app/combat/attack.rs
+- src/app/combat/ai.rs
+- src/game/story/ending.rs (new)
+- src/game/story/mod.rs
+- src/ui/tui/screens/ending.rs (new)
+- src/app/state/app_state.rs
+- src/app/combat/actions.rs
+- src/app/handlers/ui.rs
+- src/app/handlers/menus.rs
+- src/ui/tui/screens/main_menu.rs
+- assets/monsters/void_architect.toml (new)
+- assets/regions/underdark-shelf/rooms/abyss_entry.toml
+- docs/tasks/milestones/m59.md
+- docs/tasks/milestones/m60.md
+- docs/tasks/backlog.md
+- docs/tasks/done.md
+
+Validation:
+- cargo check: pass
+- cargo test: pass (144 tests)
+- Headless visual dump snapshots:
+  - test_outputs/m59_weather_world.txt
+  - test_outputs/m60_ending_screen.txt
+
+---
+
+## 2026-02-26 — Milestone 58: Bestiary & Shared Lore UI
+
+- [x] Added persistent discovery sets in `src/game/story/world_state/types.rs` with helper APIs in `src/game/story/world_state/flags.rs`.
+- [x] Wired lore discovery through `src/game/story/events.rs::inspect_lore`.
+- [x] Wired monster discovery + kill counters in `src/app/combat/actions.rs` on combat victory.
+- [x] Implemented `src/ui/tui/screens/bestiary.rs` and `src/ui/tui/screens/lore_library.rs`.
+- [x] Added `AppState::{Bestiary,LoreLibrary}` and event routing in app/renderer/input layers.
+- [x] Added world/journal shortcuts (`v` bestiary, `y` lore library) and updated world/journal screen hints.
+- [x] Completed remaining M57 harvest integration by invoking `harvest_from_monster` after combat wins.
+
+**Validation:** `cargo check` passes; headless visual dumps captured via `scripts/visual_check.py`.
+
+---
+
+## 2026-02-26 — Milestone 57: Crafting & Alchemy Systems
+
+Tasks completed this session:
+  1. Added is_ingredient and crafting_tags to ItemDef in data/types.rs
+  2. Created RecipeDef, RecipeIngredient, and RecipeSkillCheck types
+  3. Added RecipeDef to GlobalAssets and implemented recipe loading
+  4. Created CraftingSystem in game/items/crafting.rs
+  5. Added crafting methods to app/actions.rs (craft_item, get_available_recipes, harvest_from_monster)
+  6. Created Crafting UI screen (src/ui/tui/screens/crafting.rs)
+  7. Added AppState::Crafting and key bindings (c key)
+  8. Created ingredient items (spider_silk, dragon_scale, poison_sac, crystal_shard, leather)
+  9. Created result items (healing_potion_v2, reinforced_boots, dragon_scale_shield)
+  10. Created 5 recipes in assets/recipes/
+  11. Fixed all compilation errors and test failures
+
+Files modified/created:
+  - src/data/types.rs (added RecipeDef, is_ingredient, crafting_tags)
+  - src/data/loader/dir.rs (added RecipeDef HasId implementation)
+  - src/data/loader/global.rs (added recipes loading)
+  - src/game/items/crafting.rs (new - CraftingSystem)
+  - src/game/items/mod.rs (added crafting module)
+  - src/app/mod.rs (added recipe_defs field, handle_crafting dispatch)
+  - src/app/actions.rs (added craft_item, get_available_recipes, harvest_from_monster)
+  - src/app/state/app_state.rs (added Crafting state)
+  - src/app/handlers/ui.rs (added handle_crafting)
+  - src/app/handlers/world.rs (added OpenCrafting key binding)
+  - src/app/samples/items.rs (added new fields to samples)
+  - src/app/tests/equipment.rs (added new fields)
+  - src/ui/tui/screens/crafting.rs (new - Crafting UI)
+  - src/ui/tui/screens/mod.rs (added crafting module)
+  - src/ui/tui/renderer.rs (added Crafting rendering)
+  - src/ui/tui/input.rs (added 'c' key for crafting)
+  - src/main.rs (added Crafting render, key binding)
+  - src/renderer.rs (added OpenCrafting event)
+  - src/ui/gui/mod.rs (added OpenCrafting key)
+  - assets/items/spider_silk.toml (new)
+  - assets/items/dragon_scale.toml (new)
+  - assets/items/poison_sac.toml (new)
+  - assets/items/crystal_shard.toml (new)
+  - assets/items/leather.toml (new)
+  - assets/items/healing_potion_v2.toml (new)
+  - assets/items/reinforced_boots.toml (new)
+  - assets/items/dragon_scale_shield.toml (new)
+  - assets/recipes/*.toml (5 recipe files)
+
+Build status: cargo test passes (141 tests), asset validation passes.
+
+---
+
+## 2026-02-26 — Milestone 56: The Underdark Shelf & Act 3 Foundation
+
+Tasks completed this session:
+  1. Added Pit and Rift tile types to src/game/world/map.rs
+  2. Created Underdark Shelf region (region.toml) with 5 rooms
+  3. Created 5 rooms: cavern_entrance, fungal_groves, crystal_lake, drow_outpost, abyss_entry
+  4. Created drow-merchant-coven faction with 4 NPCs (merchant_zae, spore_herder, crystal_seer, myconid_sapient)
+  5. Created dialog files for all NPCs with faction reputation logic
+  6. Created Act 3 quest (silence-below.toml) with exploration, alliance-building, and final confrontation
+  7. Added connection from Ironhold Mines to Underdark Shelf (requires ritual_completed flag)
+  8. Added obsidian_heart item to ore_chamber (reward for completing volcanic curse)
+  9. Created rope_of_climbing and glowing_spores items
+  10. Created abyss_runes lore entry
+  11. Updated src/app/debug.rs to handle new tile types
+  12. Added visual test scenario for underdark_shelf
+  13. Fixed all asset validation errors
+
+Files modified/created:
+  - src/game/world/map.rs (modified - added Pit/Rift tiles)
+  - src/app/debug.rs (modified - added Pit/Rift to debug dump)
+  - assets/regions/underdark-shelf/region.toml (created)
+  - assets/regions/underdark-shelf/rooms/*.toml (5 files created)
+  - assets/regions/underdark-shelf/npcs/*.toml (4 files created)
+  - assets/regions/underdark-shelf/dialog/*.toml (4 files created)
+  - assets/quests/main/silence-below.toml (created)
+  - assets/items/rope_of_climbing.toml (created)
+  - assets/items/glowing_spores.toml (created)
+  - assets/lore/abyss_runes.toml (created)
+  - assets/regions/ironhold-mines/region.toml (modified - added connection)
+  - assets/regions/ironhold-mines/rooms/ore_chamber.toml (modified - added item)
+  - tests/visual_scenarios.json (modified - added scenario)
+
+Build status: cargo test passes (138 tests), asset validation passes.
 
 ---
 
