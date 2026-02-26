@@ -63,4 +63,37 @@ impl AbilityScores {
             _ => 0,
         }
     }
+
+    pub fn get_by_name(&self, name: &str) -> Option<u8> {
+        match name {
+            "strength" => Some(self.strength),
+            "dexterity" => Some(self.dexterity),
+            "constitution" => Some(self.constitution),
+            "intelligence" => Some(self.intelligence),
+            "wisdom" => Some(self.wisdom),
+            "charisma" => Some(self.charisma),
+            _ => None,
+        }
+    }
+
+    pub fn increase_by_name(&mut self, name: &str, amount: u8, cap: u8) -> bool {
+        let cur = match self.get_by_name(name) {
+            Some(v) => v,
+            None => return false,
+        };
+        let next = cur.saturating_add(amount).min(cap);
+        if next == cur {
+            return false;
+        }
+        match name {
+            "strength" => self.strength = next,
+            "dexterity" => self.dexterity = next,
+            "constitution" => self.constitution = next,
+            "intelligence" => self.intelligence = next,
+            "wisdom" => self.wisdom = next,
+            "charisma" => self.charisma = next,
+            _ => return false,
+        }
+        true
+    }
 }

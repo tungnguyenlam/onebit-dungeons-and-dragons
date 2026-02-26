@@ -25,27 +25,47 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     };
     let footer_lines = if app.show_help {
         vec![
-            Line::from("LEGEND: @=player  n=NPC  !=trigger  /=door  >=stairs down  <=stairs up"),
+            Line::from("LEGEND: @=player  n=NPC  !=trigger  /=door  v=stairs down  ^=stairs up"),
             Line::from("       c=chest  +=door closed  ~=deep water  ,=shallow water"),
             Line::from("       HP=health  MP=mana  XP=experience  $[=gold"),
             Line::from("Press ? to close help. Move: arrows/hjkl Interact: Enter"),
         ]
     } else if let Some(msg) = feedback {
+        let alloc_line = if app.player.skill_points > 0 {
+            format!(
+                "Allocate stats: 1 STR 2 DEX 3 CON 4 INT 5 WIS 6 CHA ({} free)",
+                app.player.skill_points
+            )
+        } else {
+            String::new()
+        };
         vec![
             Line::from(msg).style(Style::default().fg(t.warning)),
             Line::from(weather_effect),
             Line::from("Move: arrows/hjkl  Interact: Enter  ?: help"),
             Line::from("a combat  i inventory  c crafting  s spellbook"),
             Line::from("n journal  v bestiary  y lore"),
-            Line::from("p save  o load  b toggle sound  q quit"),
+            Line::from(if alloc_line.is_empty() {
+                "p save  o load  b toggle sound  q quit".to_string()
+            } else {
+                alloc_line
+            }),
         ]
     } else {
+        let alloc_line = if app.player.skill_points > 0 {
+            format!(
+                "Allocate stats: 1 STR 2 DEX 3 CON 4 INT 5 WIS 6 CHA ({} free)",
+                app.player.skill_points
+            )
+        } else {
+            "p save  o load  b toggle sound  q quit".to_string()
+        };
         vec![
             Line::from(weather_effect),
             Line::from("Move: arrows/hjkl  Interact: Enter  ?: help"),
             Line::from("a combat  i inventory  c crafting  s spellbook"),
             Line::from("n journal  v bestiary  y lore"),
-            Line::from("p save  o load  b toggle sound  q quit"),
+            Line::from(alloc_line),
         ]
     };
     let footer_height = (footer_lines.len() + 2) as u16;
@@ -174,8 +194,17 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
                 } else if let Some(_item) = room.items.iter().find(|i| i.position == [c, r]) {
                     line.push(Span::styled("c", Style::default().fg(t.item)));
                 } else if let Some(trigger) = room.trigger_at(c, r) {
-                    let (glyph, style) = render_trigger_tile(trigger, &t);
-                    line.push(Span::styled(glyph.to_string(), style));
+                    // Normal room-to-room traversal uses border exits now.
+                    // Hide local travel triggers to reduce map clutter.
+                    if matches!(trigger.kind, TriggerKind::Travel)
+                        && app.region.room(&trigger.target_id).is_some()
+                    {
+                        let (glyph, style) = render_map_tile(room.grid.get(c, r));
+                        line.push(Span::styled(glyph.to_string(), style));
+                    } else {
+                        let (glyph, style) = render_trigger_tile(trigger, &t);
+                        line.push(Span::styled(glyph.to_string(), style));
+                    }
                 } else {
                     let (glyph, style) = render_map_tile(room.grid.get(c, r));
                     line.push(Span::styled(glyph.to_string(), style));
@@ -241,7 +270,7 @@ fn render_trigger_tile(
     t: &crate::ui::tui::theme::Theme,
 ) -> (char, Style) {
     match trigger.kind {
-        TriggerKind::Travel => ('>', Style::default().fg(t.success)),
+        TriggerKind::Travel => ('!', Style::default().fg(t.success)),
         TriggerKind::Dialog => ('!', Style::default().fg(t.warning)),
         TriggerKind::Encounter => ('!', Style::default().fg(t.danger)),
         _ => ('!', Style::default().fg(t.warning)),
@@ -264,8 +293,8 @@ fn render_map_tile(tile: Option<Tile>) -> (char, Style) {
         Some(Tile::DoorClosed) => ('+', Style::default().fg(t.connection)),
         Some(Tile::DeepWater) => ('~', Style::default().fg(t.mana)),
         Some(Tile::ShallowWater) => ('.', Style::default().fg(t.mana)),
-        Some(Tile::StairsUp) => ('<', Style::default().fg(t.success)),
-        Some(Tile::StairsDown) => ('>', Style::default().fg(t.success)),
+        Some(Tile::StairsUp) => ('^', Style::default().fg(t.success)),
+        Some(Tile::StairsDown) => ('v', Style::default().fg(t.success)),
         Some(Tile::Chest) => ('c', Style::default().fg(t.item)),
         Some(Tile::Trigger) => ('!', Style::default().fg(t.warning)),
         _ => (' ', Style::default()),

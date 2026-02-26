@@ -1,0 +1,10 @@
+id = "ranger"
+name = "Ranger"
+hit_die = 10
+primary_ability = "dexterity"
+stat_growth = { dexterity = 1, wisdom = 1 }
+special_ability_perk = "alert"
+special_ability_level = 3
+saving_throw_proficiencies = ["strength", "dexterity"]
+armor_proficiencies = ["light", "medium", "shield"]
+weapon_proficiencies = ["simple", "martial"]

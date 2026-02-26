@@ -1,0 +1,10 @@
+id = "human"
+name = "Human"
+speed = 30
+size = "medium"
+ability_score_increases = { strength = 1, dexterity = 1, constitution = 1, intelligence = 1, wisdom = 1, charisma = 1 }
+level_growth_every = 4
+level_growth = { charisma = 1 }
+special_ability_perk = "alert"
+special_ability_level = 5
+languages = ["common"]

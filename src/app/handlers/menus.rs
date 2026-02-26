@@ -144,12 +144,22 @@ impl App {
                         .min(self.char_creation_ui.race_options.len().saturating_sub(1));
                 }
             }
-            GameEvent::Choice(n @ 1..=9) => {
+            GameEvent::Choice(_n @ 1..=9) => {}
+            GameEvent::TextInput(c) => {
                 if self.char_creation_ui.selected == 0 {
-                    self.char_creation_ui.name.push(char::from(b'0' + n));
+                    if self.char_creation_ui.name.len() < 20 {
+                        self.char_creation_ui.name.push(c);
+                    }
                 }
             }
-            GameEvent::Back | GameEvent::Cancel => self.transition(AppState::MainMenu),
+            GameEvent::Back => {
+                if self.char_creation_ui.selected == 0 {
+                    self.char_creation_ui.name.pop();
+                } else {
+                    self.transition(AppState::MainMenu);
+                }
+            }
+            GameEvent::Cancel => self.transition(AppState::MainMenu),
             GameEvent::Confirm => {
                 if self.char_creation_ui.selected == 3 {
                     self.apply_character_creation();

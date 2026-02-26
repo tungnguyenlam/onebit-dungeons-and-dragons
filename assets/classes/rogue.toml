@@ -1,0 +1,10 @@
+id = "rogue"
+name = "Rogue"
+hit_die = 8
+primary_ability = "dexterity"
+stat_growth = { dexterity = 1 }
+special_ability_perk = "mobile"
+special_ability_level = 3
+saving_throw_proficiencies = ["dexterity", "intelligence"]
+armor_proficiencies = ["light"]
+weapon_proficiencies = ["simple", "hand_crossbow", "rapier", "shortsword"]

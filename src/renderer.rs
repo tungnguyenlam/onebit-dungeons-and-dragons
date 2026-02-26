@@ -44,6 +44,8 @@ pub enum GameEvent {
 
     // --- dialog choice (key 1–9) ---
     Choice(u8),
+    /// Raw text input (used by name entry in character creation).
+    TextInput(char),
 
     // --- system ---
     /// Fired every ~250 ms when there is no keyboard input. Used to advance

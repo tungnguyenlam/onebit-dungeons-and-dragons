@@ -25,7 +25,8 @@ pub fn map_key(key: KeyEvent) -> GameEvent {
         KeyCode::Left | KeyCode::Char('h') => GameEvent::MoveLeft,
         KeyCode::Right | KeyCode::Char('l') => GameEvent::MoveRight,
         KeyCode::Enter => GameEvent::Confirm,
-        KeyCode::Esc | KeyCode::Backspace => GameEvent::Cancel,
+        KeyCode::Esc => GameEvent::Cancel,
+        KeyCode::Backspace => GameEvent::Back,
 
         // In-game shortcuts
         KeyCode::Char('i') => GameEvent::OpenInventory,
@@ -46,6 +47,10 @@ pub fn map_key(key: KeyEvent) -> GameEvent {
 
         // Dialog choices
         KeyCode::Char(c @ '1'..='9') => GameEvent::Choice(c as u8 - b'0'),
+        KeyCode::Char(c) if c.is_ascii_alphabetic() && c.is_ascii_uppercase() => {
+            GameEvent::TextInput(c)
+        }
+        KeyCode::Char(' ') => GameEvent::TextInput(' '),
 
         _ => GameEvent::Tick, // unrecognised — treated as no-op
     }

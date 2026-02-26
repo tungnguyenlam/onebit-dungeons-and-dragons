@@ -1,0 +1,10 @@
+id = "elf"
+name = "Elf"
+speed = 30
+size = "medium"
+ability_score_increases = { dexterity = 2, intelligence = 1 }
+level_growth_every = 3
+level_growth = { dexterity = 1 }
+special_ability_perk = "lucky"
+special_ability_level = 3
+languages = ["common", "elvish"]

@@ -1,0 +1,10 @@
+id = "halfling"
+name = "Halfling"
+speed = 25
+size = "small"
+ability_score_increases = { dexterity = 2, charisma = 1 }
+level_growth_every = 4
+level_growth = { charisma = 1 }
+special_ability_perk = "lucky"
+special_ability_level = 2
+languages = ["common", "halfling"]

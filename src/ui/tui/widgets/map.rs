@@ -17,7 +17,7 @@ pub fn room_list_lines(overview: &RegionOverview) -> Vec<Line<'static>> {
     lines.push(Line::from(""));
     lines.push(Line::from("Rooms:"));
     for room in &overview.room_ids {
-        let marker = if room == &overview.current_room { ">" } else { " " };
+        let marker = if room == &overview.current_room { "*" } else { " " };
         lines.push(Line::from(format!("{marker} {room}")));
     }
     lines
@@ -49,7 +49,7 @@ pub fn exit_lines(overview: &RegionOverview) -> Vec<Line<'static>> {
             Style::default().fg(t.warning)
         };
         lines.push(Line::from(vec![
-            Span::raw(format!("- {} -> {}:{} ", exit.label, exit.to_region, exit.to_room)),
+            Span::raw(format!("- {} to {}:{} ", exit.label, exit.to_region, exit.to_room)),
             Span::styled(format!("[{status}]"), style.add_modifier(Modifier::BOLD)),
         ]));
     }
@@ -76,7 +76,7 @@ mod tests {
             .into_iter()
             .map(|l| l.to_string())
             .collect::<Vec<_>>();
-        assert!(lines.iter().any(|l| l.contains("> b")));
+        assert!(lines.iter().any(|l| l.contains("* b")));
         assert!(lines.iter().any(|l| l.contains("Landmark: Beacon")));
     }
 

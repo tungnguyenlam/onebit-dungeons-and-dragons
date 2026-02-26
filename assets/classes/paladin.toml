@@ -1,0 +1,10 @@
+id = "paladin"
+name = "Paladin"
+hit_die = 10
+primary_ability = "charisma"
+stat_growth = { strength = 1, charisma = 1 }
+special_ability_perk = "heavy_armor_prof"
+special_ability_level = 2
+saving_throw_proficiencies = ["wisdom", "charisma"]
+armor_proficiencies = ["light", "medium", "heavy", "shield"]
+weapon_proficiencies = ["simple", "martial"]

@@ -1,7 +1,7 @@
 use crate::data::loader::{load_global_assets, load_lore, load_monsters, load_quests, load_region};
 use crate::data::types::{
-    DialogTree, FeatDef, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, QuestKind,
-    QuestStageDef, QuestTransition, RecipeDef, SpellDef,
+    ClassDef, DialogTree, FeatDef, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, QuestKind,
+    QuestStageDef, QuestTransition, RaceDef, RecipeDef, SpellDef,
 };
 use crate::game::{
     character::{progression::level_for_xp, AbilityScores, Character},
@@ -43,6 +43,8 @@ pub struct App {
     pub player: Character,
     pub item_defs: HashMap<String, ItemDef>,
     pub spell_defs: HashMap<String, SpellDef>,
+    pub class_defs: HashMap<String, ClassDef>,
+    pub race_defs: HashMap<String, RaceDef>,
     pub monster_defs: HashMap<String, MonsterDef>,
     pub feat_defs: HashMap<String, FeatDef>,
     pub recipe_defs: HashMap<String, RecipeDef>,
@@ -92,6 +94,16 @@ impl App {
             .ok()
             .filter(|m| !m.is_empty())
             .unwrap_or_else(sample_monster_defs);
+        let class_defs = global_assets
+            .as_ref()
+            .map(|ga| ga.classes.clone())
+            .filter(|m| !m.is_empty())
+            .unwrap_or_else(sample_class_defs);
+        let race_defs = global_assets
+            .as_ref()
+            .map(|ga| ga.races.clone())
+            .filter(|m| !m.is_empty())
+            .unwrap_or_else(sample_race_defs);
         let lore_defs = global_assets
             .as_ref()
             .map(|ga| ga.lore.clone())
@@ -192,11 +204,35 @@ impl App {
                 (region, npcs, dialogs, room_id, spawn)
             };
 
+        let mut char_creation_ui = CharacterCreationUiState::default();
+        let mut class_opts = class_defs.keys().cloned().collect::<Vec<_>>();
+        class_opts.sort();
+        if !class_opts.is_empty() {
+            char_creation_ui.class_options = class_opts;
+            char_creation_ui.class_index = char_creation_ui
+                .class_options
+                .iter()
+                .position(|c| c == "fighter")
+                .unwrap_or(0);
+        }
+        let mut race_opts = race_defs.keys().cloned().collect::<Vec<_>>();
+        race_opts.sort();
+        if !race_opts.is_empty() {
+            char_creation_ui.race_options = race_opts;
+            char_creation_ui.race_index = char_creation_ui
+                .race_options
+                .iter()
+                .position(|r| r == "human")
+                .unwrap_or(0);
+        }
+
         Self {
             state: AppState::default(),
             player,
             item_defs,
             spell_defs,
+            class_defs,
+            race_defs,
             monster_defs,
             feat_defs,
             recipe_defs,
@@ -219,7 +255,7 @@ impl App {
             sound_enabled: false,
             sound_queue: RefCell::new(Vec::new()),
             menu_ui: MainMenuUiState::default(),
-            char_creation_ui: CharacterCreationUiState::default(),
+            char_creation_ui,
             journal_ui: JournalUiState::default(),
             settings_ui: SettingsUiState::default(),
             settings: SettingsConfig::default(),

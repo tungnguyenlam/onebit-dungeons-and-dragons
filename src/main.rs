@@ -164,7 +164,7 @@ pub fn run_text_mode(mut app: App, step: bool, key: &str) -> anyhow::Result<()> 
     // 1. Process the input key if we are stepping
     if step && !key.is_empty() {
         for c in key.chars() {
-            if let Some(event) = char_to_game_event(c) {
+            if let Some(event) = char_to_game_event_for_app(c, &app) {
                 if let Ok(ControlFlow::Exit) = app.handle_event(event) {
                     break;
                 }
@@ -281,36 +281,50 @@ pub fn run_step_mode(mut renderer: Box<dyn GameRenderer>, mut app: App) -> Resul
 fn char_to_game_event(c: char) -> Option<GameEvent> {
     match c {
         // Navigation (vim-style or direct letters)
-        'k' | 'K' => Some(GameEvent::MoveUp),
-        'j' | 'J' => Some(GameEvent::MoveDown),
-        'h' | 'H' => Some(GameEvent::MoveLeft),
-        'l' | 'L' => Some(GameEvent::MoveRight),
+        'k' => Some(GameEvent::MoveUp),
+        'j' => Some(GameEvent::MoveDown),
+        'h' => Some(GameEvent::MoveLeft),
+        'l' => Some(GameEvent::MoveRight),
         // Actions
         '\r' | '\n' | ' ' => Some(GameEvent::Confirm),
         '\x1B' => Some(GameEvent::Cancel), // ESC
         '\x7F' => Some(GameEvent::Back),   // Backspace
         // In-game actions
-        'i' | 'I' => Some(GameEvent::OpenInventory),
-        'c' | 'C' => Some(GameEvent::OpenCrafting),
-        'v' | 'V' => Some(GameEvent::OpenBestiary),
-        'y' | 'Y' => Some(GameEvent::OpenLoreLibrary),
-        's' | 'S' => Some(GameEvent::OpenSpellbook),
-        'n' | 'N' => Some(GameEvent::OpenJournal),
-        'm' | 'M' => Some(GameEvent::OpenMap),
+        'i' => Some(GameEvent::OpenInventory),
+        'c' => Some(GameEvent::OpenCrafting),
+        'v' => Some(GameEvent::OpenBestiary),
+        'y' => Some(GameEvent::OpenLoreLibrary),
+        's' => Some(GameEvent::OpenSpellbook),
+        'n' => Some(GameEvent::OpenJournal),
+        'm' => Some(GameEvent::OpenMap),
         'p' | 'P' => Some(GameEvent::SaveGame),
         'o' | 'O' => Some(GameEvent::LoadGame),
-        'a' | 'A' => Some(GameEvent::Attack),
-        'f' | 'F' => Some(GameEvent::Choice(4)),
+        'a' => Some(GameEvent::Attack),
+        'f' => Some(GameEvent::Choice(4)),
         '.' => Some(GameEvent::Wait),
-        't' | 'T' => Some(GameEvent::Tick),
+        't' => Some(GameEvent::Tick),
         '?' => Some(GameEvent::OpenHelp),
-        'b' | 'B' => Some(GameEvent::ToggleSound),
-        'q' | 'Q' => Some(GameEvent::Quit),
+        'b' => Some(GameEvent::ToggleSound),
+        'q' => Some(GameEvent::Quit),
         // Choice keys 1-9
         '1'..='9' => {
             let n = c.to_digit(10).unwrap();
             Some(GameEvent::Choice(n as u8))
         }
+        'A'..='Z' => Some(GameEvent::TextInput(c)),
         _ => None,
     }
+}
+
+fn char_to_game_event_for_app(c: char, app: &App) -> Option<GameEvent> {
+    if matches!(app.state, app::AppState::CharacterCreation) && app.char_creation_ui.selected == 0
+    {
+        if c.is_ascii_alphanumeric() || c == ' ' {
+            return Some(GameEvent::TextInput(c));
+        }
+        if c == '\x7F' {
+            return Some(GameEvent::Back);
+        }
+    }
+    char_to_game_event(c)
 }

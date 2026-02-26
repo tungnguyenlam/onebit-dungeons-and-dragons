@@ -1,0 +1,10 @@
+id = "wizard"
+name = "Wizard"
+hit_die = 6
+primary_ability = "intelligence"
+stat_growth = { intelligence = 1 }
+special_ability_perk = "lucky"
+special_ability_level = 4
+saving_throw_proficiencies = ["intelligence", "wisdom"]
+armor_proficiencies = []
+weapon_proficiencies = ["dagger", "quarterstaff"]

@@ -1,0 +1,10 @@
+id = "tiefling"
+name = "Tiefling"
+speed = 30
+size = "medium"
+ability_score_increases = { charisma = 2, intelligence = 1 }
+level_growth_every = 4
+level_growth = { intelligence = 1 }
+special_ability_perk = "alert"
+special_ability_level = 4
+languages = ["common", "infernal"]

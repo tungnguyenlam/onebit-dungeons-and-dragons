@@ -1,0 +1,10 @@
+id = "dwarf"
+name = "Dwarf"
+speed = 25
+size = "medium"
+ability_score_increases = { constitution = 2, wisdom = 1 }
+level_growth_every = 3
+level_growth = { constitution = 1 }
+special_ability_perk = "toughness"
+special_ability_level = 3
+languages = ["common", "dwarvish"]

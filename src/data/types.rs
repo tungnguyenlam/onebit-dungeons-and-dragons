@@ -274,6 +274,12 @@ pub struct ClassDef {
     pub hit_die: u8,
     pub primary_ability: String,
     #[serde(default)]
+    pub stat_growth: HashMap<String, u8>,
+    #[serde(default)]
+    pub special_ability_perk: String,
+    #[serde(default)]
+    pub special_ability_level: u8,
+    #[serde(default)]
     pub saving_throw_proficiencies: Vec<String>,
     #[serde(default)]
     pub armor_proficiencies: Vec<String>,
@@ -305,6 +311,14 @@ pub struct RaceDef {
     pub size: String,
     #[serde(default)]
     pub ability_score_increases: HashMap<String, i8>,
+    #[serde(default)]
+    pub level_growth_every: u8,
+    #[serde(default)]
+    pub level_growth: HashMap<String, u8>,
+    #[serde(default)]
+    pub special_ability_perk: String,
+    #[serde(default)]
+    pub special_ability_level: u8,
     #[serde(default)]
     pub traits: Vec<RaceTraitDef>,
     #[serde(default)]

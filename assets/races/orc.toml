@@ -1,0 +1,10 @@
+id = "orc"
+name = "Orc"
+speed = 30
+size = "medium"
+ability_score_increases = { strength = 2, constitution = 1 }
+level_growth_every = 3
+level_growth = { strength = 1 }
+special_ability_perk = "grappler"
+special_ability_level = 3
+languages = ["common", "orcish"]

@@ -99,9 +99,12 @@ Poisoned, Prone, Restrained, Stunned, Unconscious.
 ## Leveling & XP
 
 XP thresholds follow standard 5e SRD table. On level-up:
-1. Roll (or take average) hit die + CON modifier, add to max HP.
-2. May gain new class features (check class TOML `features` table).
-3. At levels 4, 8, 12, 16, 19: Ability Score Improvement (+2 to one, or +1 to two).
+1. Main class level increases and class-primary ability gains +1 (capped at 20).
+2. Max HP increases by class-derived per-level amount (with CON modifier).
+3. Gain free stat allocation points (`skill_points`, currently +2 per level gained).
+4. Free points can be allocated in world map using:
+   `1 STR`, `2 DEX`, `3 CON`, `4 INT`, `5 WIS`, `6 CHA` (cap 20).
+5. Race affects baseline progression through starting ability bonuses and speed.
 
 `src/game/character/progression.rs`
 

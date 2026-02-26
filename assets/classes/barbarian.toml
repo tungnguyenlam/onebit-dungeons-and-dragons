@@ -1,0 +1,10 @@
+id = "barbarian"
+name = "Barbarian"
+hit_die = 12
+primary_ability = "strength"
+stat_growth = { strength = 1, constitution = 1 }
+special_ability_perk = "toughness"
+special_ability_level = 2
+saving_throw_proficiencies = ["strength", "constitution"]
+armor_proficiencies = ["light", "medium", "shield"]
+weapon_proficiencies = ["simple", "martial"]

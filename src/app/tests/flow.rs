@@ -89,6 +89,37 @@ fn leveling_up_from_xp_updates_hp_and_level() {
 }
 
 #[test]
+fn level_up_increases_primary_stat_and_grants_alloc_points() {
+    let mut app = App::new();
+    app.player.classes = vec![crate::data::types::ClassLevel {
+        class_id: "fighter".into(),
+        level: 1,
+    }];
+    app.player.update_total_level();
+    let str_before = app.player.scores.strength;
+    let alloc_before = app.player.skill_points;
+
+    app.grant_player_xp(300);
+
+    assert_eq!(app.player.total_level, 2);
+    assert!(app.player.scores.strength >= str_before + 1);
+    assert_eq!(app.player.skill_points, alloc_before + 2);
+}
+
+#[test]
+fn free_stat_points_can_be_allocated_in_world() {
+    let mut app = App::new();
+    app.player.skill_points = 2;
+    let dex_before = app.player.scores.dexterity;
+
+    app.handle_world_map(crate::renderer::GameEvent::Choice(2))
+        .unwrap();
+
+    assert_eq!(app.player.scores.dexterity, dex_before + 1);
+    assert_eq!(app.player.skill_points, 1);
+}
+
+#[test]
 fn stepping_on_intra_region_travel_trigger_does_not_transition() {
     let mut app = App::new();
     app.handle_event(GameEvent::Confirm).unwrap();

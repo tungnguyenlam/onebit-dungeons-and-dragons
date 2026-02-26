@@ -40,6 +40,29 @@ impl App {
             GameEvent::MoveLeft => self.try_move_player(-1, 0)?,
             GameEvent::MoveRight => self.try_move_player(1, 0)?,
             GameEvent::Confirm | GameEvent::OpenMap => self.interact_current_tile(),
+            GameEvent::Choice(n @ 1..=6) => {
+                let ability = match n {
+                    1 => "strength",
+                    2 => "dexterity",
+                    3 => "constitution",
+                    4 => "intelligence",
+                    5 => "wisdom",
+                    6 => "charisma",
+                    _ => "",
+                };
+                if !ability.is_empty() {
+                    if self.allocate_stat_point(ability) {
+                        self.set_feedback(&format!(
+                            "Increased {}. Free points left: {}",
+                            ability, self.player.skill_points
+                        ));
+                    } else if self.player.skill_points == 0 {
+                        self.set_feedback("No free stat points to allocate.");
+                    } else {
+                        self.set_feedback("That stat is already at cap.");
+                    }
+                }
+            }
             _ => {}
         }
         Ok(())

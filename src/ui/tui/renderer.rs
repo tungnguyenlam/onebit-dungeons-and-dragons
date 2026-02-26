@@ -20,6 +20,7 @@ pub struct TuiRenderer {
     terminal: Terminal<CrosstermBackend<Stdout>>,
     vfx: vfx::VfxEngine,
     last_tick: std::time::Instant,
+    capture_name_input: bool,
 }
 
 impl TuiRenderer {
@@ -36,6 +37,7 @@ impl TuiRenderer {
             terminal,
             vfx: vfx::VfxEngine::new(),
             last_tick: std::time::Instant::now(),
+            capture_name_input: false,
         })
     }
 
@@ -50,6 +52,8 @@ impl TuiRenderer {
 
 impl GameRenderer for TuiRenderer {
     fn render(&mut self, app: &App) -> Result<()> {
+        self.capture_name_input = matches!(app.state, AppState::CharacterCreation)
+            && app.char_creation_ui.selected == 0;
         if app.sound_enabled {
             let sounds: Vec<_> = app.sound_queue.borrow_mut().drain(..).collect();
             for sound in sounds {
@@ -88,6 +92,15 @@ impl GameRenderer for TuiRenderer {
 
         if event::poll(frame_interval)? {
             if let Event::Key(key) = event::read()? {
+                if self.capture_name_input {
+                    match key.code {
+                        KeyCode::Char(c) if c.is_ascii_alphanumeric() || c == ' ' => {
+                            return Ok(GameEvent::TextInput(c));
+                        }
+                        KeyCode::Backspace => return Ok(GameEvent::Back),
+                        _ => {}
+                    }
+                }
                 return Ok(map_key(key));
             }
         }
