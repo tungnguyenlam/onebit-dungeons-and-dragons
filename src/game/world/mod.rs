@@ -27,6 +27,7 @@ pub mod fov;
 pub mod map;
 pub mod region;
 pub mod room;
+pub mod weather;
 
 // Convenience re-exports.
 // pub use fov::compute as compute_fov;

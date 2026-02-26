@@ -1,9 +1,13 @@
+pub mod bestiary;
 pub mod character_creation;
 pub mod combat;
+pub mod crafting;
 pub mod dialog;
+pub mod ending;
 pub mod game_over;
 pub mod inventory;
 pub mod journal;
+pub mod lore_library;
 pub mod main_menu;
 pub mod settings;
 pub mod spellbook;

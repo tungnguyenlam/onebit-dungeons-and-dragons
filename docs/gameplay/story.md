@@ -134,3 +134,17 @@ let count = quest_log.emit_blocked_hints(&world_state, &mut journal, turn);
 
 Hints are written as `Category::System` journal entries visible in the **System** tab.  
 A stage with *no* `next` entries is a terminal stage, not stuck — it is not reported.
+
+---
+
+## Ending & New Game+
+
+Finale resolution is computed from `WorldState` choices/flags (alliances,
+ritual outcomes, and silence resolution). The ending screen presents:
+
+1. Ending title/body from score tier.
+2. Credits scroll.
+3. Return to main menu with New Game+ unlocked.
+
+New Game+ starts a fresh world state while retaining progression baseline
+(level/XP carryover) and increasing enemy difficulty scaling.

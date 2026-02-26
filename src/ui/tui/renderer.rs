@@ -1,3 +1,7 @@
+use super::input::map_key;
+use super::screens;
+use super::theme;
+use super::vfx;
 use crate::app::{App, AppState};
 use crate::renderer::{GameEvent, GameRenderer};
 use anyhow::Result;
@@ -11,10 +15,6 @@ use std::{
     io::{self, Stdout, Write},
     time::Duration,
 };
-use super::input::map_key;
-use super::vfx;
-use super::theme;
-use super::screens;
 
 pub struct TuiRenderer {
     terminal: Terminal<CrosstermBackend<Stdout>>,
@@ -72,6 +72,10 @@ impl GameRenderer for TuiRenderer {
             AppState::Dialog(_) => screens::dialog::render(frame, app),
             AppState::Journal => screens::journal::render(frame, app),
             AppState::Inventory => screens::inventory::render(frame, app),
+            AppState::Crafting => screens::crafting::render(frame, app),
+            AppState::Bestiary => screens::bestiary::render(frame, app),
+            AppState::LoreLibrary => screens::lore_library::render(frame, app),
+            AppState::Ending => screens::ending::render(frame, app),
             AppState::Spellbook => screens::spellbook::render(frame, app),
             AppState::Settings => screens::settings::render(frame, app),
             AppState::GameOver => screens::game_over::render(frame, app),

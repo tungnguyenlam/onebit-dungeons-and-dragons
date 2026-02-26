@@ -4,28 +4,29 @@ use crate::game::{
     story::world_state::WorldState,
 };
 use rand::{Rng, SeedableRng};
-use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 /// Roll a d20 attack: `d20 + attack_bonus >= AC`.
 ///
 /// Natural 1 always misses. Natural 20 always crits (double damage dice).
 pub fn roll_attack(
     attacker: &AttackProfile<'_>,
     target: &DefenseProfile<'_>,
-    _ws: &WorldState,
+    ws: &WorldState,
 ) -> AttackOutcome {
     let mut rng = rand::rng();
-    roll_attack_with_rng(attacker, target, &mut rng)
+    roll_attack_with_rng(attacker, target, ws, &mut rng)
 }
 
 /// Deterministic helper for tests/replay.
 pub fn roll_attack_with_seed(
     attacker: &AttackProfile<'_>,
     target: &DefenseProfile<'_>,
+    ws: &WorldState,
     seed: u64,
 ) -> AttackOutcome {
     let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
-    roll_attack_with_rng(attacker, target, &mut rng)
+    roll_attack_with_rng(attacker, target, ws, &mut rng)
 }
 
 /// Roll saving throw against DC.
@@ -37,12 +38,17 @@ pub fn roll_saving_throw(save_bonus: i32, dc: i32) -> SaveOutcome {
 fn roll_attack_with_rng<R: Rng + ?Sized>(
     attacker: &AttackProfile<'_>,
     target: &DefenseProfile<'_>,
+    ws: &WorldState,
     rng: &mut R,
 ) -> AttackOutcome {
-    let attacker_disadv = attacker
+    let condition_disadv = attacker
         .conditions
         .iter()
         .any(Condition::imposes_attack_disadvantage);
+    let flag_disadv = ws.flag("volcanic_curse_active");
+    let fog_disadv = ws.flag("weather_fog") && attacker.is_ranged;
+    let rain_fire_disadv = ws.flag("weather_rain") && attacker.damage_type == "fire";
+    let attacker_disadv = condition_disadv || flag_disadv || fog_disadv || rain_fire_disadv;
     let target_grants_adv = target
         .conditions
         .iter()
@@ -60,7 +66,12 @@ fn roll_attack_with_rng<R: Rng + ?Sized>(
         (a.min(b), RollMode::Disadvantage)
     };
 
-    let total = d20 + attacker.attack_bonus;
+    let rain_ranged_penalty = if ws.flag("weather_rain") && attacker.is_ranged {
+        2
+    } else {
+        0
+    };
+    let total = d20 + attacker.attack_bonus - rain_ranged_penalty;
 
     let (hit_type, mut damage, inflicted_condition) = if d20 == 1 {
         (HitType::Miss, 0, None)

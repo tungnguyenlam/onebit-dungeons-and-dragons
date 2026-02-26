@@ -1,0 +1,35 @@
+id = "abyss_entry"
+name = "The Abyss Awakens"
+description = "A massive chasm yawns before you, radiating cold. Ancient runes pulse with dark energy, marking this as the threshold to the final confrontation."
+terminal = true
+grid = """
+################
+#..............#
+#..............#
+#....RRRRRR....#
+#....RRRRRR....#
+#......!.......#
+#..............#
+#..............#
+################
+"""
+
+[[triggers]]
+position = [5, 5]
+type = "quest_stage"
+target_id = "silence_below_started"
+once = true
+
+[[triggers]]
+position = [6, 5]
+type = "lore"
+target_id = "abyss_runes"
+once = true
+condition = "quest:silence_below_started"
+
+[[triggers]]
+position = [7, 5]
+type = "encounter"
+target_id = "void_architect"
+once = true
+condition = "quest:silence_below_started"

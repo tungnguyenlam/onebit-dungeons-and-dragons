@@ -56,7 +56,11 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     frame.render_widget(title, chunks[0]);
 
     // Menu options with selection highlight
-    let items = ["New Game", "Continue", "Load Save", "Quit"];
+    let mut items = vec!["New Game", "Continue", "Load Save"];
+    if app.ng_plus_unlocked {
+        items.push("New Game+");
+    }
+    items.push("Quit");
     let mut lines = Vec::new();
     for (idx, item) in items.iter().enumerate() {
         let is_selected = idx == app.menu_ui.selected;

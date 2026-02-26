@@ -9,50 +9,236 @@
 
 ## Active Task
 
-**Milestone:** M53 - Advanced Character Specialization (Feats & Multiclassing)
+**Milestone:** Backlog complete (M60 done)
 
-**Goal:** Implement the data structures and core logic for multiclassing and feats, enabling complex build options for players.
+**Goal:** All listed milestones through M60 are completed; next work should come from new milestone definition.
 
-**Spec:** See [milestones/m53.md](milestones/m53.md)
+**Spec:** Define next milestone in `docs/tasks/backlog.md` and add `docs/tasks/milestones/mXX.md`
 
 ---
 
 ```
-Date:          2026-02-23
-Completed:     M53 part 1 (Feats & Multiclassing Infrastructure)
+Date:          2026-02-26
+Completed:     M59 + M60 in one pass
 
-Tasks completed this session:
-  1. Updated `Character` struct to support multiple classes via `Vec<ClassLevel>` and feats via `Vec<String>`.
-  2. Implemented `FeatDef` struct and updated `GlobalAssets` to load feats from `assets/feats/`.
-  3. Implemented `HasId` for `FeatDef` to support automated asset loading.
-  4. Updated progression logic in `src/game/character/progression.rs` and `src/app/progression.rs` for multiclass/total_level scaling.
-  5. Refactored UI screens (Inventory, World Map, Debug) and combat setup to respect character leveling changes.
-  6. Fixed save validation and existing tests to accommodate the new structural invariants.
-  7. Added "Tough" feat as a sample data asset.
+Execution TODO plan:
+  [x] M59 weather/hazard systems
+  [x] M59 weather-aware combat/FOV
+  [x] M60 final boss encounter trigger/content
+  [x] M60 ending calculation + credits screen
+  [x] M60 New Game+ option
+  [x] Docs + backlog + done updates
+  [x] Validation + headless visual dumps
 
-Files modified/created:
-  - assets/feats/tough.toml (created)
-  - src/data/types.rs
-  - src/data/loader/global.rs
-  - src/data/loader/dir.rs
-  - src/game/character/stats/character.rs
-  - src/game/character/progression.rs
-  - src/game/save/validate.rs
-  - src/app/mod.rs
-  - src/app/progression.rs
-  - src/app/debug.rs
-  - src/app/combat/setup.rs
-  - src/app/tests/flow.rs
-  - src/app/tests/combat.rs
-  - src/ui/tui/screens/inventory.rs
+Files modified/created (major):
+  - src/game/world/weather.rs (new)
+  - src/app/navigation/movement.rs
+  - src/app/systems.rs
   - src/ui/tui/screens/world_map.rs
+  - src/game/combat/attack/types.rs
+  - src/game/combat/attack/engine.rs
+  - src/app/combat/attack.rs
+  - src/app/combat/ai.rs
+  - src/game/story/ending.rs (new)
+  - src/game/story/mod.rs
+  - src/ui/tui/screens/ending.rs (new)
+  - src/app/state/app_state.rs
+  - src/app/combat/actions.rs
+  - src/app/handlers/ui.rs
+  - src/app/handlers/menus.rs
+  - src/ui/tui/screens/main_menu.rs
+  - assets/monsters/void_architect.toml (new)
+  - assets/regions/underdark-shelf/rooms/abyss_entry.toml
+  - docs/tasks/milestones/m59.md
+  - docs/tasks/milestones/m60.md
+  - docs/tasks/backlog.md
+  - docs/tasks/done.md
 
-Build status: cargo test passes (136 tests).
+Validation:
+  - cargo check: pass
+  - cargo test: pass (144 tests)
+  - Headless visual dump snapshots:
+    - test_outputs/m59_weather_world.txt
+    - test_outputs/m60_ending_screen.txt
 
 Next for incoming agent:
-  - Implement the Feat selection UI (triggered at level 4, 8, etc.).
-  - Implement Multiclassing selection UI during level-up.
-  - Finalize mechanical effects of feats (like evaluating the `mechanical_effect` string or adding hardcoded handlers).
+  - Define M61 and add its spec before coding.
+```
+
+```
+Date:          2026-02-26
+Completed:     M58 - Bestiary & Shared Lore UI
+
+M58 TODO plan:
+  [x] Add explicit discovery sets and helper APIs in WorldState for monsters/lore.
+  [x] Wire discovery events: monster defeat updates bestiary; lore inspection updates lore library.
+  [x] Add new UI states/screens for Bestiary and Lore Library.
+  [x] Add key bindings + renderer/handler wiring for accessing new screens.
+  [x] Validate via cargo check and headless visual dump snapshots.
+
+M57 completion check:
+  - Status before this session: partially complete (harvesting helper existed but was not integrated into combat resolution).
+  - Completed in this session: combat victory now triggers `harvest_from_monster` for defeated enemies and awards harvested ingredients.
+
+Files modified:
+  - src/game/story/world_state/types.rs
+  - src/game/story/world_state/flags.rs
+  - src/game/story/events.rs
+  - src/app/combat/actions.rs
+  - src/app/actions.rs
+  - src/app/state/app_state.rs
+  - src/app/mod.rs
+  - src/renderer.rs
+  - src/main.rs
+  - src/ui/tui/input.rs
+  - src/ui/gui/mod.rs
+  - src/app/handlers/world.rs
+  - src/app/handlers/ui.rs
+  - src/ui/tui/renderer.rs
+  - src/ui/tui/screens/mod.rs
+  - src/ui/tui/screens/journal.rs
+  - src/ui/tui/screens/world_map.rs
+  - src/ui/tui/screens/bestiary.rs (new)
+  - src/ui/tui/screens/lore_library.rs (new)
+  - docs/tasks/milestones/m58.md
+  - README.md
+
+Build status: cargo check passes.
+Headless visual dump: snapshots captured for `enter_world + v` and `enter_world + y`.
+
+Next for incoming agent:
+  - Start M59 implementation from `docs/tasks/milestones/m59.md`.
+```
+
+```
+Date:          2026-02-26
+Completed:     M57 - Crafting & Alchemy Systems
+
+Tasks completed this session:
+  1. Added is_ingredient and crafting_tags to ItemDef in data/types.rs
+  2. Created RecipeDef, RecipeIngredient, and RecipeSkillCheck types
+  3. Added RecipeDef to GlobalAssets and implemented recipe loading
+  4. Created CraftingSystem in game/items/crafting.rs
+  5. Added crafting methods to app/actions.rs (craft_item, get_available_recipes, harvest_from_monster)
+  6. Created Crafting UI screen (src/ui/tui/screens/crafting.rs)
+  7. Added AppState::Crafting and key bindings (c key)
+  8. Created ingredient items (spider_silk, dragon_scale, poison_sac, crystal_shard, leather)
+  9. Created result items (healing_potion_v2, reinforced_boots, dragon_scale_shield)
+  10. Created 5 recipes in assets/recipes/
+  11. Fixed all compilation errors and test failures
+
+Files modified/created:
+  - src/data/types.rs (added RecipeDef, is_ingredient, crafting_tags)
+  - src/data/loader/dir.rs (added RecipeDef HasId implementation)
+  - src/data/loader/global.rs (added recipes loading)
+  - src/game/items/crafting.rs (new - CraftingSystem)
+  - src/game/items/mod.rs (added crafting module)
+  - src/app/mod.rs (added recipe_defs field, handle_crafting dispatch)
+  - src/app/actions.rs (added craft_item, get_available_recipes, harvest_from_monster)
+  - src/app/state/app_state.rs (added Crafting state)
+  - src/app/handlers/ui.rs (added handle_crafting)
+  - src/app/handlers/world.rs (added OpenCrafting key binding)
+  - src/app/samples/items.rs (added new fields to samples)
+  - src/app/tests/equipment.rs (added new fields)
+  - src/ui/tui/screens/crafting.rs (new - Crafting UI)
+  - src/ui/tui/screens/mod.rs (added crafting module)
+  - src/ui/tui/renderer.rs (added Crafting rendering)
+  - src/ui/tui/input.rs (added 'c' key for crafting)
+  - src/main.rs (added Crafting render, key binding)
+  - src/renderer.rs (added OpenCrafting event)
+  - src/ui/gui/mod.rs (added OpenCrafting key)
+  - assets/items/spider_silk.toml (new)
+  - assets/items/dragon_scale.toml (new)
+  - assets/items/poison_sac.toml (new)
+  - assets/items/crystal_shard.toml (new)
+  - assets/items/leather.toml (new)
+  - assets/items/healing_potion_v2.toml (new)
+  - assets/items/reinforced_boots.toml (new)
+  - assets/items/dragon_scale_shield.toml (new)
+  - assets/recipes/*.toml (5 recipe files)
+
+Build status: cargo test passes (141 tests), asset validation passes.
+
+Next for incoming agent:
+  - Implement the Survival skill check for crafting (optional enhancement)
+  - Add more recipes for different item types
+  - Add harvest mechanic integration with combat (call harvest_from_monster after combat)
+```
+
+```
+Date:          2026-02-26
+Completed:     M56 - The Underdark Shelf & Act 3 Foundation
+
+Tasks completed this session:
+  1. Added Pit and Rift tile types to src/game/world/map.rs
+  2. Created Underdark Shelf region (region.toml) with 5 rooms
+  3. Created 5 rooms: cavern_entrance, fungal_groves, crystal_lake, drow_outpost, abyss_entry
+  4. Created drow-merchant-coven faction with 4 NPCs (merchant_zae, spore_herder, crystal_seer, myconid_sapient)
+  5. Created dialog files for all NPCs with faction reputation logic
+  6. Created Act 3 quest (silence-below.toml) with exploration, alliance-building, and final confrontation
+  7. Added connection from Ironhold Mines to Underdark Shelf (requires ritual_completed flag)
+  8. Added obsidian_heart item to ore_chamber (reward for completing volcanic curse)
+  9. Created rope_of_climbing and glowing_spores items
+  10. Created abyss_runes lore entry
+  11. Updated src/app/debug.rs to handle new tile types
+  12. Added visual test scenario for underdark_shelf
+  13. Fixed all asset validation errors
+
+Files modified/created:
+  - src/game/world/map.rs (modified - added Pit/Rift tiles)
+  - src/app/debug.rs (modified - added Pit/Rift to debug dump)
+  - assets/regions/underdark-shelf/region.toml (created)
+  - assets/regions/underdark-shelf/rooms/*.toml (5 files created)
+  - assets/regions/underdark-shelf/npcs/*.toml (4 files created)
+  - assets/regions/underdark-shelf/dialog/*.toml (4 files created)
+  - assets/quests/main/silence-below.toml (created)
+  - assets/items/rope_of_climbing.toml (created)
+  - assets/items/glowing_spores.toml (created)
+  - assets/lore/abyss_runes.toml (created)
+  - assets/regions/ironhold-mines/region.toml (modified - added connection)
+  - assets/regions/ironhold-mines/rooms/ore_chamber.toml (modified - added item)
+  - tests/visual_scenarios.json (modified - added scenario)
+
+Build status: cargo test passes (138 tests), asset validation passes.
+
+Next for incoming agent:
+  - Implement the final boss encounter for Act 3 (M60)
+  - Add more visual test scenarios for Underdark Shelf exploration
+  - Add verticality mechanics (Dexterity saves for Pit/Rift tiles)
+```
+
+```
+Date:          2026-02-26
+Completed:     M55 - Act 2 Main Quest: The Volcanic Curse
+
+Tasks completed this session:
+  1. Updated `volcanic-curse.toml` to include full quest stages with investigation, artifact retrieval, and ritual choice
+  2. Created `cursed_volcanic_artifact.toml` quest item with volcanic curse effect
+  3. Enhanced Warden Brom's dialog to include lore about the volcano and dwarf-drow conflict
+  4. Enhanced Archivist Nyra's dialog to include lore about the volcanic curse and artifact location
+  5. Implemented trigger condition check in `execute_trigger` method
+  6. Added condition to travel trigger in Valley of Ash to only allow travel to Emberpeak after completing Valley Contract quest
+  7. Updated `quests.md` to document the completed Volcanic Curse quest
+  8. Added visual test scenario for the new quest
+
+Files modified/created:
+  - assets/quests/main/volcanic-curse.toml (modified)
+  - assets/items/cursed_volcanic_artifact.toml (created)
+  - assets/regions/emberpeak-summit/dialog/warden_brom.toml (modified)
+  - assets/regions/emberpeak-summit/dialog/archivist_nyra.toml (modified)
+  - assets/regions/valley-of-ash/rooms/cinder_ridge.toml (modified)
+  - src/app/navigation/interaction.rs (modified)
+  - docs/content/quests.md (modified)
+  - tests/visual_scenarios.json (modified)
+
+Build status: cargo test passes (138 tests), asset validation passes.
+
+Next for incoming agent:
+  - Implement the ritual choice mechanic in Ironhold Mines
+  - Add the cursed artifact to the Ironhold Mines loot table
+  - Implement volcanic curse effects (periodic fire damage/disadvantage)
+  - Test the full quest flow from Valley of Ash to Emberpeak and Ironhold Mines
+  - Add more visual test scenarios for different quest outcomes
 ```
 
 ```

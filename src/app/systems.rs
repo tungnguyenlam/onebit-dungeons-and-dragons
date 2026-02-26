@@ -1,4 +1,5 @@
 use crate::app::App;
+use crate::game::world::weather::WeatherType;
 use crate::game::save::{load_from_path, save_to_path, SaveGame, SAVE_FORMAT_VERSION};
 use crate::renderer::SoundEffect;
 use anyhow::Result;
@@ -56,20 +57,42 @@ impl App {
     }
 
     pub fn tick_story_systems(&mut self) {
+        let weather = WeatherType::from_region_tag(&self.region.weather);
+        weather.apply_world_flags(&mut self.world_state);
+        if weather == WeatherType::Ash && self.turn % 5 == 0 {
+            self.player.conditions.insert(crate::game::character::conditions::Condition::Poisoned);
+            self.set_feedback("Ash-choked air stings your lungs. You cough and lose focus.");
+        } else if weather != WeatherType::Ash {
+            self.player
+                .conditions
+                .remove(&crate::game::character::conditions::Condition::Poisoned);
+        }
+
         self.world_events
             .tick(&mut self.world_state, &mut self.journal, self.turn);
 
         // Auto-accept quests whose first-stage transition condition is satisfied
-        let unaccepted: Vec<String> = self.quests.defs.keys()
+        let unaccepted: Vec<String> = self
+            .quests
+            .defs
+            .keys()
             .filter(|id| !self.quests.states.contains_key(id.as_str()))
             .cloned()
             .collect();
         for qid in unaccepted {
             if let Some(def) = self.quests.defs.get(&qid) {
                 if let Some(first) = def.stages.first() {
-                    let should_accept = first.next.iter().any(|t| self.world_state.evaluate(&t.condition));
+                    let should_accept = first
+                        .next
+                        .iter()
+                        .any(|t| self.world_state.evaluate(&t.condition));
                     if should_accept {
-                        self.quests.accept_quest(&qid, &mut self.world_state, &mut self.journal, self.turn);
+                        self.quests.accept_quest(
+                            &qid,
+                            &mut self.world_state,
+                            &mut self.journal,
+                            self.turn,
+                        );
                     }
                 }
             }

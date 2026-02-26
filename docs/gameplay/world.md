@@ -69,6 +69,8 @@ Tile legend is defined per-project:
 | `X` | Chest / interactable |
 | `@` | NPC spawn point |
 | `!` | Trigger zone (encounter, dialog, lore) |
+| `O` | Pit hazard (damage + prone risk) |
+| `R` | Rift hazard (rope-assisted crossing or damage/restraint) |
 
 ---
 
@@ -96,3 +98,13 @@ position  = [7, 2]    # matches ! in grid
 type      = "dialog"  # dialog | encounter | lore | quest_stage
 target_id = "kael_encounter_1"
 condition = "not flag:met_kael"
+
+---
+
+## Weather & Visibility
+
+Regions declare weather in `region.toml` (`clear`, `rain`, `fog`, `ash`, etc.).
+
+- `fog` reduces visible map radius in the TUI.
+- `rain` penalizes ranged attacks and weakens fire-based attacks in combat.
+- `ash` periodically applies coughing pressure (modeled via temporary poisoned state).

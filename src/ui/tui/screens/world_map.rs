@@ -1,5 +1,6 @@
 use crate::app::App;
 use crate::game::world::map::Tile;
+use crate::game::world::{fov, weather::WeatherType};
 use crate::ui::tui::theme::{self, progress_bar, theme};
 use ratatui::{
     layout::{Constraint, Layout},
@@ -15,7 +16,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         Constraint::Length(4),
         Constraint::Length(4),
         Constraint::Min(7),
-        Constraint::Length(4),
+        Constraint::Length(6),
     ])
     .split(area);
 
@@ -44,8 +45,11 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             )
         })
         .style(Style::default().fg(t.text_primary)),
-        Line::from(format!("Room: {} ({}) | Turn: {}", room_name, app.current_room_id, app.turn))
-            .style(Style::default().fg(t.text_muted)),
+        Line::from(format!(
+            "Room: {} ({}) | Turn: {}",
+            room_name, app.current_room_id, app.turn
+        ))
+        .style(Style::default().fg(t.text_muted)),
     ])
     .block(
         Block::default()
@@ -94,11 +98,22 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
 
     // Map with semantic coloring
     let map_text = if let Some(room) = app.region.room(&app.current_room_id) {
+        let weather = WeatherType::from_region_tag(&app.region.weather);
+        let visible = fov::compute(
+            (app.player_pos.0 as i32, app.player_pos.1 as i32),
+            weather.fov_radius(),
+            &room.grid,
+        );
         let mut rows = Vec::new();
         for r in 0..room.height() {
             let mut line = Vec::new();
             for c in 0..room.width() {
                 let pos = (c, r);
+                let is_visible = visible.contains(&(c as i32, r as i32));
+                if !is_visible {
+                    line.push(Span::raw(" "));
+                    continue;
+                }
                 if pos == app.player_pos {
                     line.push(Span::styled(
                         "@",
@@ -135,6 +150,13 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
 
     // Controls footer
     let feedback = app.get_feedback();
+    let weather_effect = match WeatherType::from_region_tag(&app.region.weather) {
+        WeatherType::Rain => "Weather: Rain (-2 ranged accuracy, fire attacks disadvantaged)",
+        WeatherType::Fog => "Weather: Fog (reduced FOV, ranged attacks disadvantaged)",
+        WeatherType::Ash => "Weather: Ash (periodic coughing/poisoned pressure)",
+        WeatherType::Snow => "Weather: Snow (slippery footing)",
+        WeatherType::Clear => "Weather: Clear",
+    };
     let footer_lines = if app.show_help {
         vec![
             Line::from("LEGEND: @=player  n=NPC  !=trigger  /=door  >=stairs down  <=stairs up"),
@@ -145,14 +167,18 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     } else if let Some(msg) = feedback {
         vec![
             Line::from(msg).style(Style::default().fg(t.warning)),
+            Line::from(weather_effect),
             Line::from("Move: arrows/hjkl  Interact: Enter  ?: help"),
-            Line::from("a combat  i inventory  s spellbook  n journal"),
+            Line::from("a combat  i inventory  c crafting  s spellbook"),
+            Line::from("n journal  v bestiary  y lore"),
             Line::from("p save  o load  b toggle sound  q quit"),
         ]
     } else {
         vec![
+            Line::from(weather_effect),
             Line::from("Move: arrows/hjkl  Interact: Enter  ?: help"),
-            Line::from("a combat  i inventory  s spellbook  n journal"),
+            Line::from("a combat  i inventory  c crafting  s spellbook"),
+            Line::from("n journal  v bestiary  y lore"),
             Line::from("p save  o load  b toggle sound  q quit"),
         ]
     };
@@ -172,7 +198,10 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
 use crate::data::types::TriggerKind;
 use ratatui::text::Span;
 
-fn render_trigger_tile(trigger: &crate::data::types::TriggerDef, t: &crate::ui::tui::theme::Theme) -> (char, Style) {
+fn render_trigger_tile(
+    trigger: &crate::data::types::TriggerDef,
+    t: &crate::ui::tui::theme::Theme,
+) -> (char, Style) {
     match trigger.kind {
         TriggerKind::Travel => ('>', Style::default().fg(t.success)),
         TriggerKind::Dialog => ('!', Style::default().fg(t.warning)),

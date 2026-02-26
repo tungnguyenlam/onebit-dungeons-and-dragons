@@ -1,0 +1,39 @@
+id = "void_architect"
+name = "The Void Architect"
+cr = 15.0
+size = "huge"
+monster_type = "aberration"
+alignment = "chaotic_neutral"
+hp = "24d10+96"
+ac = 19
+speed = 30
+str_score = 18
+dex_score = 14
+con_score = 18
+int_score = 20
+wis_score = 16
+cha_score = 18
+xp = 13000
+resistances = ["fire", "cold", "lightning"]
+immunities = ["poison"]
+condition_immunities = ["charmed", "frightened"]
+
+[[actions]]
+name = "Rift Cleave"
+description = "A sweeping strike of void energy."
+attack_bonus = 10
+damage = "3d10+6"
+damage_type = "force"
+on_hit_condition = "restrained"
+
+[[actions]]
+name = "Entropy Beam"
+description = "A focused ray that warps armor and flesh."
+attack_bonus = 10
+damage = "4d8+4"
+damage_type = "necrotic"
+on_hit_condition = "poisoned"
+
+[[loot]]
+item_id = "crystal_shard"
+chance = 1.0

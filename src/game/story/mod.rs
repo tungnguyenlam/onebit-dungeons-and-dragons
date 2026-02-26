@@ -8,6 +8,7 @@
 ///
 /// See docs/gameplay/story.md and docs/tasks/backlog.md.
 pub mod dialog;
+pub mod ending;
 pub mod events;
 pub mod journal;
 pub mod quest;

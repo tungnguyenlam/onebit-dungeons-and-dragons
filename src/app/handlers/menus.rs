@@ -1,5 +1,5 @@
-use crate::app::App;
 use crate::app::state::{AppState, FocusedPane, JournalUiState};
+use crate::app::App;
 use crate::game::{
     items::equipment::EquipmentSlot,
     story::{
@@ -10,17 +10,36 @@ use crate::game::{
 use crate::renderer::{ControlFlow, GameEvent};
 use anyhow::Result;
 
-
 impl App {
+    fn max_main_menu_index(&self) -> usize {
+        if self.ng_plus_unlocked {
+            4
+        } else {
+            3
+        }
+    }
+
+    fn start_new_game_plus(&mut self) {
+        let inherited_level = self.ng_plus_inherited_level.max(2);
+        let inherited_xp = self.ng_plus_inherited_xp;
+        *self = App::new();
+        self.player.total_level = inherited_level;
+        self.player.xp = inherited_xp;
+        self.player.skill_points = self.player.skill_points.saturating_add(2);
+        self.settings.enemy_hp_multiplier = (self.settings.enemy_hp_multiplier + 0.2).min(2.0);
+        self.world_state.set_flag("ng_plus_active");
+        self.transition(AppState::WorldMap);
+    }
+
     pub fn handle_main_menu(&mut self, event: GameEvent) -> Result<()> {
         match event {
             GameEvent::MoveUp => {
                 self.menu_ui.selected = self.menu_ui.selected.saturating_sub(1);
             }
             GameEvent::MoveDown => {
-                self.menu_ui.selected = (self.menu_ui.selected + 1).min(3);
+                self.menu_ui.selected = (self.menu_ui.selected + 1).min(self.max_main_menu_index());
             }
-            GameEvent::Confirm => match self.menu_ui.selected {
+            GameEvent::Confirm | GameEvent::Choice(1) => match self.menu_ui.selected {
                 0 => self.transition(AppState::CharacterCreation),
                 1 => self.transition(AppState::WorldMap),
                 2 => {
@@ -29,9 +48,25 @@ impl App {
                     }
                     self.transition(AppState::WorldMap);
                 }
+                3 if self.ng_plus_unlocked => self.start_new_game_plus(),
                 3 => {}
+                4 => {}
                 _ => {}
             },
+            GameEvent::Choice(2) => {
+                self.menu_ui.selected = 1;
+                self.transition(AppState::WorldMap);
+            }
+            GameEvent::Choice(3) => {
+                self.menu_ui.selected = 2;
+                if let Err(_e) = self.load_from_default_path() {
+                    // In a real app we'd log this or show a message
+                }
+                self.transition(AppState::WorldMap);
+            }
+            GameEvent::Choice(4) => {
+                // Quit - do nothing for now
+            }
             _ => {}
         }
         Ok(())

@@ -1,6 +1,6 @@
-use crate::app::App;
 use crate::app::samples::combatant_from_monster;
 use crate::app::state::{AppState, CombatContext};
+use crate::app::App;
 use crate::game::{
     character::{conditions::Condition, Character},
     combat::{
@@ -101,6 +101,7 @@ impl App {
         let atk_profile = AttackProfile {
             id: attacker_id,
             attack_bonus: attacker_attack_bonus,
+            is_ranged: false,
             damage_dice: &attacker_damage_dice,
             damage_type: &attacker_damage_type,
             conditions: &attacker_conditions,
@@ -180,6 +181,7 @@ impl App {
         attacker_id: &str,
         target_id: &str,
         attack_bonus: i32,
+        is_ranged: bool,
         damage_dice: DiceExpr,
         damage_type: &str,
         on_hit_condition: Option<crate::game::character::conditions::Condition>,
@@ -220,6 +222,7 @@ impl App {
         let atk_profile = AttackProfile {
             id: attacker_id,
             attack_bonus,
+            is_ranged,
             damage_dice: &damage_dice,
             damage_type,
             conditions: &attacker_conditions,

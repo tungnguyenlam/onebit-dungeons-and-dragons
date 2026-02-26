@@ -5,6 +5,60 @@
 
 ---
 
+## 2026-02-26 — Milestone 60: Final Boss, Ending Variations & New Game+
+
+- [x] Added final boss asset `assets/monsters/void_architect.toml`.
+- [x] Wired Underdark final encounter trigger in `assets/regions/underdark-shelf/rooms/abyss_entry.toml`.
+- [x] Implemented ending evaluation logic in `src/game/story/ending.rs`.
+- [x] Added ending/credits TUI screen in `src/ui/tui/screens/ending.rs` and routed `AppState::Ending`.
+- [x] Combat victory now sets completion flags and transitions to ending after defeating `void_architect`.
+- [x] Added New Game+ menu path with retained progression and higher difficulty baseline.
+
+## 2026-02-26 — Milestone 59: Dynamic Weather & Environmental Hazards
+
+- [x] Added weather model in `src/game/world/weather.rs`.
+- [x] Weather flags are applied each story tick in `src/app/systems.rs`.
+- [x] Added hazard tile effects on movement (deep water/pit/rift) in `src/app/navigation/movement.rs`.
+- [x] Added weather impact to combat rolls in `src/game/combat/attack/engine.rs`.
+- [x] Added fog-based FOV masking and weather effect indicators in `src/ui/tui/screens/world_map.rs`.
+- [x] Added combat attack weather tests in `src/game/combat/attack/tests.rs`.
+
+## 2026-02-26 — Milestone 58: Bestiary & Shared Lore UI
+
+- [x] Added persistent discovery sets in `src/game/story/world_state/types.rs` with helper APIs in `src/game/story/world_state/flags.rs`.
+- [x] Wired lore discovery through `src/game/story/events.rs::inspect_lore`.
+- [x] Wired monster discovery + kill counters in `src/app/combat/actions.rs` on combat victory.
+- [x] Implemented `src/ui/tui/screens/bestiary.rs` and `src/ui/tui/screens/lore_library.rs`.
+- [x] Added `AppState::{Bestiary,LoreLibrary}` and event routing in app/renderer/input layers.
+- [x] Added world/journal shortcuts (`v` bestiary, `y` lore library) and updated world/journal screen hints.
+- [x] Completed remaining M57 harvest integration by invoking `harvest_from_monster` after combat wins.
+
+**Validation:** `cargo check` passes; headless visual dumps captured via `scripts/visual_check.py`.
+
+## 2026-02-26 — Milestone 55: Act 2 Main Quest: The Volcanic Curse
+
+### Quest Implementation
+- [x] `assets/quests/main/volcanic-curse.toml` — Updated with full quest stages (investigation, artifact retrieval, ritual choice)
+- [x] `assets/items/cursed_volcanic_artifact.toml` — Created quest item with volcanic curse effect
+- [x] `assets/regions/emberpeak-summit/dialog/warden_brom.toml` — Enhanced with lore about volcano and dwarf-drow conflict
+- [x] `assets/regions/emberpeak-summit/dialog/archivist_nyra.toml` — Enhanced with lore about volcanic curse and artifact location
+- [x] `src/app/navigation/interaction.rs` — Implemented trigger condition check
+- [x] `assets/regions/valley-of-ash/rooms/cinder_ridge.toml` — Added condition to travel trigger
+- [x] `docs/content/quests.md` — Documented the completed Volcanic Curse quest
+- [x] `tests/visual_scenarios.json` — Added visual test scenario for the new quest
+
+### Quest Stages
+1. **Start:** Unlocks after completing Valley Contract (Act 1)
+2. **Retrieve Artifact:** Find the cursed artifact in Ironhold Mines
+3. **Ritual Choice:** Decide to perform the ritual or destroy the artifact
+4. **Resolution:** Volcano stabilizes with different outcomes based on choice
+
+**Key Features:**
+- Cursed artifact imposes periodic fire damage/disadvantage while equipped
+- Travel to Emberpeak now requires Act 1 completion
+- Enhanced dialog with dwarven lore and backstory
+- Trigger conditions for quests and travel now properly implemented
+
 ## 2026-02-22 — Milestone 52: Flee Mechanics & Combat AI Targeting
 
 ### Combat Flow Refinements

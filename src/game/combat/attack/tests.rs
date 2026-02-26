@@ -1,7 +1,10 @@
 #[cfg(test)]
 mod tests {
     use crate::game::combat::attack::*;
-    use crate::game::{character::conditions::Condition, combat::CombatantState, dice::DiceExpr};
+    use crate::game::{
+        character::conditions::Condition, combat::CombatantState, dice::DiceExpr,
+        story::world_state::WorldState,
+    };
     use std::collections::HashSet;
 
     fn attacker() -> (DiceExpr, HashSet<Condition>) {
@@ -22,6 +25,10 @@ mod tests {
         )
     }
 
+    fn empty_ws() -> WorldState {
+        WorldState::new()
+    }
+
     #[test]
     fn seeded_attack_is_deterministic() {
         let (dice, atk_conds) = attacker();
@@ -29,6 +36,7 @@ mod tests {
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 5,
+            is_ranged: false,
             damage_dice: &dice,
             damage_type: "slashing",
             conditions: &atk_conds,
@@ -43,8 +51,9 @@ mod tests {
             immunities: &HashSet::new(),
         };
 
-        let a = roll_attack_with_seed(&atk, &def, 99);
-        let b = roll_attack_with_seed(&atk, &def, 99);
+        let ws = empty_ws();
+        let a = roll_attack_with_seed(&atk, &def, &ws, 99);
+        let b = roll_attack_with_seed(&atk, &def, &ws, 99);
         assert_eq!(a, b);
     }
 
@@ -74,6 +83,7 @@ mod tests {
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 5,
+            is_ranged: false,
             damage_dice: &dice,
             damage_type: "bludgeoning",
             conditions: &atk_conds,
@@ -88,7 +98,8 @@ mod tests {
             immunities: &HashSet::new(),
         };
 
-        let out = roll_attack_with_seed(&atk, &def, 1234);
+        let ws = empty_ws();
+        let out = roll_attack_with_seed(&atk, &def, &ws, 1234);
         assert!((1..=20).contains(&out.d20));
     }
 
@@ -111,6 +122,7 @@ mod tests {
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 4,
+            is_ranged: false,
             damage_dice: &dice,
             damage_type: "piercing",
             conditions: &atk_conds,
@@ -124,7 +136,8 @@ mod tests {
             vulnerabilities: &def_vuln,
             immunities: &HashSet::new(),
         };
-        let out = roll_attack_with_seed(&atk, &def, 42);
+        let ws = empty_ws();
+        let out = roll_attack_with_seed(&atk, &def, &ws, 42);
         assert_eq!(out.roll_mode, RollMode::Disadvantage);
     }
 
@@ -136,6 +149,7 @@ mod tests {
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 100,
+            is_ranged: false,
             damage_dice: &dice,
             damage_type: "poison",
             conditions: &atk_conds,
@@ -149,8 +163,9 @@ mod tests {
             vulnerabilities: &def_vuln,
             immunities: &HashSet::new(),
         };
+        let ws = empty_ws();
         // Seed chosen to avoid natural 1.
-        let out = roll_attack_with_seed(&atk, &def, 2);
+        let out = roll_attack_with_seed(&atk, &def, &ws, 2);
         assert!(matches!(out.hit_type, HitType::Hit | HitType::Critical));
         assert_eq!(out.inflicted_condition, Some(Condition::Poisoned));
     }
@@ -165,6 +180,7 @@ mod tests {
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 100, // always hit
+            is_ranged: false,
             damage_dice: &dice,
             damage_type: "fire",
             conditions: &atk_conds,
@@ -179,8 +195,9 @@ mod tests {
             immunities: &HashSet::new(),
         };
 
+        let ws = empty_ws();
         // Seed 2 gives 3 on d10. 3 / 2 = 1.
-        let out = roll_attack_with_seed(&atk, &def, 2);
+        let out = roll_attack_with_seed(&atk, &def, &ws, 2);
         assert_eq!(out.damage, 1);
     }
 
@@ -194,6 +211,7 @@ mod tests {
         let atk = AttackProfile {
             id: "a",
             attack_bonus: 100, // always hit
+            is_ranged: false,
             damage_dice: &dice,
             damage_type: "cold",
             conditions: &atk_conds,
@@ -208,8 +226,65 @@ mod tests {
             immunities: &HashSet::new(),
         };
 
+        let ws = empty_ws();
         // Seed 2 gives 3 on d10 (after hit roll). 3 * 2 = 6.
-        let out = roll_attack_with_seed(&atk, &def, 2);
+        let out = roll_attack_with_seed(&atk, &def, &ws, 2);
         assert_eq!(out.damage, 6);
+    }
+
+    #[test]
+    fn fog_applies_disadvantage_to_ranged_attacks() {
+        let dice = DiceExpr::new(1, 6, 0);
+        let atk_conds = HashSet::new();
+        let (def_conds, def_res, def_vuln, _def_imm) = target();
+        let atk = AttackProfile {
+            id: "a",
+            attack_bonus: 4,
+            is_ranged: true,
+            damage_dice: &dice,
+            damage_type: "piercing",
+            conditions: &atk_conds,
+            on_hit_condition: None,
+        };
+        let def = DefenseProfile {
+            id: "t",
+            armor_class: 12,
+            conditions: &def_conds,
+            resistances: &def_res,
+            vulnerabilities: &def_vuln,
+            immunities: &HashSet::new(),
+        };
+        let mut ws = empty_ws();
+        ws.set_flag("weather_fog");
+        let out = roll_attack_with_seed(&atk, &def, &ws, 42);
+        assert_eq!(out.roll_mode, RollMode::Disadvantage);
+    }
+
+    #[test]
+    fn rain_disadvantages_fire_attacks() {
+        let dice = DiceExpr::new(1, 6, 0);
+        let atk_conds = HashSet::new();
+        let (def_conds, def_res, def_vuln, _def_imm) = target();
+        let atk = AttackProfile {
+            id: "a",
+            attack_bonus: 4,
+            is_ranged: true,
+            damage_dice: &dice,
+            damage_type: "fire",
+            conditions: &atk_conds,
+            on_hit_condition: None,
+        };
+        let def = DefenseProfile {
+            id: "t",
+            armor_class: 12,
+            conditions: &def_conds,
+            resistances: &def_res,
+            vulnerabilities: &def_vuln,
+            immunities: &HashSet::new(),
+        };
+        let mut ws = empty_ws();
+        ws.set_flag("weather_rain");
+        let out = roll_attack_with_seed(&atk, &def, &ws, 42);
+        assert_eq!(out.roll_mode, RollMode::Disadvantage);
     }
 }

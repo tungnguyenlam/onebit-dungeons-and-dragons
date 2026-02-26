@@ -3,8 +3,8 @@ use crate::game::{
     story::world_state::WorldState,
 };
 use rand::{Rng, SeedableRng};
-use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum HitType {
@@ -37,6 +37,7 @@ pub struct AttackOutcome {
 pub struct AttackProfile<'a> {
     pub id: &'a str,
     pub attack_bonus: i32,
+    pub is_ranged: bool,
     pub damage_dice: &'a DiceExpr,
     pub damage_type: &'a str,
     pub conditions: &'a HashSet<Condition>,

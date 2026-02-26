@@ -157,7 +157,7 @@ fn main() -> Result<()> {
 
 pub fn run_text_mode(mut app: App, step: bool, key: &str) -> anyhow::Result<()> {
     use ratatui::{backend::TestBackend, Terminal};
-    
+
     // Attempt to load existing test state to persist between step runs
     let _ = app.load_from_default_path();
 
@@ -180,19 +180,21 @@ pub fn run_text_mode(mut app: App, step: bool, key: &str) -> anyhow::Result<()> 
     let mut terminal = Terminal::new(backend)?;
 
     // 3. Render the actual TUI to our headless buffer
-    terminal.draw(|f| {
-        match &app.state {
-            app::AppState::MainMenu => ui::tui::screens::main_menu::render(f, &app),
-            app::AppState::CharacterCreation => ui::tui::screens::character_creation::render(f, &app),
-            app::AppState::WorldMap => ui::tui::screens::world_map::render(f, &app),
-            app::AppState::Combat(_) => ui::tui::screens::combat::render(f, &app),
-            app::AppState::Dialog(_) => ui::tui::screens::dialog::render(f, &app),
-            app::AppState::Journal => ui::tui::screens::journal::render(f, &app),
-            app::AppState::Inventory => ui::tui::screens::inventory::render(f, &app),
-            app::AppState::Spellbook => ui::tui::screens::spellbook::render(f, &app),
-            app::AppState::Settings => ui::tui::screens::settings::render(f, &app),
-            app::AppState::GameOver => ui::tui::screens::game_over::render(f, &app),
-        }
+    terminal.draw(|f| match &app.state {
+        app::AppState::MainMenu => ui::tui::screens::main_menu::render(f, &app),
+        app::AppState::CharacterCreation => ui::tui::screens::character_creation::render(f, &app),
+        app::AppState::WorldMap => ui::tui::screens::world_map::render(f, &app),
+        app::AppState::Combat(_) => ui::tui::screens::combat::render(f, &app),
+        app::AppState::Dialog(_) => ui::tui::screens::dialog::render(f, &app),
+        app::AppState::Journal => ui::tui::screens::journal::render(f, &app),
+        app::AppState::Inventory => ui::tui::screens::inventory::render(f, &app),
+        app::AppState::Crafting => ui::tui::screens::crafting::render(f, &app),
+        app::AppState::Bestiary => ui::tui::screens::bestiary::render(f, &app),
+        app::AppState::LoreLibrary => ui::tui::screens::lore_library::render(f, &app),
+        app::AppState::Ending => ui::tui::screens::ending::render(f, &app),
+        app::AppState::Spellbook => ui::tui::screens::spellbook::render(f, &app),
+        app::AppState::Settings => ui::tui::screens::settings::render(f, &app),
+        app::AppState::GameOver => ui::tui::screens::game_over::render(f, &app),
     })?;
 
     // 4. Print the buffer row by row to standard output
@@ -204,7 +206,7 @@ pub fn run_text_mode(mut app: App, step: bool, key: &str) -> anyhow::Result<()> 
         }
         println!("{}", row);
     }
-    
+
     Ok(())
 }
 
@@ -289,6 +291,9 @@ fn char_to_game_event(c: char) -> Option<GameEvent> {
         '\x7F' => Some(GameEvent::Back),   // Backspace
         // In-game actions
         'i' | 'I' => Some(GameEvent::OpenInventory),
+        'c' | 'C' => Some(GameEvent::OpenCrafting),
+        'v' | 'V' => Some(GameEvent::OpenBestiary),
+        'y' | 'Y' => Some(GameEvent::OpenLoreLibrary),
         's' | 'S' => Some(GameEvent::OpenSpellbook),
         'n' | 'N' => Some(GameEvent::OpenJournal),
         'm' | 'M' => Some(GameEvent::OpenMap),

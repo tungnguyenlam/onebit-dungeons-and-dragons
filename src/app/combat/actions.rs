@@ -1,6 +1,6 @@
-use crate::app::App;
 use crate::app::samples::combatant_from_monster;
 use crate::app::state::{AppState, CombatContext};
+use crate::app::App;
 use crate::game::{
     character::{conditions::Condition, Character},
     combat::{
@@ -83,10 +83,24 @@ impl App {
             self.grant_player_xp(gained_xp);
 
             let mut loot_granted = Vec::new();
+            let mut harvest_granted = Vec::new();
             use rand::Rng;
             let mut rng = rand::rng();
 
             for monster in loot_items {
+                self.world_state.discover_monster(&monster.id);
+                self.world_state.register_monster_kill(&monster.id);
+                if monster.id == "void_architect" {
+                    if self.world_state.flag("drow_allied") {
+                        self.world_state.set_flag("silence_heard");
+                    } else {
+                        self.world_state.set_flag("silence_silenced");
+                    }
+                    self.world_state.set_flag("game_completed");
+                    self.world_state.set_flag("ng_plus_unlocked");
+                    self.ng_plus_unlocked = true;
+                }
+
                 if let Some(loot_table) = self.monster_defs.get(&monster.id).map(|m| &m.loot) {
                     for loot in loot_table {
                         if rng.random::<f32>() < loot.chance {
@@ -95,16 +109,27 @@ impl App {
                         }
                     }
                 }
+
+                if let Some(msg) = self.harvest_from_monster(&monster.id) {
+                    harvest_granted.push(msg);
+                }
             }
 
             if !loot_granted.is_empty() {
                 self.set_feedback(&format!("Found: {}", loot_granted.join(", ")));
+            } else if !harvest_granted.is_empty() {
+                self.set_feedback(&harvest_granted.join(" "));
             }
 
             self.world_state.set_flag("won_first_combat");
             self.modify_faction_rep("town_guard", 1);
             self.modify_faction_rep("goblin_tribe", -2);
-            self.transition(AppState::WorldMap);
+            if self.world_state.flag("game_completed") {
+                self.ending_scroll = 0;
+                self.transition(AppState::Ending);
+            } else {
+                self.transition(AppState::WorldMap);
+            }
         } else {
             self.modify_faction_rep("town_guard", -1);
             self.transition(AppState::GameOver);
@@ -134,13 +159,21 @@ impl App {
         true
     }
     pub fn try_flee(ctx: &mut CombatContext) -> bool {
-        let max_enemy_dex = ctx.state.combatants.values()
+        let max_enemy_dex = ctx
+            .state
+            .combatants
+            .values()
             .filter(|c| !c.is_player && c.is_alive())
             .map(|c| c.initiative_mod)
             .max()
             .unwrap_or(0);
 
-        let player_dex = ctx.state.combatants.get("player").map(|p| p.initiative_mod).unwrap_or(0);
+        let player_dex = ctx
+            .state
+            .combatants
+            .get("player")
+            .map(|p| p.initiative_mod)
+            .unwrap_or(0);
 
         let p_roll = DiceExpr::new(1, 20, player_dex).roll();
         ctx.seed = (ctx.seed.wrapping_mul(1103515245).wrapping_add(12345)) & 0x7fffffff;
@@ -152,7 +185,10 @@ impl App {
             Self::push_log(ctx, "You successfully fled from combat!");
             true
         } else {
-            Self::push_log(ctx, format!("You failed to flee! ({} vs {})", p_roll, e_roll));
+            Self::push_log(
+                ctx,
+                format!("You failed to flee! ({} vs {})", p_roll, e_roll),
+            );
             false
         }
     }

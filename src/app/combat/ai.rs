@@ -1,6 +1,6 @@
-use crate::app::App;
 use crate::app::samples::combatant_from_monster;
 use crate::app::state::{AppState, CombatContext};
+use crate::app::App;
 use crate::game::{
     character::{conditions::Condition, Character},
     combat::{
@@ -94,6 +94,7 @@ impl App {
                             &current_id,
                             &target_id,
                             bonus,
+                            true,
                             dice,
                             &damage_type,
                             cond,
@@ -119,6 +120,7 @@ impl App {
                             &current_id,
                             &target_id,
                             bonus,
+                            true,
                             dice,
                             &damage_type,
                             cond,

@@ -1,5 +1,5 @@
-use crate::app::App;
 use crate::app::state::{AppState, FocusedPane, JournalUiState};
+use crate::app::App;
 use crate::game::{
     items::equipment::EquipmentSlot,
     story::{
@@ -98,6 +98,21 @@ impl App {
         Ok(())
     }
 
+    pub fn handle_crafting(&mut self, event: GameEvent) -> Result<()> {
+        match event {
+            GameEvent::Back | GameEvent::Cancel => self.transition(AppState::WorldMap),
+            GameEvent::Choice(n) if n >= 1 && n <= 9 => {
+                let available = self.get_available_recipes();
+                let idx = (n - 1) as usize;
+                if let Some(recipe_id) = available.get(idx) {
+                    self.craft_item(recipe_id);
+                }
+            }
+            _ => {}
+        }
+        Ok(())
+    }
+
     pub fn handle_journal(&mut self, event: GameEvent) -> Result<()> {
         match event {
             GameEvent::Back | GameEvent::Cancel => {
@@ -143,6 +158,37 @@ impl App {
                     self.journal_ui.selected = 0;
                     self.journal_ui.detail_scroll = 0;
                 }
+            }
+            GameEvent::OpenBestiary => self.transition(AppState::Bestiary),
+            GameEvent::OpenLoreLibrary => self.transition(AppState::LoreLibrary),
+            _ => {}
+        }
+        Ok(())
+    }
+
+    pub fn handle_bestiary(&mut self, event: GameEvent) -> Result<()> {
+        match event {
+            GameEvent::Back | GameEvent::Cancel => self.transition(AppState::Journal),
+            _ => {}
+        }
+        Ok(())
+    }
+
+    pub fn handle_lore_library(&mut self, event: GameEvent) -> Result<()> {
+        match event {
+            GameEvent::Back | GameEvent::Cancel => self.transition(AppState::Journal),
+            _ => {}
+        }
+        Ok(())
+    }
+
+    pub fn handle_ending(&mut self, event: GameEvent) -> Result<()> {
+        match event {
+            GameEvent::MoveDown => self.ending_scroll = self.ending_scroll.saturating_add(1),
+            GameEvent::MoveUp => self.ending_scroll = self.ending_scroll.saturating_sub(1),
+            GameEvent::Back | GameEvent::Cancel | GameEvent::Confirm => {
+                self.ending_scroll = 0;
+                self.transition(AppState::MainMenu);
             }
             _ => {}
         }
