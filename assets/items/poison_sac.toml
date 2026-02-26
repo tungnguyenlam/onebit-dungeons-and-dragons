@@ -1,0 +1,8 @@
+id = "poison_sac"
+name = "Poison Sac"
+type = "misc"
+weight = 0.2
+value_gp = 25
+description = "A gland containing deadly venom. Handle with care."
+is_ingredient = true
+crafting_tags = ["organic", "poison", "alchemical"]

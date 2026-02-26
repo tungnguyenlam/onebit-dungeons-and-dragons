@@ -28,6 +28,9 @@ pub enum GameEvent {
 
     // --- in-game actions ---
     OpenInventory,
+    OpenCrafting,
+    OpenBestiary,
+    OpenLoreLibrary,
     OpenSpellbook,
     OpenJournal,
     OpenMap,

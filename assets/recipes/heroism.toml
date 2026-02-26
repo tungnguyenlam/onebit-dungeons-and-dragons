@@ -1,0 +1,13 @@
+id = "recipe_heroism"
+name = "Elixir of Heroism"
+description = "Brew an elixir that grants temporary bravery."
+result_item = "elixir_of_heroism"
+result_quantity = 1
+
+[[ingredients]]
+item_id = "crystal_shard"
+quantity = 2
+
+[skill_check]
+skill = "survival"
+dc = 15

@@ -29,6 +29,9 @@ pub fn map_key(key: KeyEvent) -> GameEvent {
 
         // In-game shortcuts
         KeyCode::Char('i') => GameEvent::OpenInventory,
+        KeyCode::Char('c') => GameEvent::OpenCrafting,
+        KeyCode::Char('v') => GameEvent::OpenBestiary,
+        KeyCode::Char('y') => GameEvent::OpenLoreLibrary,
         KeyCode::Char('s') => GameEvent::OpenSpellbook,
         KeyCode::Char('n') => GameEvent::OpenJournal,
         KeyCode::Char('m') => GameEvent::OpenMap,

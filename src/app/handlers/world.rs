@@ -1,5 +1,5 @@
-use crate::app::App;
 use crate::app::state::{AppState, FocusedPane, JournalUiState};
+use crate::app::App;
 use crate::game::{
     items::equipment::EquipmentSlot,
     story::{
@@ -9,7 +9,6 @@ use crate::game::{
 };
 use crate::renderer::{ControlFlow, GameEvent};
 use anyhow::Result;
-
 
 impl App {
     pub fn handle_world_map(&mut self, event: GameEvent) -> Result<()> {
@@ -22,6 +21,9 @@ impl App {
             }
             GameEvent::OpenInventory => self.transition(AppState::Inventory),
             GameEvent::OpenSpellbook => self.transition(AppState::Spellbook),
+            GameEvent::OpenCrafting => self.transition(AppState::Crafting),
+            GameEvent::OpenBestiary => self.transition(AppState::Bestiary),
+            GameEvent::OpenLoreLibrary => self.transition(AppState::LoreLibrary),
             GameEvent::OpenJournal => {
                 self.journal.mark_read();
                 self.journal_ui.selected = 0;

@@ -1,0 +1,6 @@
+id = "healing_potion_v2"
+name = "Greater Healing Potion"
+type = "consumable"
+weight = 0.5
+value_gp = 75
+description = "Restores a significant amount of health."

@@ -320,6 +320,10 @@ pub struct ItemDef {
     pub armor: Option<ArmorDef>,
     #[serde(default)]
     pub bonuses: ItemBonuses,
+    #[serde(default)]
+    pub is_ingredient: bool,
+    #[serde(default)]
+    pub crafting_tags: Vec<String>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
@@ -352,6 +356,30 @@ pub enum ItemType {
     Consumable,
     Misc,
     Quest,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct RecipeDef {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub result_item: String,
+    pub result_quantity: u32,
+    pub ingredients: Vec<RecipeIngredient>,
+    #[serde(default)]
+    pub skill_check: Option<RecipeSkillCheck>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct RecipeIngredient {
+    pub item_id: String,
+    pub quantity: u32,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct RecipeSkillCheck {
+    pub skill: String,
+    pub dc: i32,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]

@@ -1,0 +1,14 @@
+id = "dragon_scale_shield"
+name = "Dragon Scale Shield"
+type = "armor"
+weight = 6.0
+value_gp = 500
+description = "A shield reinforced with dragon scales. Provides fire resistance."
+
+[armor]
+base_ac = 2
+type = "shield"
+stealth_disadvantage = false
+
+[bonuses]
+resistances = ["fire"]

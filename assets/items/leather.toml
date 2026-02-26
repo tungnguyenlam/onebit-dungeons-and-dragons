@@ -1,0 +1,8 @@
+id = "leather"
+name = "Leather"
+type = "misc"
+weight = 0.5
+value_gp = 5
+description = "Tanned leather hide, useful for crafting armor and equipment."
+is_ingredient = true
+crafting_tags = ["organic", "leather", "material"]

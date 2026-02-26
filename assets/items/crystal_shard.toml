@@ -1,0 +1,8 @@
+id = "crystal_shard"
+name = "Crystal Shard"
+type = "misc"
+weight = 0.3
+value_gp = 50
+description = "A fragment of magical crystal that hums with energy."
+is_ingredient = true
+crafting_tags = ["crystal", "magic", "arcane"]

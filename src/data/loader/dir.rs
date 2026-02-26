@@ -1,11 +1,12 @@
+use super::core::*;
 use crate::data::types::{
-    ClassDef, DialogTree, FeatDef, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, RaceDef, SpellDef,
+    ClassDef, DialogTree, FeatDef, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, RaceDef,
+    RecipeDef, SpellDef,
 };
 use anyhow::{Context, Result};
 use serde::de::DeserializeOwned;
-use std::path::{Path, PathBuf};
 use std::collections::HashMap;
-use super::core::*;
+use std::path::{Path, PathBuf};
 /// Load all `*.toml` files in a directory into a `HashMap<id, T>`.
 /// `T` must have an `id: String` field (accessed via a helper trait).
 pub fn load_dir<T: DeserializeOwned + HasId>(
@@ -73,3 +74,4 @@ impl_has_id!(SpellDef);
 impl_has_id!(QuestDef);
 impl_has_id!(LoreEntry);
 impl_has_id!(FeatDef);
+impl_has_id!(RecipeDef);

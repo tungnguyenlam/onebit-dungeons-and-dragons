@@ -1,4 +1,5 @@
 use crate::app::{App, AppState, DialogContext};
+use crate::game::items::crafting::CraftingSystem;
 
 impl App {
     pub fn start_dialog_with_npc(&mut self, npc_id: &str) {
@@ -42,6 +43,7 @@ impl App {
 
         let slot_idx = (spell_def.level.saturating_sub(1)) as usize;
         if slot_idx >= 9 || self.player.spell_slots[slot_idx] == 0 {
+            self.set_feedback("Not enough spell slots!");
             return;
         }
 
@@ -49,6 +51,61 @@ impl App {
             let amount = heal_dice.roll();
             self.player.heal(amount as u32);
             self.player.spell_slots[slot_idx] -= 1;
+            self.set_feedback(&format!(
+                "Casted {}! Healed for {} HP.",
+                spell_def.name, amount
+            ));
+        } else {
+            self.player.spell_slots[slot_idx] -= 1;
+            self.set_feedback(&format!("Casted {}.", spell_def.name));
         }
+    }
+
+    pub fn craft_item(&mut self, recipe_id: &str) -> bool {
+        let crafting = CraftingSystem::new(self.recipe_defs.clone());
+
+        if let Some(result) = crafting.craft(recipe_id, &mut self.player.inventory) {
+            let result_name = self
+                .item_defs
+                .get(&result)
+                .map(|i| i.name.as_str())
+                .unwrap_or(&result);
+            self.set_feedback(&format!("Crafted {}!", result_name));
+            true
+        } else {
+            self.set_feedback("Not enough ingredients!");
+            false
+        }
+    }
+
+    pub fn get_available_recipes(&self) -> Vec<String> {
+        let crafting = CraftingSystem::new(self.recipe_defs.clone());
+        crafting
+            .get_available_recipes(&self.player.inventory)
+            .into_iter()
+            .map(|r| r.id.clone())
+            .collect()
+    }
+
+    pub fn harvest_from_monster(&mut self, monster_id: &str) -> Option<String> {
+        let harvest_table = [
+            ("giant_spider", "spider_silk"),
+            ("ignis_cinder_drake", "dragon_scale"),
+            ("goblin_shaman", "poison_sac"),
+            ("ember_wraith", "crystal_shard"),
+        ];
+
+        for (mob, item) in harvest_table {
+            if monster_id.contains(mob) {
+                self.player.inventory.add(item, 1);
+                let item_name = self
+                    .item_defs
+                    .get(item)
+                    .map(|i| i.name.as_str())
+                    .unwrap_or(item);
+                return Some(format!("Harvested {} from the corpse.", item_name));
+            }
+        }
+        None
     }
 }

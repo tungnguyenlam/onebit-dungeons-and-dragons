@@ -1,0 +1,9 @@
+id = "recipe_greater_healing"
+name = "Greater Healing Potion"
+description = "Brew a more potent healing potion."
+result_item = "healing_potion_v2"
+result_quantity = 1
+
+[[ingredients]]
+item_id = "glowing_spores"
+quantity = 2

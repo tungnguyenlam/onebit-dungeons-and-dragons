@@ -1,0 +1,13 @@
+id = "recipe_reinforced_boots"
+name = "Reinforced Boots"
+description = "Craft boots reinforced with spider silk."
+result_item = "reinforced_boots"
+result_quantity = 1
+
+[[ingredients]]
+item_id = "spider_silk"
+quantity = 3
+
+[[ingredients]]
+item_id = "leather"
+quantity = 1

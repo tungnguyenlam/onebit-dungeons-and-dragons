@@ -106,6 +106,7 @@ pub fn inspect_lore(
         return false;
     }
     world.set_flag(seen_key);
+    world.discover_lore(&lore.id);
     journal.append(
         format!("lore-{}", lore.id),
         turn,

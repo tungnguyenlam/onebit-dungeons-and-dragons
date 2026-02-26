@@ -1,0 +1,9 @@
+id = "recipe_antivenom"
+name = "Antivenom"
+description = "Create a potent antivenom from poison sacs."
+result_item = "antivenom"
+result_quantity = 1
+
+[[ingredients]]
+item_id = "poison_sac"
+quantity = 1

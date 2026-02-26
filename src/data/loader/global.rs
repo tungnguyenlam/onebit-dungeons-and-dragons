@@ -1,12 +1,13 @@
+use super::core::*;
+use super::dir::*;
 use crate::data::types::{
-    ClassDef, DialogTree, FeatDef, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, RaceDef, SpellDef,
+    ClassDef, DialogTree, FeatDef, ItemDef, LoreEntry, MonsterDef, NpcDef, QuestDef, RaceDef,
+    RecipeDef, SpellDef,
 };
 use anyhow::{Context, Result};
 use serde::de::DeserializeOwned;
-use std::path::{Path, PathBuf};
 use std::collections::HashMap;
-use super::dir::*;
-use super::core::*;
+use std::path::{Path, PathBuf};
 pub struct GlobalAssets {
     pub monsters: std::collections::HashMap<String, MonsterDef>,
     pub classes: std::collections::HashMap<String, ClassDef>,
@@ -16,6 +17,7 @@ pub struct GlobalAssets {
     pub quests: std::collections::HashMap<String, QuestDef>,
     pub lore: std::collections::HashMap<String, LoreEntry>,
     pub feats: std::collections::HashMap<String, FeatDef>,
+    pub recipes: std::collections::HashMap<String, RecipeDef>,
 }
 
 /// Load all global assets from `assets/`.
@@ -31,6 +33,7 @@ pub fn load_global_assets(base: impl AsRef<Path>) -> Result<GlobalAssets> {
         quests: load_dir_nested(base.join("quests"))?,
         lore: load_dir(base.join("lore"))?,
         feats: load_dir(base.join("feats")).unwrap_or_default(),
+        recipes: load_dir(base.join("recipes")).unwrap_or_default(),
     })
 }
 

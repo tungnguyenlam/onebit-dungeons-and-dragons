@@ -1,0 +1,17 @@
+id = "recipe_dragon_shield"
+name = "Dragon Scale Shield"
+description = "Forge a shield reinforced with dragon scales."
+result_item = "dragon_scale_shield"
+result_quantity = 1
+
+[[ingredients]]
+item_id = "dragon_scale"
+quantity = 2
+
+[[ingredients]]
+item_id = "leather"
+quantity = 1
+
+[skill_check]
+skill = "smiths_tools"
+dc = 15

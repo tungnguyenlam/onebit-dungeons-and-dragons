@@ -116,6 +116,9 @@ fn map_key(key: egui::Key) -> Option<GameEvent> {
 
         // In-game shortcuts
         egui::Key::I => GameEvent::OpenInventory,
+        egui::Key::C => GameEvent::OpenCrafting,
+        egui::Key::V => GameEvent::OpenBestiary,
+        egui::Key::Y => GameEvent::OpenLoreLibrary,
         egui::Key::S => GameEvent::OpenSpellbook,
         egui::Key::N => GameEvent::OpenJournal,
         egui::Key::M => GameEvent::OpenMap,

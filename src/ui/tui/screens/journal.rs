@@ -23,6 +23,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         category_label(category)
     ))];
     left.push(Line::from("←/→ switch  ↑/↓ select"));
+    left.push(Line::from("v bestiary  y lore library"));
     left.push(Line::from("Esc close"));
     left.push(Line::from(""));
     for (idx, entry) in entries.iter().enumerate() {

@@ -1,0 +1,8 @@
+id = "spider_silk"
+name = "Spider Silk"
+type = "misc"
+weight = 0.1
+value_gp = 10
+description = "Thin, strong silk harvested from giant spiders. Useful for crafting."
+is_ingredient = true
+crafting_tags = ["organic", "fiber"]

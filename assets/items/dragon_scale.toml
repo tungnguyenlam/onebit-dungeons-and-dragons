@@ -1,0 +1,8 @@
+id = "dragon_scale"
+name = "Dragon Scale"
+type = "misc"
+weight = 0.5
+value_gp = 100
+description = "A scale from a dragon. Radiates faint heat and is nearly indestructible."
+is_ingredient = true
+crafting_tags = ["dragon", "scale", "fire"]

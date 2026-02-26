@@ -1,0 +1,14 @@
+id = "reinforced_boots"
+name = "Reinforced Boots"
+type = "armor"
+weight = 2.0
+value_gp = 150
+description = "Boots reinforced with spider silk for extra protection."
+
+[armor]
+base_ac = 11
+type = "light"
+stealth_disadvantage = false
+
+[bonuses]
+armor_class_bonus = 1
