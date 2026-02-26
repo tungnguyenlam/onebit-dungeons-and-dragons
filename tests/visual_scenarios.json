@@ -13,10 +13,10 @@
       "expected_contains": ["Region: Valley of Ash", "Room: Ash Gate", "Local Map"]
     },
     "move_around": {
-      "keys": "\rjjj\rllllkk",
+      "keys": "\rjjj\rhhkk",
       "reset": true,
       "description": "Move the player character in the world",
-      "expected_contains": ["Region: Valley of Ash", "Local Map", "Turn: 5"]
+      "expected_contains": ["Region: Valley of Ash", "Room: Ember Square", "Turn: 3"]
     },
     "open_inventory": {
       "keys": "\rjjj\ri",

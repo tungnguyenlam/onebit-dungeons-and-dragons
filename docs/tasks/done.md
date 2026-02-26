@@ -6,6 +6,31 @@
 
 ---
 
+## 2026-02-26 — Milestone 64: Edge-Based Room Transitions
+
+- [x] Added edge-driven intra-region room transitions in movement handling.
+- [x] Added auto-travel when stepping onto travel trigger tiles.
+- [x] Added flow tests for trigger-step and boundary-push transitions.
+- [x] Updated map/world docs to describe traversal behavior.
+
+Files modified:
+  - src/app/navigation/movement.rs
+  - src/app/tests/flow.rs
+  - tests/visual_scenarios.json
+  - docs/content/map-format.md
+  - docs/gameplay/world.md
+  - docs/tasks/milestones/m64.md
+  - docs/tasks/backlog.md
+  - docs/tasks/current-sprint.md
+  - docs/tasks/done.md
+
+Validation:
+  - cargo check: pass
+  - visual_check scenarios: pass
+  - Note: `cargo test` blocked in this environment due crates.io DNS/network resolution failure.
+
+---
+
 ## 2026-02-26 — Milestone 63: Map Scale, Connectivity, and Landmarks
 
 - [x] Added room landmark support in runtime/data models.

@@ -11,12 +11,84 @@ impl App {
         };
         let next_col = self.player_pos.0 as i32 + dx;
         let next_row = self.player_pos.1 as i32 + dy;
+
+        let out_of_bounds = next_col < 0
+            || next_row < 0
+            || next_col >= room.width() as i32
+            || next_row >= room.height() as i32;
+        if out_of_bounds {
+            if self.try_edge_room_transition(dx, dy) {
+                self.set_feedback("You move into the next area.");
+            }
+            return Ok(());
+        }
+
         if room.grid.is_passable(next_col, next_row) {
             self.player_pos = (next_col as u32, next_row as u32);
+            if self.try_step_travel_trigger() {
+                return Ok(());
+            }
             self.apply_hazard_tile_effects();
             self.pass_turn()?;
+        } else {
+            let is_boundary_wall = next_col == 0
+                || next_row == 0
+                || next_col == room.width() as i32 - 1
+                || next_row == room.height() as i32 - 1;
+            if is_boundary_wall && self.try_edge_room_transition(dx, dy) {
+                self.set_feedback("You move into the next area.");
+            }
         }
         Ok(())
+    }
+
+    fn try_step_travel_trigger(&mut self) -> bool {
+        let room_id = self.current_room_id.clone();
+        let (col, row) = self.player_pos;
+        if let Some(trigger) = self
+            .region
+            .room(&room_id)
+            .and_then(|r| r.trigger_at(col, row).cloned())
+        {
+            if matches!(trigger.kind, TriggerKind::Travel) {
+                self.execute_trigger(&trigger);
+                return true;
+            }
+        }
+        false
+    }
+
+    fn try_edge_room_transition(&mut self, dx: i32, dy: i32) -> bool {
+        let room_id = self.current_room_id.clone();
+        let Some(room) = self.region.room(&room_id) else {
+            return false;
+        };
+
+        let width = room.width();
+        let height = room.height();
+        let candidate = room
+            .triggers
+            .iter()
+            .filter(|t| matches!(t.kind, TriggerKind::Travel))
+            .filter(|t| self.region.room(&t.target_id).is_some())
+            .min_by_key(|t| {
+                let x = t.position[0];
+                let y = t.position[1];
+                match (dx, dy) {
+                    (-1, 0) => x,
+                    (1, 0) => width.saturating_sub(1).saturating_sub(x),
+                    (0, -1) => y,
+                    (0, 1) => height.saturating_sub(1).saturating_sub(y),
+                    _ => u32::MAX,
+                }
+            })
+            .cloned();
+
+        if let Some(trigger) = candidate {
+            self.execute_trigger(&trigger);
+            return true;
+        }
+        false
     }
 
     fn apply_hazard_tile_effects(&mut self) {

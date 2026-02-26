@@ -117,6 +117,9 @@ hp = 18
 | `quest_stage` | `<quest-id>:<stage-id>` | Force advance quest stage |
 | `travel` | `<region-slug>:<room-id>` or `<room-id>` | Travel to another region or another room in the same region |
 
+In runtime movement, intra-region `travel` links can be reached by stepping onto the
+trigger tile directly or by pushing through the corresponding map boundary direction.
+
 ---
 
 ## Tile Legend (full)

@@ -74,6 +74,7 @@
 | M61 | Map Widgets & World Map Utility | ✅ done | [milestones/m61.md](milestones/m61.md) |
 | M62 | Visual Playtest Bug Sweep | ✅ done | [milestones/m62.md](milestones/m62.md) |
 | M63 | Map Scale, Connectivity, and Landmarks | ✅ done | [milestones/m63.md](milestones/m63.md) |
+| M64 | Edge-Based Room Transitions | ✅ done | [milestones/m64.md](milestones/m64.md) |
 
 Status: ✅ done · 🚧 in progress · 🔲 next / planned
 

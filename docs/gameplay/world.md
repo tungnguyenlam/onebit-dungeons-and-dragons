@@ -116,3 +116,9 @@ room visibility.
 The TUI world screen now combines:
 - **Local Map** (tile-level room view)
 - **World Map Widget** (room list + current room landmark + intra-region path links + available/locked regional exits)
+
+### Room-to-Room Movement
+
+- Intra-region movement is now edge-driven: pushing against a room boundary can transition to a connected room.
+- Stepping directly onto a `travel` trigger also transitions immediately.
+- `travel` triggers remain the mechanism for special transitions (stairs/portals/region hops) and for conditioned/locked routes.

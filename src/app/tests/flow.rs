@@ -87,3 +87,37 @@ fn leveling_up_from_xp_updates_hp_and_level() {
     assert_eq!(app.player.total_level, 2);
     assert!(app.player.max_hp > hp_before);
 }
+
+#[test]
+fn stepping_on_travel_trigger_moves_to_target_room() {
+    let mut app = App::new();
+    app.handle_event(GameEvent::Confirm).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::Confirm).unwrap();
+    assert_eq!(app.current_room_id, "ash_gate");
+
+    app.handle_event(GameEvent::MoveRight).unwrap();
+    app.handle_event(GameEvent::MoveRight).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+
+    assert_eq!(app.current_room_id, "ember_square");
+}
+
+#[test]
+fn pressing_into_room_edge_can_transition_rooms() {
+    let mut app = App::new();
+    app.handle_event(GameEvent::Confirm).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::Confirm).unwrap();
+    assert_eq!(app.current_room_id, "ash_gate");
+
+    app.handle_event(GameEvent::MoveLeft).unwrap();
+    app.handle_event(GameEvent::MoveLeft).unwrap();
+    app.handle_event(GameEvent::MoveLeft).unwrap();
+
+    assert_eq!(app.current_room_id, "ember_square");
+}
