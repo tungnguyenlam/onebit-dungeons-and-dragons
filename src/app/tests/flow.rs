@@ -121,3 +121,42 @@ fn pressing_into_room_edge_can_transition_rooms() {
 
     assert_eq!(app.current_room_id, "ember_square");
 }
+
+#[test]
+fn edge_transition_uses_direction_mapping() {
+    let mut app = App::new();
+    app.handle_event(GameEvent::Confirm).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::Confirm).unwrap();
+    assert_eq!(app.current_room_id, "ash_gate");
+
+    let turn_before = app.turn;
+    // Push north boundary; ash_gate's intra-region travel aligns west, so this should not transition.
+    app.handle_event(GameEvent::MoveUp).unwrap();
+    app.handle_event(GameEvent::MoveUp).unwrap();
+    app.handle_event(GameEvent::MoveUp).unwrap();
+
+    assert_eq!(app.current_room_id, "ash_gate");
+    assert!(app.turn >= turn_before + 1);
+}
+
+#[test]
+fn room_transition_consumes_turn() {
+    let mut app = App::new();
+    app.handle_event(GameEvent::Confirm).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::MoveDown).unwrap();
+    app.handle_event(GameEvent::Confirm).unwrap();
+    assert_eq!(app.current_room_id, "ash_gate");
+
+    let before = app.turn;
+    app.handle_event(GameEvent::MoveLeft).unwrap();
+    app.handle_event(GameEvent::MoveLeft).unwrap();
+    app.handle_event(GameEvent::MoveLeft).unwrap();
+
+    assert_eq!(app.current_room_id, "ember_square");
+    assert!(app.turn > before);
+}

@@ -16,7 +16,7 @@
       "keys": "\rjjj\rhhkk",
       "reset": true,
       "description": "Move the player character in the world",
-      "expected_contains": ["Region: Valley of Ash", "Room: Ember Square", "Turn: 3"]
+      "expected_contains": ["Region: Valley of Ash", "Room: Ash Gate", "Turn: 3"]
     },
     "open_inventory": {
       "keys": "\rjjj\ri",

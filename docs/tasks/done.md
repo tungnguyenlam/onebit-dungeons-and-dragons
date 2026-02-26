@@ -6,6 +6,29 @@
 
 ---
 
+## 2026-02-26 — Milestone 65: Traversal Directionality & Interaction Cleanup
+
+- [x] Fixed edge-transition directionality in movement handling.
+- [x] Ensured room-travel transitions consume turn progression.
+- [x] Removed redundant first-room dialog trigger overlap with NPCs.
+- [x] Added/updated flow + visual validation expectations.
+
+Files modified:
+  - src/app/navigation/movement.rs
+  - src/app/tests/flow.rs
+  - assets/regions/valley-of-ash/rooms/ash_gate.toml
+  - tests/visual_scenarios.json
+  - docs/tasks/milestones/m65.md
+  - docs/tasks/backlog.md
+  - docs/tasks/current-sprint.md
+  - docs/tasks/done.md
+
+Validation:
+  - cargo test: pass (151 tests)
+  - visual_check scenarios: pass
+
+---
+
 ## 2026-02-26 — Milestone 64: Edge-Based Room Transitions
 
 - [x] Added edge-driven intra-region room transitions in movement handling.

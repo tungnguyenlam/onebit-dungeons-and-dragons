@@ -17,7 +17,7 @@ impl App {
             || next_col >= room.width() as i32
             || next_row >= room.height() as i32;
         if out_of_bounds {
-            if self.try_edge_room_transition(dx, dy) {
+            if self.try_edge_room_transition(dx, dy)? {
                 self.set_feedback("You move into the next area.");
             }
             return Ok(());
@@ -25,7 +25,7 @@ impl App {
 
         if room.grid.is_passable(next_col, next_row) {
             self.player_pos = (next_col as u32, next_row as u32);
-            if self.try_step_travel_trigger() {
+            if self.try_step_travel_trigger()? {
                 return Ok(());
             }
             self.apply_hazard_tile_effects();
@@ -35,14 +35,14 @@ impl App {
                 || next_row == 0
                 || next_col == room.width() as i32 - 1
                 || next_row == room.height() as i32 - 1;
-            if is_boundary_wall && self.try_edge_room_transition(dx, dy) {
+            if is_boundary_wall && self.try_edge_room_transition(dx, dy)? {
                 self.set_feedback("You move into the next area.");
             }
         }
         Ok(())
     }
 
-    fn try_step_travel_trigger(&mut self) -> bool {
+    fn try_step_travel_trigger(&mut self) -> Result<bool> {
         let room_id = self.current_room_id.clone();
         let (col, row) = self.player_pos;
         if let Some(trigger) = self
@@ -52,25 +52,31 @@ impl App {
         {
             if matches!(trigger.kind, TriggerKind::Travel) {
                 self.execute_trigger(&trigger);
-                return true;
+                // Travel should always spend a world turn.
+                if matches!(self.state, AppState::WorldMap) {
+                    self.pass_turn()?;
+                }
+                return Ok(true);
             }
         }
-        false
+        Ok(false)
     }
 
-    fn try_edge_room_transition(&mut self, dx: i32, dy: i32) -> bool {
+    fn try_edge_room_transition(&mut self, dx: i32, dy: i32) -> Result<bool> {
         let room_id = self.current_room_id.clone();
         let Some(room) = self.region.room(&room_id) else {
-            return false;
+            return Ok(false);
         };
 
         let width = room.width();
         let height = room.height();
+        let desired_dir = edge_direction(dx, dy);
         let candidate = room
             .triggers
             .iter()
             .filter(|t| matches!(t.kind, TriggerKind::Travel))
             .filter(|t| self.region.room(&t.target_id).is_some())
+            .filter(|t| trigger_direction(t.position[0], t.position[1], width, height) == desired_dir)
             .min_by_key(|t| {
                 let x = t.position[0];
                 let y = t.position[1];
@@ -86,9 +92,12 @@ impl App {
 
         if let Some(trigger) = candidate {
             self.execute_trigger(&trigger);
-            return true;
+            if matches!(self.state, AppState::WorldMap) {
+                self.pass_turn()?;
+            }
+            return Ok(true);
         }
-        false
+        Ok(false)
     }
 
     fn apply_hazard_tile_effects(&mut self) {
@@ -131,5 +140,34 @@ impl App {
             return !room.grid.is_passable(col as i32, row as i32);
         }
         false
+    }
+}
+
+fn edge_direction(dx: i32, dy: i32) -> (i32, i32) {
+    match (dx.signum(), dy.signum()) {
+        (-1, 0) => (-1, 0),
+        (1, 0) => (1, 0),
+        (0, -1) => (0, -1),
+        (0, 1) => (0, 1),
+        _ => (0, 0),
+    }
+}
+
+fn trigger_direction(x: u32, y: u32, width: u32, height: u32) -> (i32, i32) {
+    let cx = (width as f32 - 1.0) / 2.0;
+    let cy = (height as f32 - 1.0) / 2.0;
+    let dx = x as f32 - cx;
+    let dy = y as f32 - cy;
+
+    if dx.abs() >= dy.abs() {
+        if dx < 0.0 {
+            (-1, 0)
+        } else {
+            (1, 0)
+        }
+    } else if dy < 0.0 {
+        (0, -1)
+    } else {
+        (0, 1)
     }
 }

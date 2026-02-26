@@ -1,9 +1,9 @@
 # Current Sprint
 ## Active Task
 
-**Milestone:** Backlog complete (M64 done)
+**Milestone:** Backlog complete (M65 done)
 
-**Goal:** All listed milestones through M64 are completed; next work should come from new milestone definition.
+**Goal:** All listed milestones through M65 are completed; next work should come from new milestone definition.
 
 **Spec:** Define next milestone in `docs/tasks/backlog.md` and add `docs/tasks/milestones/mXX.md`
 
