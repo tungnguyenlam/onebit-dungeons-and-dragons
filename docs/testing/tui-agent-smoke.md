@@ -1,24 +1,16 @@
-# Agent TUI Smoke Tool
+# Agent Smoke Testing
 
-Use this tool to let an agent run a deterministic, keyboard-driven smoke test
-of the TUI without manual interaction.
+Use this guide for deterministic, non-interactive smoke checks.
 
-Script:
-- `scripts/agent_tui_smoke.sh`
-- `scripts/agent_verify.sh` (standard agent verification entry point)
+Primary tools:
+- `python3 scripts/visual_check.py`
+- `scripts/agent_verify.sh` (tests + asset validation)
 
 ---
 
 ## What It Tests
 
-The scripted flow launches `cargo run -- --mode tui` and sends keys for:
-- Main menu -> character creation -> world map
-- Save (`p`) and load (`o`)
-- Open/close inventory, spellbook, journal
-- Enter/advance/exit combat
-- Quit cleanly (`q`)
-
-It then verifies `saves/slot1.toml` was created.
+The scenario runner drives the real game in text mode and validates key gameplay flow (menu -> world entry -> interactions) with reproducible key sequences from `tests/visual_scenarios.json`.
 
 ---
 
@@ -27,116 +19,51 @@ It then verifies `saves/slot1.toml` was created.
 From repo root:
 
 ```bash
-# Standard regression entry point (tests only)
+# Standard regression entry point
 scripts/agent_verify.sh
 
-# Tests + scripted TUI keyboard smoke
-scripts/agent_verify.sh --with-smoke
+# List available visual scenarios
+python3 scripts/visual_check.py -l
 
-# Smoke-only flow
-scripts/agent_tui_smoke.sh
+# Smoke check using a predefined scenario
+python3 scripts/visual_check.py --scenario enter_world --artifact none --show
 
-# Interactive manual inspection mode (same binary, no scripted keys)
-scripts/agent_tui_smoke.sh --interactive
+# Save a compact final-state artifact
+python3 scripts/visual_check.py --scenario enter_world
 ```
 
-### Interactive Mode and TTY Requirements
-
-`--interactive` launches the real TUI process and requires a terminal TTY.
-
-- Works: local terminal sessions (normal shell), PTY-backed agent sessions.
-- Fails by design: non-TTY command runners (piped/backgrounded headless exec).
-
-If `--interactive` is run without a TTY, the script now exits with:
-
-```text
-Error: --interactive requires a TTY (stdin/stdout must be terminals).
-Run this directly in a terminal, or omit --interactive for scripted smoke mode.
-```
-
-Use these modes intentionally:
-
-- Manual interactive inspection: `scripts/agent_tui_smoke.sh --interactive`
-- Deterministic automated smoke: `scripts/agent_tui_smoke.sh`
-
-Options:
+### Artifact and Debug Options
 
 ```bash
-# Also run full test suite after smoke flow
-scripts/agent_tui_smoke.sh --with-tests
+# Full step history
+python3 scripts/visual_check.py --scenario enter_world --verbose-steps --artifact full --history
 
-# Keep generated save file for inspection
-scripts/agent_tui_smoke.sh --keep-save
-
-# Skip pre-build if already built
-scripts/agent_tui_smoke.sh --no-build
-
-# Override expect timeout (seconds)
-scripts/agent_tui_smoke.sh --timeout 180
-
-# Capture raw terminal output while running scripted flow
-scripts/agent_tui_smoke.sh --capture-log /tmp/dnd-tui.raw.log
-
-# Deterministic long-session soak profile
-scripts/agent_tui_smoke.sh --soak --profile standard --minutes 30 --token-efficient
+# Custom key sequence smoke
+python3 scripts/visual_check.py "jjl\r" --name custom_smoke --show
 ```
-
-Environment:
-- `TUI_TIMEOUT` (default: `120`)
-- `TUI_RUSTFLAGS` (default: `-Awarnings`) to keep build output concise during smoke runs
 
 ---
 
-## Requirements
+## Soak-Style Run (Replacement for old `--soak`)
 
-- `expect` must be installed for scripted smoke mode.
-  - macOS: `brew install expect`
-- `expect` is not required for `--interactive`.
+Use repeated scenario execution for a timed soak run:
+
+```bash
+end=$(( $(date +%s) + 300 )) # 5 minutes
+while [ "$(date +%s)" -lt "$end" ]; do
+  python3 scripts/visual_check.py --scenario enter_world --artifact none >/dev/null
+  python3 scripts/visual_check.py --scenario combat_flee --artifact none >/dev/null
+done
+```
+
+This preserves deterministic behavior with the scenario runner.
 
 ---
 
-## Agent Workflow Recommendation
+## Notes
 
-1. `scripts/agent_tui_smoke.sh`
-2. If smoke passes and deeper validation is needed:
-  - `scripts/agent_tui_smoke.sh --with-tests`
+- `visual_check.py` is the active smoke/soak runner.
+- `visual_check.py` does not require `expect` or a TTY.
+- Scenario list and key sequences live in `tests/visual_scenarios.json`.
 
-If smoke fails, inspect:
-- `src/ui/tui/mod.rs` (key mapping)
-- `src/app.rs` (event handling/state transitions)
-- `src/ui/tui/screens/*.rs` (render/runtime assumptions)
-
-## Scenario-Aware and Deterministic Capture (Milestone 15)
-
-New options for interactive playtest and token-efficient capture:
-
-```bash
-# List available scenario presets
-scripts/agent_tui_smoke.sh --list-scenarios
-
-# Run a specific scenario (e.g., ash_gate)
-scripts/agent_tui_smoke.sh --scenario ash_gate
-
-# Run in interactive mode for a scenario
-scripts/agent_tui_smoke.sh --interactive --scenario ember_square
-
-# Capture a deterministic, token-efficient log (bounded frames)
-scripts/agent_tui_smoke.sh --capture-log /tmp/ash_gate.log --scenario ash_gate --token-efficient --max-frames 120
-```
-
-- `--scenario <name>`: Use a scenario preset (ash_gate, ember_square, river_watch)
-- `--token-efficient`: Output compact, summary-oriented logs for review
-- `--max-frames <N>`: Limit the number of frames/events captured
-- `--list-scenarios`: List all available scenario presets
-- `--soak`: Run repeated scripted scenarios until `--minutes` is reached
-- `--profile <name>`: Soak profile (`standard`)
-- `--minutes <N>`: Soak duration in minutes
-
-Asset integrity verification:
-
-```bash
-cargo run -- --validate-assets
-scripts/validate_assets.sh
-```
-
-See also: [interactive-playtest-checklist.md](interactive-playtest-checklist.md)
+See also: [step-through-testing.md](step-through-testing.md)

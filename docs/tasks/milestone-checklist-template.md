@@ -15,8 +15,8 @@ Use this at handoff when closing a milestone.
 ## Verification
 - [ ] `cargo test`
 - [ ] `cargo run -- --validate-assets`
-- [ ] `scripts/agent_tui_smoke.sh --no-build`
-- [ ] Soak run (when applicable): `scripts/agent_tui_smoke.sh --soak --profile standard --minutes <n> --token-efficient`
+- [ ] `python3 scripts/visual_check.py --scenario enter_world --artifact none --show`
+- [ ] Soak run (when applicable): `for i in $(seq 1 <n>); do python3 scripts/visual_check.py --scenario enter_world --artifact none; done`
 
 ## Artifacts
 - [ ] Updated docs under `docs/`

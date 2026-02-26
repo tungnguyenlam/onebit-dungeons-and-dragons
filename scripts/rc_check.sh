@@ -11,7 +11,7 @@
 #
 # Tiers:
 #   T1 (fast)  : format, lint, asset validate, save-suite
-#   T2 (slow)  : full cargo test, TUI smoke
+#   T2 (slow)  : full cargo test, scenario smoke
 #   T3 (rc)    : T1 + T2 + soak profile
 
 set -euo pipefail
@@ -74,15 +74,16 @@ step T1 "combat AI suite" \
 # ---------------------------------------------------------------------------
 if [[ "$TIER" == "--fast" ]]; then
     skip "Tier 2: full cargo test (skipped — --fast mode)"
-    skip "Tier 2: TUI smoke (skipped — --fast mode)"
+    skip "Tier 2: scenario smoke (skipped — --fast mode)"
 else
     echo -e "\n${BLUE}=== Tier 2: Full Test Suite ===${NC}"
     step T2 "cargo test (all)"  cargo test
-    if command -v expect >/dev/null 2>&1; then
-        step T2 "TUI smoke" \
-            bash "$SCRIPT_DIR/agent_tui_smoke.sh" --no-build
+    if command -v python3 >/dev/null 2>&1; then
+        step T2 "scenario smoke (enter_world)" \
+            python3 "$SCRIPT_DIR/visual_check.py" \
+                --scenario enter_world --artifact none
     else
-        skip "TUI smoke (expect not installed)"
+        skip "scenario smoke (python3 not installed)"
     fi
 fi
 
@@ -91,12 +92,11 @@ fi
 # ---------------------------------------------------------------------------
 if [[ "$TIER" == "--all" ]]; then
     echo -e "\n${BLUE}=== Tier 3: RC Soak Profile ===${NC}"
-    if command -v expect >/dev/null 2>&1; then
-        step T3 "soak (1 min)" \
-            bash "$SCRIPT_DIR/agent_tui_smoke.sh" \
-                --soak --profile standard --minutes 1 --token-efficient --no-build
+    if command -v python3 >/dev/null 2>&1; then
+        step T3 "soak profile (3x scenario loop)" \
+            bash -lc 'for scenario in enter_world combat_init combat_flee; do python3 scripts/visual_check.py --scenario "$scenario" --artifact none; done'
     else
-        skip "soak profile (expect not installed)"
+        skip "soak profile (python3 not installed)"
     fi
 fi
 

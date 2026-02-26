@@ -73,25 +73,17 @@ Important: `visual_check` is a runner over the real game (`cargo run -- --text -
 
 Guide: [testing/step-through-testing.md](docs/testing/step-through-testing.md)
 
-### Option 2: TUI Smoke Test (Automated)
+### Option 2: Automated Smoke Check (Scenario Runner)
 
-For a non-interactive keyboard smoke check of the TUI:
+For a deterministic non-interactive smoke check of the game:
 ```bash
-scripts/agent_tui_smoke.sh
+python3 scripts/visual_check.py --scenario enter_world --artifact none --show
 ```
 Guide: [testing/tui-agent-smoke.md](docs/testing/tui-agent-smoke.md)
 
-For manual interactive playtest:
-```bash
-scripts/agent_tui_smoke.sh --interactive
-```
-Note: this requires a TTY terminal session. If you run commands in a non-TTY
-agent exec context, use scripted smoke mode instead.
-
-For standard automated verification (tests first, optional smoke):
+For standard automated verification:
 ```bash
 scripts/agent_verify.sh
-scripts/agent_verify.sh --with-smoke
 ```
 
 For asset graph and progression consistency checks:

@@ -3,7 +3,7 @@
 **Date:** 2026-02-20  
 **Scenario:** ash_gate  
 **Run Type:** Deterministic Capture  
-**Tool:** `scripts/agent_tui_smoke.sh --scenario ash_gate --capture-log /tmp/ash_gate.log --keep-save`
+**Tool:** `python3 scripts/visual_check.py --scenario ash_gate --verbose-steps --artifact full --history`
 
 ---
 

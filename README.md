@@ -35,11 +35,8 @@ scripts/agent_verify.sh
 # Full release-readiness check
 scripts/release_check.sh
 
-# Agent-run automated TUI smoke flow
-scripts/agent_tui_smoke.sh
-
-# Manual interactive TUI playtest (requires TTY terminal)
-scripts/agent_tui_smoke.sh --interactive
+# Agent-run automated visual scenario check
+python3 scripts/visual_check.py --scenario enter_world
 
 # Asset validation (rooms/quests/dialog links + reachability)
 cargo run -- --validate-assets

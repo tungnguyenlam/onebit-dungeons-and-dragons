@@ -74,7 +74,7 @@
 ### Testing docs
 
 - `testing/tui-agent-smoke.md`
-  - Related: [AGENT.md](../AGENT.md), [README.md](../README.md), `scripts/agent_tui_smoke.sh`, `scripts/agent_verify.sh`
+  - Related: [AGENT.md](../AGENT.md), [README.md](../README.md), `scripts/visual_check.py`, `scripts/agent_verify.sh`
 - `testing/WRITING_TESTS.md`
   - Related: `src/app/tests.rs`, `src/game/combat/attack.rs`
 

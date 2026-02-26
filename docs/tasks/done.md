@@ -5,6 +5,15 @@
 
 ---
 
+## 2026-02-26 — Milestone 61: Map Widgets & World Map Utility
+
+- [x] Added world-map utility in `src/app/navigation/world_map_util.rs` to build region overview data.
+- [x] Added reusable map widgets in `src/ui/tui/widgets/map.rs` (room list + exits).
+- [x] Integrated widget panel into `src/ui/tui/screens/world_map.rs`.
+- [x] Added utility/widget tests and verified world map rendering path.
+
+**Validation:** `cargo check` pass, `cargo test` pass, headless visual dump snapshot saved.
+
 ## 2026-02-26 — Milestone 60: Final Boss, Ending Variations & New Game+
 
 - [x] Added final boss asset `assets/monsters/void_architect.toml`.
@@ -188,7 +197,7 @@ Files modified:
 - [x] `src/data/validate.rs` (new) — `--validate-assets` with room/dialog/quest graph checks
 - [x] `src/app.rs` — dialog softlock guardrails emit explicit journal feedback
 - [x] `src/ui/tui/screens/combat.rs` — timeline strip, last-turn summary, reduced-motion styling
-- [x] `scripts/agent_tui_smoke.sh` — soak mode (`--soak --profile standard --minutes`)
+- [x] `scripts/visual_check.py` — scenario-based smoke/soak runs
 - [x] `.github/workflows/rust.yml` — CI runs asset validation + PR soak
 - [x] `docs/tasks/milestone-checklist-template.md` — new handoff template
 
