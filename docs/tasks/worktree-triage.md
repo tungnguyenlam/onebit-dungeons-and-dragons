@@ -8,6 +8,11 @@ Detailed report: `/tmp/worktree_triage/triage_report.txt`
 - Total changed paths: 164
 - Tracked modified: 131
 - Untracked: 33
+- After split commits: 111 remaining (`89` tracked, `22` untracked)
+
+## Commits created during triage
+- `4ed89a8` — isolate M59/M60 implementation + docs
+- `d79ff62` — isolate M57/M58 crafting + bestiary/lore screens
 
 ## Buckets
 - `runtime_noise` (2): `save.toml`, `amp`
