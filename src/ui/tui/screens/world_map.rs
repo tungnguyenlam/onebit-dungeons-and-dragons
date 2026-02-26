@@ -1,7 +1,9 @@
 use crate::app::App;
+use crate::app::navigation::world_map_util::build_region_overview;
 use crate::game::world::map::Tile;
 use crate::game::world::{fov, weather::WeatherType};
 use crate::ui::tui::theme::{self, progress_bar, theme};
+use crate::ui::tui::widgets::{exit_lines, room_list_lines};
 use ratatui::{
     layout::{Constraint, Layout},
     style::{Modifier, Style},
@@ -99,20 +101,26 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
     // Map with semantic coloring
     let map_text = if let Some(room) = app.region.room(&app.current_room_id) {
         let weather = WeatherType::from_region_tag(&app.region.weather);
-        let visible = fov::compute(
-            (app.player_pos.0 as i32, app.player_pos.1 as i32),
-            weather.fov_radius(),
-            &room.grid,
-        );
+        let visible = if matches!(weather, WeatherType::Fog) {
+            Some(fov::compute(
+                (app.player_pos.0 as i32, app.player_pos.1 as i32),
+                weather.fov_radius(),
+                &room.grid,
+            ))
+        } else {
+            None
+        };
         let mut rows = Vec::new();
         for r in 0..room.height() {
             let mut line = Vec::new();
             for c in 0..room.width() {
                 let pos = (c, r);
-                let is_visible = visible.contains(&(c as i32, r as i32));
-                if !is_visible {
-                    line.push(Span::raw(" "));
-                    continue;
+                if let Some(visible) = &visible {
+                    let is_visible = visible.contains(&(c as i32, r as i32));
+                    if !is_visible {
+                        line.push(Span::raw(" "));
+                        continue;
+                    }
                 }
                 if pos == app.player_pos {
                     line.push(Span::styled(
@@ -138,14 +146,34 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
         vec![Line::from("No active room.")]
     };
 
+    let map_chunks = Layout::horizontal([Constraint::Min(28), Constraint::Length(36)]).split(chunks[2]);
+
     frame.render_widget(
         Paragraph::new(map_text).block(
             Block::default()
-                .title("Map")
+                .title("Local Map")
                 .borders(Borders::ALL)
                 .style(Style::default().fg(t.panel_border)),
         ),
-        chunks[2],
+        map_chunks[0],
+    );
+
+    let overview = build_region_overview(&app.region, &app.current_room_id, &app.world_state);
+    let right_lines = room_list_lines(&overview)
+        .into_iter()
+        .chain(std::iter::once(Line::from("")))
+        .chain(exit_lines(&overview))
+        .collect::<Vec<_>>();
+    frame.render_widget(
+        Paragraph::new(right_lines)
+            .block(
+                Block::default()
+                    .title("World Map Widget")
+                    .borders(Borders::ALL)
+                    .style(Style::default().fg(t.panel_border)),
+            )
+            .wrap(ratatui::widgets::Wrap { trim: true }),
+        map_chunks[1],
     );
 
     // Controls footer

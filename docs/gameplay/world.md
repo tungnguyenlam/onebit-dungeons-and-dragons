@@ -108,3 +108,10 @@ Regions declare weather in `region.toml` (`clear`, `rain`, `fog`, `ash`, etc.).
 - `fog` reduces visible map radius in the TUI.
 - `rain` penalizes ranged attacks and weakens fire-based attacks in combat.
 - `ash` periodically applies coughing pressure (modeled via temporary poisoned state).
+
+Visibility masking is applied for **fog only**. Other weather types keep full
+room visibility.
+
+The TUI world screen now combines:
+- **Local Map** (tile-level room view)
+- **World Map Widget** (room list + available/locked regional exits)

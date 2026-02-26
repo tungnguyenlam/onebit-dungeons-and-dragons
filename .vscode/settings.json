@@ -1,6 +1,12 @@
 {
     "chat.tools.terminal.autoApprove": {
         "cargo check": true,
-        "cargo test": true
+        "cargo test": true,
+        "scripts/agent_tui_smoke.sh": true,
+        "/^python3 scripts/visual_check\\.py --scenario enter_world --show --name m62_enter_world$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "cargo run": true
     }
 }

@@ -71,6 +71,7 @@
 | M58 | Bestiary & Shared Lore UI | ✅ done | [milestones/m58.md](milestones/m58.md) |
 | M59 | Dynamic Weather & Environmental Hazards | ✅ done | [milestones/m59.md](milestones/m59.md) |
 | M60 | Final Boss, Ending Variations & New Game+ | ✅ done | [milestones/m60.md](milestones/m60.md) |
+| M61 | Map Widgets & World Map Utility | ✅ done | [milestones/m61.md](milestones/m61.md) |
 
 Status: ✅ done · 🚧 in progress · 🔲 next / planned
 
