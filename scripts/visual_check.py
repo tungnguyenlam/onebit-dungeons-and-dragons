@@ -3,7 +3,7 @@ import subprocess
 import os
 import sys
 import argparse
-import time
+from datetime import datetime
 
 def run_command(keys, reset=False):
     if reset:
@@ -36,6 +36,17 @@ def main():
     parser.add_argument("--config", default="tests/visual_scenarios.json", help="Path to scenarios JSON")
     parser.add_argument("--list-scenarios", "-l", action="store_true", help="List available scenarios")
     parser.add_argument("--verbose-steps", "-v", action="store_true", help="Run each key in the sequence as a separate step and capture/print all outputs")
+    parser.add_argument(
+        "--artifact",
+        choices=["final", "full", "none"],
+        default="final",
+        help="Artifact mode: final=save only final state (default), full=save every step, none=do not write a file",
+    )
+    parser.add_argument(
+        "--history",
+        action="store_true",
+        help="Keep timestamped history files instead of overwriting the latest snapshot name",
+    )
 
     args = parser.parse_args()
 
@@ -72,31 +83,42 @@ def main():
         os.makedirs(args.dir)
 
     full_output = ""
+    final_output = ""
     if args.verbose_steps:
-        # Initial state
+        # Capture initial state once so verbose runs can include a clean baseline.
         out = run_command("", reset)
         if out:
             full_output += "--- INITIAL STATE ---\n" + out + "\n"
+            final_output = out
         
         for i, char in enumerate(keys):
             out = run_command(char, False)
             if out:
                 full_output += f"--- STEP {i+1}: '{char}' ---\n" + out + "\n"
+                final_output = out
     else:
         full_output = run_command(keys, reset)
+        final_output = full_output
     
     if full_output:
-        name = scenario_name if scenario_name else f"check_{int(time.time())}"
+        name = scenario_name if scenario_name else "latest"
+        if args.history:
+            stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+            name = f"{name}_{stamp}"
         filepath = os.path.join(args.dir, f"{name}.txt")
-        
-        with open(filepath, "w") as f:
-            f.write(full_output)
-        
-        print(f"Snapshot saved to: {filepath}")
+
+        if args.artifact != "none":
+            to_write = full_output if args.artifact == "full" else final_output
+            with open(filepath, "w") as f:
+                f.write(to_write)
+            print(f"Snapshot saved to: {filepath}")
         
         if args.show:
             print(f"\n--- Visual Output: {name} ---")
-            print(full_output)
+            if args.artifact == "full":
+                print(full_output)
+            else:
+                print(final_output)
             print("----------------------")
 
 if __name__ == "__main__":
